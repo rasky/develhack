@@ -9,9 +9,6 @@ if(NOT DEVKITARM)
   message(FATAL_ERROR "Please set DEVKITARM in your environment")
 endif(NOT DEVKITARM)
 
-message("Found devkitARM: ${DEVKITARM}")
-message("Found devkitpro: ${DEVKITPRO}")
-
 set(CMAKE_C_COMPILER ${DEVKITARM}/bin/arm-none-eabi-gcc)
 set(CMAKE_CXX_COMPILER ${DEVKITARM}/bin/arm-none-eabi-g++)
 set(CMAKE_FIND_ROOT_PATH ${DEVKITPRO})
@@ -45,7 +42,3 @@ find_library(NDS7_LIBRARY
 if(NOT NDS7_LIBRARY)
   message(FATAL_ERROR "Unable to find libnds for ARM7")
 endif(NOT NDS7_LIBRARY)
-
-message("NDS_INCLUDE_DIR ${NDS_INCLUDE_DIR}")
-message("NDS7_LIBRARY ${NDS7_LIBRARY}")
-message("NDS9_LIBRARY ${NDS9_LIBRARY}")
