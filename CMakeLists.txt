@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.5)
 
 set(CMAKE_TOOLCHAIN_FILE cmake/devkitARM.cmake)
 set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
+include(devkitARM)
 include(NDS)
 
 project(develfighter)
