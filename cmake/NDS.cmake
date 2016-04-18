@@ -17,10 +17,10 @@ macro(OBJCOPY_FILE EXE_NAME)
 endmacro(OBJCOPY_FILE)
 
 if(NOT NDSTOOL_EXE)
- message(STATUS "Looking for arm-eabi-objcopy")
+ message(STATUS "Looking for ndstool")
  find_program(NDSTOOL_EXE ndstool ${DEVKITARM}/bin)
  if(NDSTOOL_EXE)
-  message(STATUS "Looking for arm-eabi-objcopy -- ${NDSTOOL_EXE}")
+  message(STATUS "Looking for ndstool -- ${NDSTOOL_EXE}")
  endif(NDSTOOL_EXE)
 endif(NOT NDSTOOL_EXE)
 
