@@ -1,0 +1,11 @@
+#!/bin/bash
+
+set -euo pipefail
+IFS=$'\n\t'
+cd "$(cd "$(dirname "${0}")"; pwd)/../"
+
+if [[ "$(uname -s)" == "Darwin" ]]; then
+    brew install docker docker-machine
+
+    brew cask install desmume
+fi

@@ -1,0 +1,12 @@
+#!/bin/bash
+
+set -euo pipefail
+IFS=$'\n\t'
+cd "$(cd "$(dirname "${0}")"; pwd)/../"
+
+if [[ "$(uname -s)" == "Darwin" && -z "${DOCKER_HOST}" ]]; then
+    echo "Make sure your Docker Machine is running and your env is configured."
+    exit 1
+fi
+
+docker build --tag develhack:latest .
