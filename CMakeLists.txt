@@ -4,17 +4,22 @@ set(CMAKE_TOOLCHAIN_FILE cmake/devkitARM.cmake)
 set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
 include(devkitARM)
 include(NDS)
+include(grit)
 
-project(develfighter)
+project(develfighter C ASM)
 
 add_definitions(-DARM9)
 
 set(EXE_NAME game)
 
-add_executable(${EXE_NAME}
-  src/main.c)
+grit(gfx/starField.png)
 
-include_directories(${NDS_INCLUDE_DIR})
+include_directories(${NDS_INCLUDE_DIR} ${GRIT_GENERATED_DIR})
+
+add_executable(${EXE_NAME}
+  src/main.c
+  starField.s
+  starField.h)
 
 target_link_libraries(${EXE_NAME} ${NDS9_LIBRARY})
 
