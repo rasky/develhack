@@ -1,11 +1,6 @@
 cmake_minimum_required(VERSION 3.5)
-
-set(CMAKE_TOOLCHAIN_FILE cmake/devkitARM.cmake)
-set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
-include(devkitARM)
-include(NDS)
-include(grit)
-
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_SOURCE_DIR}/cmake/Modules)
+find_package(DevkitPRO REQUIRED)
 project(develfighter C ASM)
 
 add_definitions(-DARM9)
@@ -14,7 +9,7 @@ set(EXE_NAME game)
 
 grit(gfx/starField.png)
 
-include_directories(${NDS_INCLUDE_DIR} ${GRIT_GENERATED_DIR})
+include_directories(${NDS_INCLUDE_DIR} ${CMAKE_CURRENT_BINARY_DIR})
 
 add_executable(${EXE_NAME}
   src/main.c
