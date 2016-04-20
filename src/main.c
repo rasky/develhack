@@ -1,5 +1,9 @@
+#include <ctype.h>
+#include <fat.h>
 #include <nds.h>
 #include <stdio.h>
+#include <sys/stat.h>
+#include <unistd.h>
 
 #include "starField.h"
 
@@ -146,10 +150,37 @@ int main(void)
     // Note that this resets some of our VRAM bank settings
     consoleDemoInit();
 
+    if (!fatInitDefault())
+    {
+        iprintf("Unable to initialize libfat");
+        goto error;
+    }
+
+    FILE* hello = fopen("hello.txt", "rb");
+
+    if (hello == NULL)
+    {
+        iprintf("Unable to read hello.txt");
+        goto error;
+    }
+
+    struct stat st;
+    int status = fstat(fileno(hello), &st);
+    char *greeting = (char *)malloc(st.st_size + 1);
+    memset(greeting, 0, st.st_size + 1);
+    int i = fread(greeting, 1, st.st_size, hello) - 1;
+    while (isspace(greeting[i]))
+    {
+        greeting[i--] = 0;
+    }
+    fclose(hello);
+
     while(1)
     {
         swiWaitForVBlank();
         touchRead(&touchXY);
+
+        iprintf("[%s]", greeting);
 
         // print at using ansi escape sequence \x1b[line;columnH
         iprintf("\x1b[10;0HFrame = %d", frame);
@@ -174,6 +205,12 @@ int main(void)
             keys & KEY_Y ? 'x' : '0',
             keys & KEY_TOUCH ? 'x' : '0',
             keys & KEY_LID ? 'x' : '0');
+    }
+
+error:
+    while(1)
+    {
+        swiWaitForVBlank();
     }
 
     return 0;

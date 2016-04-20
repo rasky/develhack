@@ -16,7 +16,7 @@ add_executable(${EXE_NAME}
   starField.s
   starField.h)
 
-target_link_libraries(${EXE_NAME} ${NDS9_LIBRARY})
+target_link_libraries(${EXE_NAME} ${NDS_FAT_LIBRARY} ${NDS9_LIBRARY})
 
 set_target_properties(${EXE_NAME}
   PROPERTIES

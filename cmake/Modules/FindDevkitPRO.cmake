@@ -47,6 +47,10 @@ if(NOT NDS9_LIBRARY)
   message(FATAL_ERROR "Unable to find libnds for ARM9")
 endif()
 
+find_library(NDS_FAT_LIBRARY
+  NAME fat
+  HINTS "${DEVKITPRO}/libnds/lib")
+
 #
 # Tools
 #
