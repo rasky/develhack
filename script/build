@@ -4,13 +4,10 @@ set -euo pipefail
 IFS=$'\n\t'
 cd "$(cd "$(dirname "${0}")"; pwd)/../"
 
-docker_run() {
-    docker run -it -v "$(pwd):/home/code" develhack:latest sh -c "${@}"
-}
+sync
+sleep 1
 
-if [[ ! -d "build" ]]; then
-    mkdir -p build
-    docker_run "cd build && cmake .."
-fi
-
-docker_run "cd build && make"
+docker run -it -v "$(pwd):/home/code" develhack:latest sh -c "\
+    test -d build || ( mkdir -p build && cd build && cmake .. ) \
+        && cd build \
+        && make VERBOSE=1"
