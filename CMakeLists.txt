@@ -11,6 +11,19 @@ set(CMAKE_C_FLAGS_RELEASE ${PROJ_C_FLAGS})
 add_definitions(-DARM9)
 
 #
+# Lua
+#
+
+add_subdirectory(3rdparty/lua-5.3.2)
+include_directories(3rdparty/lua-5.3.2/src)
+
+find_package(Luac REQUIRED)
+
+set(LUA_FILES ${CMAKE_CURRENT_SOURCE_DIR}/lua/hello.lua)
+set(LUA_LIBRARIES lua ${MATH_LIBRARY})
+set(LUA_OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/luac.out)
+
+#
 # Game Binary
 #
 
@@ -25,7 +38,7 @@ add_executable(${EXE_NAME}
   starField.s
   starField.h)
 
-target_link_libraries(${EXE_NAME} ${NDS_FAT_LIBRARY} ${NDS9_LIBRARY})
+target_link_libraries(${EXE_NAME} ${NDS_FAT_LIBRARY} ${NDS9_LIBRARY} ${LUA_LIBRARIES})
 
 objcopy_file(${EXE_NAME})
 ndstool_file(${EXE_NAME})
@@ -34,8 +47,16 @@ ndstool_file(${EXE_NAME})
 # Data Disk
 #
 
+# Pre-compile Lua files
 add_custom_command(
-    TARGET ${EXE_NAME}
-    POST_BUILD
-    COMMAND ${CMAKE_SOURCE_DIR}/script/mkdatadisk
-    ARGS ${CMAKE_SOURCE_DIR}/data ${CMAKE_CURRENT_BINARY_DIR}/data.bin)
+  TARGET ${EXE_NAME}
+  POST_BUILD
+  DEPENDS ${LUA_FILES}
+  COMMAND ${LUAC_EXE} -o ${LUA_OUTPUT} -- ${LUA_FILES})
+
+# Create data disk
+add_custom_command(
+  TARGET ${EXE_NAME}
+  POST_BUILD
+  COMMAND ${CMAKE_SOURCE_DIR}/script/mkdatadisk
+  ARGS ${CMAKE_CURRENT_BINARY_DIR}/data.bin ${CMAKE_CURRENT_SOURCE_DIR}/data/*.* ${LUA_OUTPUT})

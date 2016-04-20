@@ -18,6 +18,6 @@ docker run --privileged \
     sh -c "\
     test -d build || ( mkdir -p build && cd build && cmake .. ) \
         && cd build \
-        && make \
+        && make -j\$(getconf _NPROCESSORS_ONLN) \
         && cd .. \
         && chown -R \${USER_UID}:\${USER_GID} build"

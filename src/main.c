@@ -5,6 +5,9 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
+#include <lua.h>
+#include <lauxlib.h>
+
 #include "starField.h"
 
 volatile int frame = 0;
@@ -175,12 +178,41 @@ int main(void)
     }
     fclose(hello);
 
+    // ---- BEGIN LUA
+
+    lua_State* lstate = luaL_newstate();
+    if (lstate == NULL) {
+        iprintf("Unable to create Lua state");
+        goto error;
+    }
+
+    int rc = luaL_dofile(lstate, "luac.out");
+    if (rc != LUA_OK) {
+        iprintf(lua_tostring(lstate, -1));
+        goto error;
+    }
+
+    lua_getglobal(lstate, "sum");
+    lua_pushnumber(lstate, 1);
+    lua_pushnumber(lstate, 2);
+    if (lua_pcall(lstate, 2, 1, 0) != 0) {
+        iprintf(lua_tostring(lstate, -1));
+        goto error;
+    }
+
+    int z = lua_tonumber(lstate, -1);
+    lua_pop(lstate, 1);
+
+    lua_close(lstate);
+
+    // ----- END LUA
+
     while(1)
     {
         swiWaitForVBlank();
         touchRead(&touchXY);
 
-        iprintf("[%s]", greeting);
+        iprintf("[%d]", z);
 
         // print at using ansi escape sequence \x1b[line;columnH
         iprintf("\x1b[10;0HFrame = %d", frame);

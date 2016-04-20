@@ -9,12 +9,14 @@ ENV DEBIAN_FRONTEND noninteractive
 RUN sed -e 's/archive.ubuntu.com/it.archive.ubuntu.com/g' \
         -e '/deb-src/d' \
         -i /etc/apt/sources.list \
+    && dpkg --add-architecture i386 \
     && apt-get update \
     && apt-get -y install \
         build-essential \
         cmake \
-        git \
         dosfstools \
+        git \
+        lua5.3:i386 \
         wget
 
 #

@@ -28,6 +28,18 @@ set(CMAKE_FIND_LIBRARY_PREFIXES lib)
 set(CMAKE_FIND_LIBRARY_SUFFIXES .a)
 
 #
+# libm
+#
+
+find_library(MATH_LIBRARY
+  NAME m
+  HINTS "${DEVKITARM}/${CMAKE_SYSTEM_PROCESSOR}/lib")
+
+if(NOT MATH_LIBRARY)
+  message(FATAL_ERROR "Unable to find math library")
+endif()
+
+#
 # libnds
 #
 
