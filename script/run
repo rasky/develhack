@@ -4,8 +4,9 @@ set -euo pipefail
 IFS=$'\n\t'
 cd "$(cd "$(dirname "${0}")"; pwd)/../"
 
-DESMUME_DARWIN_APP="${HOME}/Applications/DeSmuME.app"
-
-if [[ "$(uname -s)" == "Darwin" ]]; then
-    exec "${DESMUME_DARWIN_APP}/Contents/MacOS/DeSmuME" "build/game.nds"
+if [[ ! -x "$(which desmume)" ]]; then
+	echo "Please install desmume first. Aborting."
+	exit 1
 fi
+
+exec desmume --load-type=1 --cflash-path=data build/game.nds
