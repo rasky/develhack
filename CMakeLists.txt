@@ -10,6 +10,10 @@ set(CMAKE_C_FLAGS_RELEASE ${PROJ_C_FLAGS})
 
 add_definitions(-DARM9)
 
+#
+# Game Binary
+#
+
 set(EXE_NAME game)
 
 grit(gfx/starField.png)
@@ -25,3 +29,13 @@ target_link_libraries(${EXE_NAME} ${NDS_FAT_LIBRARY} ${NDS9_LIBRARY})
 
 objcopy_file(${EXE_NAME})
 ndstool_file(${EXE_NAME})
+
+#
+# Data Disk
+#
+
+add_custom_command(
+    TARGET ${EXE_NAME}
+    POST_BUILD
+    COMMAND ${CMAKE_SOURCE_DIR}/script/mkdatadisk
+    ARGS ${CMAKE_SOURCE_DIR}/data ${CMAKE_CURRENT_BINARY_DIR}/data.bin)

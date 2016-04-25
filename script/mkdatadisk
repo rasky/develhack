@@ -1,0 +1,32 @@
+#!/bin/sh
+
+set -eu
+
+cd "$(dirname "${0}")/../" || exit 1
+
+IN="${1:-./data}"
+OUT="${2:-./data.img}"
+
+#
+# Cleanup
+#
+
+on_exit() {
+    umount /mnt || true
+}
+
+trap on_exit EXIT
+
+#
+# Create Image
+#
+
+dd if=/dev/zero of="${OUT}" bs=1K count=256
+mkfs.vfat "${OUT}"
+mount -o loop "${OUT}" /mnt
+
+#
+# Populate Disk Image
+#
+
+cp "${IN}"/*.* /mnt/

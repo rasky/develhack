@@ -9,4 +9,4 @@ if [[ ! -x "$(which desmume)" ]]; then
 	exit 1
 fi
 
-exec desmume --load-type=1 --cflash-path=data build/game.nds
+exec desmume --load-type=1 --cflash-image=build/data.bin build/game.nds

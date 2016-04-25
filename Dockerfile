@@ -14,6 +14,7 @@ RUN sed -e 's/archive.ubuntu.com/it.archive.ubuntu.com/g' \
         build-essential \
         cmake \
         git \
+        dosfstools \
         wget
 
 #
