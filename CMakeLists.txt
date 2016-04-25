@@ -3,6 +3,11 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_SOURCE_DIR}/cmake/Modules)
 find_package(DevkitPRO REQUIRED)
 project(develfighter C ASM)
 
+set(PROJ_C_FLAGS "-Os -mthumb -mthumb-interwork -specs=ds_arm9.specs")
+set(CMAKE_C_FLAGS ${PROJ_C_FLAGS})
+set(CMAKE_C_FLAGS_DEBUG ${PROJ_C_FLAGS})
+set(CMAKE_C_FLAGS_RELEASE ${PROJ_C_FLAGS})
+
 add_definitions(-DARM9)
 
 set(EXE_NAME game)
@@ -17,11 +22,6 @@ add_executable(${EXE_NAME}
   starField.h)
 
 target_link_libraries(${EXE_NAME} ${NDS_FAT_LIBRARY} ${NDS9_LIBRARY})
-
-set_target_properties(${EXE_NAME}
-  PROPERTIES
-  LINK_FLAGS -specs=ds_arm9.specs
-  COMPILER_FLAGS "-mthumb -mthumb-interwork")
 
 objcopy_file(${EXE_NAME})
 ndstool_file(${EXE_NAME})
