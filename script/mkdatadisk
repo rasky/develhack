@@ -13,26 +13,14 @@ OUT="${1}"
 shift 1
 
 #
-# Cleanup
-#
-
-on_exit() {
-    umount /mnt || true
-}
-
-trap on_exit EXIT
-
-#
 # Create Image
 #
 
-dd if=/dev/zero of="${OUT}" bs=1K count=256
-mkfs.vfat "${OUT}"
-mount -o loop "${OUT}" /mnt
+mformat -C -t 1 -h 1 -s 512 -i "${OUT}"
 
 #
 # Populate Disk Image
 #
 
-cp "${@}" /mnt/
-ls -l /mnt/
+mcopy -i "${OUT}" "${@}" ::
+mdir -i "${OUT}"
