@@ -17,6 +17,7 @@ RUN sed -e 's/archive.ubuntu.com/it.archive.ubuntu.com/g' \
         dosfstools \
         git \
         lua5.3:i386 \
+        mtools \
         wget
 
 #

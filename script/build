@@ -4,20 +4,14 @@ set -euo pipefail
 IFS=$'\n\t'
 cd "$(cd "$(dirname "${0}")"; pwd)/../"
 
-USER_UID="$(id -u)"
-USER_GID="$(id -g)"
-
 sync
 sleep 1
 
-docker run --privileged \
-    --env="USER_UID=${USER_UID}" --env="USER_GID=${USER_GID}" \
+docker run \
     --volume="$(pwd):/home/code" \
     --interactive --tty \
     develhack:latest \
     sh -c "\
     test -d build || ( mkdir -p build && cd build && cmake .. ) \
         && cd build \
-        && make -j\$(getconf _NPROCESSORS_ONLN) \
-        && cd .. \
-        && chown -R \${USER_UID}:\${USER_GID} build"
+        && make -j\$(getconf _NPROCESSORS_ONLN)"
