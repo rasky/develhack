@@ -1,0 +1,14 @@
+machine:
+  services:
+    - docker
+
+dependencies:
+  override:
+    - if [[ -e ~/docker/image.tar ]]; then docker load -i ~/docker/image.tar; fi
+    - sed -e 's/it.archive.ubuntu.com/us.archive.ubuntu.com/g' -i Dockerfile
+    - ./script/setup
+    - mkdir -p ~/docker; docker save develhack:latest > ~/docker/image.tar
+
+test:
+  override:
+    - ./script/cibuild

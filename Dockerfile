@@ -27,6 +27,9 @@ RUN sed -e 's/archive.ubuntu.com/it.archive.ubuntu.com/g' \
 ENV DEVKITPRO "/usr/local/devkitPRO"
 ENV DEVKITARM "${DEVKITPRO}/devkitARM"
 
+# Work around tar being unable to extract files on Circle CI
+ENV TAR_OPTIONS "--no-same-owner"
+
 RUN wget 'http://downloads.sourceforge.net/project/devkitpro/Automated%20Installer/devkitARMupdate.pl' -O- \
     | perl
 
