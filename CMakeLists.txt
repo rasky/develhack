@@ -34,6 +34,8 @@ grit(gfx/starField.png)
 include_directories(${NDS_INCLUDE_DIR} ${CMAKE_CURRENT_BINARY_DIR})
 
 add_executable(${EXE_NAME}
+  src/debug.c
+  src/debug.h
   src/main.c
   starField.s
   starField.h)

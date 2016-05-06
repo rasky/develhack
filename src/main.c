@@ -1,3 +1,5 @@
+#include "debug.h"
+
 #include <ctype.h>
 #include <fat.h>
 #include <nds.h>
@@ -140,6 +142,7 @@ void Vblank()
 
 int main(void)
 {
+    debugf("Powering on\n");
     touchPosition touchXY;
 
     powerOn(POWER_ALL_2D);
