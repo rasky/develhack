@@ -62,9 +62,9 @@ static __attribute__ ((noinline))
 void output_debug_string_internal(const char* text)
 {
 #ifdef __thumb__
-    asm volatile ("swi #0xfc");
+    asm volatile ("swi #0xfc" :: "r"(text));
 #else
-    asm volatile ("swi #0xfc000");
+    asm volatile ("swi #0xfc000" :: "r"(text));
 #endif
 }
 
