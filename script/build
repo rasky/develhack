@@ -7,9 +7,13 @@ cd "$(cd "$(dirname "${0}")"; pwd)/../"
 sync
 sleep 1
 
+if tty -s; then
+    TTY=1
+fi
+
 docker run \
     --volume="$(pwd):/home/code" \
-    --interactive --tty \
+    ${TTY+--interactive} ${TTY+--tty} \
     develhack:latest \
     sh -c "\
     test -d build || ( mkdir -p build && cd build && cmake .. ) \
