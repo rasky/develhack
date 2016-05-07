@@ -50,8 +50,7 @@ int is_emulator()
 #endif
 
     // TODO: find a way to detect that we're running on ndsemu as well
-    // return mov_r0_r0 != 0;
-    return 1;
+    return mov_r0_r0 != 0;
 }
 
 // This function must be noinline, because
