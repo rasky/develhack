@@ -8,6 +8,9 @@ set(CMAKE_C_FLAGS ${PROJ_C_FLAGS})
 set(CMAKE_C_FLAGS_DEBUG ${PROJ_C_FLAGS})
 set(CMAKE_C_FLAGS_RELEASE ${PROJ_C_FLAGS})
 
+# Generate map file
+set(CMAKE_EXE_LINKER_FLAGS "-Wl,-Map,game.map")
+
 add_definitions(-DARM9)
 
 #
