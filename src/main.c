@@ -11,6 +11,7 @@
 #include <lua.h>
 
 #include "debug.h"
+#include "input.h"
 #include "starField.h"
 #include "anim.h"
 
@@ -200,13 +201,13 @@ int main(void)
                 touchXY.rawy, touchXY.py);
         }
 
-        uint32 keys = keysCurrent();
+        uint32 keys = currentKeyEvent();
         uint32 changed = last_keys ^ keys;
 
         changed &= ~KEY_TOUCH;
 
         if (changed) {
-            debugf("%c%c%c%c%c%c%c%c%c%c%c%c%c%c\n",
+            debugf("%c%c%c%c%c%c%c%c%c%c%c%c%c%c %c\n",
                 keys & KEY_A ? 'A' : '.',
                 keys & KEY_B ? 'B' : '.',
                 keys & KEY_SELECT ? 's' : '.',
@@ -220,7 +221,8 @@ int main(void)
                 keys & KEY_X ? 'X' : '.',
                 keys & KEY_Y ? 'Y' : '.',
                 keys & KEY_TOUCH ? 'T' : '.',
-                keys & KEY_LID ? 'L' : '.');
+                keys & KEY_LID ? 'L' : '.',
+                keys & KEY_SPECIAL_HADUKEN ? 'H' : '.');
         }
 
         animUpdate();

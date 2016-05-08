@@ -39,6 +39,8 @@ include_directories(${NDS_INCLUDE_DIR} ${CMAKE_CURRENT_BINARY_DIR})
 add_executable(${EXE_NAME}
   src/debug.c
   src/debug.h
+  src/input.c
+  src/input.h
   src/main.c
   src/anim.h
   src/anim.c
