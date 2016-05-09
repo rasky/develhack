@@ -153,12 +153,9 @@ int main(void)
 
     irqSet(IRQ_VBLANK, Vblank);
 
-    // Note that this resets some of our VRAM bank settings
-    consoleDemoInit();
-
     if (!fatInitDefault())
     {
-        iprintf("Unable to initialize libfat");
+        debugf("Unable to initialize libfat");
         goto error;
     }
 
@@ -166,7 +163,7 @@ int main(void)
 
     if (hello == NULL)
     {
-        iprintf("Unable to read hello.txt");
+        debugf("Unable to read hello.txt");
         goto error;
     }
 
@@ -185,13 +182,13 @@ int main(void)
 
     lua_State* lstate = luaL_newstate();
     if (lstate == NULL) {
-        iprintf("Unable to create Lua state");
+        debugf("Unable to create Lua state");
         goto error;
     }
 
     int rc = luaL_dofile(lstate, "luac.out");
     if (rc != LUA_OK) {
-        iprintf(lua_tostring(lstate, -1));
+        debugf(lua_tostring(lstate, -1));
         goto error;
     }
 
@@ -199,7 +196,7 @@ int main(void)
     lua_pushnumber(lstate, 1);
     lua_pushnumber(lstate, 2);
     if (lua_pcall(lstate, 2, 1, 0) != 0) {
-        iprintf(lua_tostring(lstate, -1));
+        debugf(lua_tostring(lstate, -1));
         goto error;
     }
 
@@ -207,39 +204,49 @@ int main(void)
     lua_pop(lstate, 1);
 
     lua_close(lstate);
+    debugf("Lua: %d\n", z);
 
     // ----- END LUA
+
+    uint32 last_keys = 0;
 
     while(1)
     {
         swiWaitForVBlank();
         touchRead(&touchXY);
 
-        iprintf("[%d]", z);
-
-        // print at using ansi escape sequence \x1b[line;columnH
-        iprintf("\x1b[10;0HFrame = %d", frame);
-        iprintf("\x1b[16;0HTouch x = %04X, %04X\n", touchXY.rawx, touchXY.px);
-        iprintf("Touch y = %04X, %04X\n", touchXY.rawy, touchXY.py);
+        if (touchXY.rawx || touchXY.rawy)
+        {
+            debugf("Touch: %04X, %04X / %04X, %04X\n",
+                touchXY.rawx, touchXY.px,
+                touchXY.rawy, touchXY.py);
+        }
 
         uint32 keys = keysCurrent();
+        uint32 changed = last_keys ^ keys;
 
-        iprintf("ABSsRLUDRLXYTL\n");
-        iprintf("%c%c%c%c%c%c%c%c%c%c%c%c%c%c\n",
-            keys & KEY_A ? 'x' : '0',
-            keys & KEY_B ? 'x' : '0',
-            keys & KEY_SELECT ? 'x' : '0',
-            keys & KEY_START ? 'x' : '0',
-            keys & KEY_RIGHT ? 'x' : '0',
-            keys & KEY_LEFT ? 'x' : '0',
-            keys & KEY_UP ? 'x' : '0',
-            keys & KEY_DOWN ? 'x' : '0',
-            keys & KEY_R ? 'x' : '0',
-            keys & KEY_L ? 'x' : '0',
-            keys & KEY_X ? 'x' : '0',
-            keys & KEY_Y ? 'x' : '0',
-            keys & KEY_TOUCH ? 'x' : '0',
-            keys & KEY_LID ? 'x' : '0');
+        changed &= ~KEY_TOUCH;
+
+        if (changed)
+        {
+            debugf("%c%c%c%c%c%c%c%c%c%c%c%c%c%c\n",
+                keys & KEY_A ? 'A' : '.',
+                keys & KEY_B ? 'B' : '.',
+                keys & KEY_SELECT ? 's' : '.',
+                keys & KEY_START ? 'S' : '.',
+                keys & KEY_RIGHT ? 'R' : '.',
+                keys & KEY_LEFT ? 'L' : '.',
+                keys & KEY_UP ? 'U' : '.',
+                keys & KEY_DOWN ? 'D' : '.',
+                keys & KEY_R ? 'R' : '.',
+                keys & KEY_L ? 'L' : '.',
+                keys & KEY_X ? 'X' : '.',
+                keys & KEY_Y ? 'Y' : '.',
+                keys & KEY_TOUCH ? 'T' : '.',
+                keys & KEY_LID ? 'L' : '.');
+        }
+
+        last_keys = keys;
     }
 
 error:
