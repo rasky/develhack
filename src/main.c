@@ -37,12 +37,12 @@ void initVideo()
                      VRAM_D_LCD);
 
     /*  Set the video mode on the main screen. */
-    videoSetMode(MODE_5_2D | // Set the graphics mode to Mode 5
+    videoSetMode(MODE_3_2D | // Set the graphics mode to Mode 3
                  DISPLAY_BG2_ACTIVE | // Enable BG2 for display
                  DISPLAY_BG3_ACTIVE); //Enable BG3 for display
 
     /*  Set the video mode on the sub screen. */
-    videoSetModeSub(MODE_5_2D | // Set the graphics mode to Mode 5
+    videoSetModeSub(MODE_3_2D | // Set the graphics mode to Mode 3
                     DISPLAY_BG3_ACTIVE); // Enable BG3 for display
 }
 
