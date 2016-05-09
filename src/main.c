@@ -120,26 +120,6 @@ void Vblank()
     frame++;
 }
 
-//void displayPlanet() {
-//    dmaCopyHalfWords(DMA_CHANNEL,
-//                     planetBitmap, /* This variable is generated for us by
-//                                    * grit. */
-//                     (uint16 *)BG_BMP_RAM(8), /* Our address for main
-//                                               * background 2 */
-//                     planetBitmapLen); /* This length (in bytes) is generated
-//                                        * from grit. */
-//}
-
-//void displaySplash() {
-//    dmaCopyHalfWords(DMA_CHANNEL,
-//                     splashBitmap, /* This variable is generated for us by
-//                                    * grit. */
-//                     (uint16 *)BG_BMP_RAM_SUB(0), /* Our address for sub
-//                                                   * background 3 */
-//                     splashBitmapLen); /* This length (in bytes) is generated
-//                                        * from grit. */
-//}
-
 int main(void)
 {
     debugf("Powering on\n");
