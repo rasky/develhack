@@ -139,8 +139,6 @@ macro(OBJCOPY_FILE EXE_NAME)
   set(FO ${CMAKE_CURRENT_BINARY_DIR}/${EXE_NAME}.bin)
   set(FI ${CMAKE_CURRENT_BINARY_DIR}/${EXE_NAME})
 
-  message(STATUS ${FO})
-
   add_custom_command(
     OUTPUT "${FO}"
     COMMAND ${CMAKE_OBJCOPY}
