@@ -1,0 +1,20 @@
+{
+	"build_systems":
+	[
+		{
+			"name": "Build DevelHack",
+			"shell_cmd": "./script/build && ./script/run",
+			"working_dir": "$project_path"
+		}
+	],
+	"folders":
+	[
+		{
+			"path": "."
+		}
+	],
+	"settings":
+	{
+		"metafmt_enabled": true
+	}
+}
