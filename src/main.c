@@ -1,15 +1,16 @@
-#include "debug.h"
-
 #include <ctype.h>
-#include <fat.h>
-#include <nds.h>
 #include <stdio.h>
+
 #include <sys/stat.h>
 #include <unistd.h>
 
-#include <lua.h>
-#include <lauxlib.h>
+#include <fat.h>
+#include <nds.h>
 
+#include <lauxlib.h>
+#include <lua.h>
+
+#include "debug.h"
 #include "starField.h"
 
 volatile int frame = 0;
@@ -32,26 +33,25 @@ void initVideo()
      *  using a particular bank.
      */
     vramSetPrimaryBanks(VRAM_A_MAIN_BG_0x06000000,
-                     VRAM_B_MAIN_BG_0x06020000,
-                     VRAM_C_SUB_BG_0x06200000,
-                     VRAM_D_LCD);
+        VRAM_B_MAIN_BG_0x06020000,
+        VRAM_C_SUB_BG_0x06200000,
+        VRAM_D_LCD);
 
     /*  Set the video mode on the main screen. */
     videoSetMode(MODE_3_2D | // Set the graphics mode to Mode 3
-                 DISPLAY_BG2_ACTIVE | // Enable BG2 for display
-                 DISPLAY_BG3_ACTIVE); //Enable BG3 for display
+        DISPLAY_BG2_ACTIVE | // Enable BG2 for display
+        DISPLAY_BG3_ACTIVE); //Enable BG3 for display
 
     /*  Set the video mode on the sub screen. */
     videoSetModeSub(MODE_3_2D | // Set the graphics mode to Mode 3
-                    DISPLAY_BG3_ACTIVE); // Enable BG3 for display
+        DISPLAY_BG3_ACTIVE); // Enable BG3 for display
 }
 
 void initBackgrounds()
 {
     /*  Set up affine background 3 on main as a 16-bit color background. */
-    REG_BG3CNT = BG_BMP16_256x256 |
-                 BG_BMP_BASE(0) | // The starting place in memory
-                 BG_PRIORITY(3); // A low priority
+    REG_BG3CNT = BG_BMP16_256x256 | BG_BMP_BASE(0) | // The starting place in memory
+        BG_PRIORITY(3); // A low priority
 
     /*  Set the affine transformation matrix for the main screen background 3
      *  to be the identity matrix.
@@ -68,9 +68,8 @@ void initBackgrounds()
     REG_BG3Y = 0;
 
     /*  Set up affine background 2 on main as a 16-bit color background. */
-    REG_BG2CNT = BG_BMP16_128x128 |
-                 BG_BMP_BASE(8) | // The starting place in memory
-                 BG_PRIORITY(2);  // A higher priority
+    REG_BG2CNT = BG_BMP16_128x128 | BG_BMP_BASE(8) | // The starting place in memory
+        BG_PRIORITY(2); // A higher priority
 
     /*  Set the affine transformation matrix for the main screen background 3
      *  to be the identity matrix.
@@ -87,9 +86,8 @@ void initBackgrounds()
     /*  Set up affine background 3 on the sub screen as a 16-bit color
      *  background.
      */
-    REG_BG3CNT_SUB = BG_BMP16_256x256 |
-                     BG_BMP_BASE(0) | // The starting place in memory
-                     BG_PRIORITY(3); // A low priority
+    REG_BG3CNT_SUB = BG_BMP16_256x256 | BG_BMP_BASE(0) | // The starting place in memory
+        BG_PRIORITY(3); // A low priority
 
     /*  Set the affine transformation matrix for the sub screen background 3
      *  to be the identity matrix.
@@ -107,11 +105,12 @@ void initBackgrounds()
 /* Select a low priority DMA channel to perform our background copying. */
 static const int DMA_CHANNEL = 3;
 
-void displayStarField() {
+void displayStarField()
+{
     dmaCopyHalfWords(DMA_CHANNEL,
-                     starFieldBitmap, /* This variable is generated for us by  grit. */
-                     (uint16 *)BG_BMP_RAM(0), /* Our address for main  background 3 */
-                     starFieldBitmapLen); /* This length (in bytes) is generated from grit. */
+        starFieldBitmap, /* This variable is generated for us by  grit. */
+        (uint16*)BG_BMP_RAM(0), /* Our address for main  background 3 */
+        starFieldBitmapLen); /* This length (in bytes) is generated from grit. */
 }
 
 void Vblank()
@@ -133,27 +132,24 @@ int main(void)
 
     irqSet(IRQ_VBLANK, Vblank);
 
-    if (!fatInitDefault())
-    {
+    if (!fatInitDefault()) {
         debugf("Unable to initialize libfat");
         goto error;
     }
 
     FILE* hello = fopen("hello.txt", "rb");
 
-    if (hello == NULL)
-    {
+    if (hello == NULL) {
         debugf("Unable to read hello.txt");
         goto error;
     }
 
     struct stat st;
     int status = fstat(fileno(hello), &st);
-    char *greeting = (char *)malloc(st.st_size + 1);
+    char* greeting = (char*)malloc(st.st_size + 1);
     memset(greeting, 0, st.st_size + 1);
     int i = fread(greeting, 1, st.st_size, hello) - 1;
-    while (isspace(greeting[i]))
-    {
+    while (isspace(greeting[i])) {
         greeting[i--] = 0;
     }
     fclose(hello);
@@ -190,13 +186,11 @@ int main(void)
 
     uint32 last_keys = 0;
 
-    while(1)
-    {
+    while (1) {
         swiWaitForVBlank();
         touchRead(&touchXY);
 
-        if (touchXY.rawx || touchXY.rawy)
-        {
+        if (touchXY.rawx || touchXY.rawy) {
             debugf("Touch: %04X, %04X / %04X, %04X\n",
                 touchXY.rawx, touchXY.px,
                 touchXY.rawy, touchXY.py);
@@ -207,8 +201,7 @@ int main(void)
 
         changed &= ~KEY_TOUCH;
 
-        if (changed)
-        {
+        if (changed) {
             debugf("%c%c%c%c%c%c%c%c%c%c%c%c%c%c\n",
                 keys & KEY_A ? 'A' : '.',
                 keys & KEY_B ? 'B' : '.',
@@ -230,8 +223,7 @@ int main(void)
     }
 
 error:
-    while(1)
-    {
+    while (1) {
         swiWaitForVBlank();
     }
 
