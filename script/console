@@ -2,4 +2,4 @@
 
 cd "$(dirname "${0}")/../" || exit 1
 
-docker run --privileged -it -v "$(pwd):/home/code" develhack:latest bash
+docker run -it -v "$(pwd):/home/code" develhack:latest bash
