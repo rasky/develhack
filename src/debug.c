@@ -3,6 +3,8 @@
 #include <stdarg.h>
 #include <stdio.h>
 
+#include <nds.h>
+
 static int DEBUG_OUTPUT_ENABLED = 1;
 
 // Gets if the program runs in an emulator.
@@ -79,6 +81,19 @@ int debugf(const char* format, ...)
 
     output_debug_string_internal(buffer);
     return 1;
+}
+
+int debugb(const char* label, u32 val)
+{
+    char buffer[33];
+    buffer[32] = '\0';
+
+    for (uint8_t i = 0; i < 32; i++) {
+        buffer[i] = val & 1 ? '1' : '0';
+        val >>= 1;
+    }
+
+    return debugf("%s: %s\n", label, &buffer);
 }
 
 // Enables or disables debug output.
