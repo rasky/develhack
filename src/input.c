@@ -21,7 +21,7 @@ static bool detectSpecialMove(const uint8_t* pattern)
 
     int8_t hit = 0;
     int8_t curKey = COUNTOF(pattern) - 1;
-    int8_t preKey = -1;
+    int8_t matchIdx = -1;
 
     while (scanned <= BUFFER_SIZE) {
         i--;
@@ -29,18 +29,18 @@ static bool detectSpecialMove(const uint8_t* pattern)
             i = BUFFER_SIZE - 1;
         }
 
-        if (hit >= MAX_KEY_FRAMES) {
-            return false;
-        } else if (curKey < 0) {
+        if (curKey < 0) {
             return true;
-        } else if ((keyBuffer[i] & pattern[curKey]) == pattern[curKey]) {
-            keyBuffer[i] = 0;
-            hit = 0;
-            preKey = curKey;
-            curKey--;
-        } else if (preKey != -1 && ((keyBuffer[i] & pattern[preKey]) == pattern[preKey])) {
-            keyBuffer[i] = 0;
+        } else if ((matchIdx != -1) && (keyBuffer[i] == keyBuffer[matchIdx])) {
             hit++;
+
+            if (hit >= MAX_KEY_FRAMES) {
+                return false;
+            }
+        } else if ((keyBuffer[i] & pattern[curKey]) == pattern[curKey]) {
+            hit = 0;
+            curKey--;
+            matchIdx = i;
         } else {
             return false;
         }
