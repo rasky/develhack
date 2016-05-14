@@ -13,11 +13,14 @@
 // Number of fractional bits for scale in AnimFighter
 #define SCALE_BITS 10
 
+#define FLAGS_IS_RIGHT (1<<0)
+
 typedef struct {
 	int x,y;   // fixed point (.8)
 	int scale; // fixed point (SCALE_BITS)
-	int curframe;
-	int cftime;
+	u8 curframe;
+	u8 cftime;
+	u8 flags;
 	u16 *vramptr[4];
 	const AnimDesc *desc;
 	u8 gfxindex[ANIM_DESC_MAX_FRAMES];
@@ -87,11 +90,12 @@ static void fighterInit(int fidx, const AnimDesc *desc) {
 
 void animInit(void) {
 	fighterInit(0, &Rasky);
+	fighterInit(1, &Rasky);
 
 	oamInit(&oamMain, SpriteMapping_1D_64, false);
 	oamDisable(&oamMain);
 
-	for (int fx=0;fx<1;fx++) {
+	for (int fx=0;fx<2;fx++) {
 		AnimFighter *f = &afight[fx];
 		for (int i=0;i<4;i++) {
 			u16 *ptr = oamAllocateGfx(&oamMain, SpriteSize_64x64, SpriteColorFormat_16Color);
@@ -127,8 +131,13 @@ void animInit(void) {
 
 	dmaCopyHalfWords(0, afight[0].pal, SPRITE_PALETTE, 256*2);
 
-	afight[0].x = 100<<8;
+	afight[0].x = 80<<8;
 	afight[0].y = 150<<8;
+	afight[0].scale = 0.5 * (1<<SCALE_BITS);
+
+	afight[1].x = 150<<8;
+	afight[1].y = 150<<8;
+	afight[1].scale = 0.5 * (1<<SCALE_BITS);
 }
 
 static void animUpdateOam(int fx) {
@@ -146,11 +155,19 @@ static void animUpdateOam(int fx) {
 	// Calculate inverse of scale in .8 fractional format (which is what
 	// oamRotateScale() expects).
 	int invscale = div32(1<<(8+SCALE_BITS), f->scale);
-	oamRotateScale(&oamMain, fx, 0, invscale, invscale);
-	oamSetXY(&oamMain, fx*4+0, x, y);
-	oamSetXY(&oamMain, fx*4+1, x+scaledw, y);
-	oamSetXY(&oamMain, fx*4+2, x, y+scaledh);
-	oamSetXY(&oamMain, fx*4+3, x+scaledw, y+scaledh);
+	if (!(f->flags & FLAGS_IS_RIGHT)) {
+		oamRotateScale(&oamMain, fx, 0, invscale, invscale);
+		oamSetXY(&oamMain, fx*4+0, x, y);
+		oamSetXY(&oamMain, fx*4+1, x+scaledw, y);
+		oamSetXY(&oamMain, fx*4+2, x, y+scaledh);
+		oamSetXY(&oamMain, fx*4+3, x+scaledw, y+scaledh);
+	} else {
+		oamRotateScale(&oamMain, fx, 0, -invscale, invscale);
+		oamSetXY(&oamMain, fx*4+0, x+scaledw, y);
+		oamSetXY(&oamMain, fx*4+1, x, y);
+		oamSetXY(&oamMain, fx*4+2, x+scaledw, y+scaledh);
+		oamSetXY(&oamMain, fx*4+3, x, y+scaledh);
+	}
 }
 
 #define INPUT_DIR_MASK (KEY_UP|KEY_DOWN|KEY_LEFT|KEY_RIGHT)
@@ -168,13 +185,23 @@ static void animProcessInput(int fx, u32 input) {
 		break;
 
 	case KEY_RIGHT:
-		if (fflags & FCWALK)
-			f->curframe = fdesc->keyframes.forward;
+		if (fflags & FCWALK) {
+			if (!(f->flags & FLAGS_IS_RIGHT)) {
+				f->curframe = fdesc->keyframes.forward;
+			} else {
+				f->curframe = fdesc->keyframes.backward;
+			}
+		}
 		break;
 
 	case KEY_LEFT:
-		if (fflags & FCWALK)
-			f->curframe = fdesc->keyframes.backward;
+		if (fflags & FCWALK) {
+			if (!(f->flags & FLAGS_IS_RIGHT)) {
+				f->curframe = fdesc->keyframes.backward;
+			} else {
+				f->curframe = fdesc->keyframes.forward;
+			}
+		}
 		break;
 	}
 
@@ -187,15 +214,28 @@ static void animProcessInput(int fx, u32 input) {
 
 
 void animUpdate(u32 input) {
+	// Update left<->right flags
+	if (afight[0].x < afight[1].x) {
+		afight[0].flags &= ~FLAGS_IS_RIGHT;
+		afight[1].flags |= FLAGS_IS_RIGHT;
+	} else {
+		afight[0].flags |= FLAGS_IS_RIGHT;
+		afight[1].flags &= ~FLAGS_IS_RIGHT;
+	}
+
 	// Fighter #0 is our own character; process the input
 	animProcessInput(0, input);
 
-	for (int fx=0;fx<1;fx++) {
+	for (int fx=0;fx<2;fx++) {
 		AnimFighter *f = &afight[fx];
 		const AnimDesc *fdesc = f->desc;
 		const AnimFrame *curframe = &fdesc->frames[f->curframe];
 
-		f->x += (int)curframe->movex * 32;
+		if (!(f->flags & FLAGS_IS_RIGHT)) {
+			f->x += (int)curframe->movex * 32;
+		} else {
+			f->x -= (int)curframe->movex * 32;
+		}
 		f->y += (int)curframe->movey * 32;
 		if (f->cftime > 0) {
 			f->cftime--;
@@ -215,7 +255,7 @@ void animUpdate(u32 input) {
 void animVblank(void) {
 	oamUpdate(&oamMain);
 
-	for (int fx=0;fx<1;fx++) {
+	for (int fx=0;fx<2;fx++) {
 		AnimFighter *f = &afight[fx];
 		int gfxidx = f->gfxindex[f->curframe];
 		u8 *gfx = &f->gfx[gfxidx * FRAME_SIZE];
