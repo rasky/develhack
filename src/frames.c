@@ -22,12 +22,12 @@ const AnimDesc Rasky = {
 		{ 12, 0,        MOVE(7,0), "rasky-walk", 4, 6, SPEED(8),  FCIDLE},
 		{ 13, NEXT(8),  MOVE(7,0), "rasky-walk", 5, 6, SPEED(8),  FCIDLE},
 		/******************************************************************/
-		{ 14, 0,        MOVE(-7,0), "rasky-walk", 5, 6, SPEED(8),  FCIDLE},
-		{ 15, 0,        MOVE(-7,0), "rasky-walk", 4, 6, SPEED(8),  FCIDLE},
-		{ 16, 0,        MOVE(-7,0), "rasky-walk", 3, 6, SPEED(8),  FCIDLE},
-		{ 17, 0,        MOVE(-7,0), "rasky-walk", 2, 6, SPEED(8),  FCIDLE},
-		{ 18, 0,        MOVE(-7,0), "rasky-walk", 1, 6, SPEED(8),  FCIDLE},
-		{ 19, NEXT(14), MOVE(-7,0), "rasky-walk", 0, 6, SPEED(8),  FCIDLE},
+		{ 14, 0,        MOVE(-7,0), "rasky-walk", 5, 6, SPEED(13),  FCIDLE},
+		{ 15, 0,        MOVE(-7,0), "rasky-walk", 4, 6, SPEED(13),  FCIDLE},
+		{ 16, 0,        MOVE(-7,0), "rasky-walk", 3, 6, SPEED(13),  FCIDLE},
+		{ 17, 0,        MOVE(-7,0), "rasky-walk", 2, 6, SPEED(13),  FCIDLE},
+		{ 18, 0,        MOVE(-7,0), "rasky-walk", 1, 6, SPEED(13),  FCIDLE},
+		{ 19, NEXT(14), MOVE(-7,0), "rasky-walk", 0, 6, SPEED(13),  FCIDLE},
 	},
 	{ // keyframes
 		/* idle */ 0,
