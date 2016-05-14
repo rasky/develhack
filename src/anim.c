@@ -129,17 +129,11 @@ void animVblank(void) {
 
 	for (int fx=0;fx<1;fx++) {
 		AnimFighter *f = &afight[fx];
-		int cf = f->curframe;
-		int ff = cf - f->frames[cf].animidx;
-		u8 *gfx = &f->gfx[ff * FRAME_SIZE];
-
-		int asz = f->frames[cf].animsz;
-		cf = f->frames[cf].animidx;
-		gfx += cf * SPRITE_SIZE*2;
+		u8 *gfx = &f->gfx[f->curframe * FRAME_SIZE];
 
 		for (int i=0;i<4;i++) {
 			dmaCopyHalfWords(2,
-				(u16*)(gfx + (i&1)*SPRITE_SIZE + (i>>1)*SPRITE_SIZE*2*asz),
+				(u16*)(gfx + i*SPRITE_SIZE),
 				(u16*)f->vramptr[i],
 				SPRITE_SIZE);
 		}
