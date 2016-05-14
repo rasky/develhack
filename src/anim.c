@@ -30,7 +30,7 @@ typedef struct {
 
 AnimFighter afight[2];
 
-static void fighterInit(int fidx, const AnimDesc *desc) {
+static void animLoad(int fidx, const AnimDesc *desc) {
 	const int MAX_ANIMS = 16;
 
 	int lastgfxindex = 0;
@@ -89,8 +89,8 @@ static void fighterInit(int fidx, const AnimDesc *desc) {
 
 
 void animInit(void) {
-	fighterInit(0, &Rasky);
-	fighterInit(1, &Rasky);
+	animLoad(0, &Rasky);
+	animLoad(1, &Rasky);
 
 	oamInit(&oamMain, SpriteMapping_1D_64, false);
 	oamDisable(&oamMain);
