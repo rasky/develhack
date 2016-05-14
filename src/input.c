@@ -14,6 +14,14 @@ static uint8_t current = 0;
 
 static const uint8_t HADUKEN[] = { KEY_DOWN, KEY_DOWN | KEY_RIGHT, KEY_RIGHT, KEY_A };
 
+static void debugKeyBuffer()
+{
+    for (uint8_t i = 0; i < BUFFER_SIZE; i++) {
+        debugf("%d: ", i);
+        debugKeys(keyBuffer[i]);
+    }
+}
+
 static bool detectSpecialMove(const uint8_t* pattern)
 {
     uint8_t scanned = 0;
