@@ -15,25 +15,28 @@ typedef struct {
 	int curframe; // fixed point .8
 	int cftime;
 	u16 *vramptr[4];
-	const AnimFrame *frames;
+	const AnimDesc *desc;
 	u8 gfx[MAX_FRAMES * FRAME_SIZE];
 	u16 pal[256];
 } AnimFighter;
 
 AnimFighter afight[2];
 
-static void fighterInit(int fidx, const AnimFrame *frames, int numframes) {
-	char *lastfn = NULL;
+static void fighterInit(int fidx, const AnimDesc *desc) {
+	const char *lastfn = NULL;
 
 	AnimFighter *f = &afight[fidx];
-	f->frames = frames;
-	for (int i=0;i<numframes;i++) {
-		if (frames[i].idx != i) {  // consistency check
+	f->desc = desc;
+	for (int i=0;i<ANIM_DESC_MAX_FRAMES;i++) {
+		if (desc->frames[i].filename == NULL) {
+			break;
+		}
+		if (desc->frames[i].idx != i) {  // consistency check
 			debugf("error: invalid index in frame\n");
 			return;
 		}
 
-		const AnimFrame *cur = &frames[i];
+		const AnimFrame *cur = &desc->frames[i];
 		if (lastfn != cur->filename) {
 			char fnbuf[128];
 			strcpy(fnbuf, cur->filename);
@@ -54,7 +57,7 @@ static void fighterInit(int fidx, const AnimFrame *frames, int numframes) {
 
 
 void animInit(void) {
-	fighterInit(0, Rasky, RaskyCount);
+	fighterInit(0, &Rasky);
 
 	oamInit(&oamMain, SpriteMapping_1D_64, false);
 	oamDisable(&oamMain);
@@ -106,35 +109,33 @@ static int scale = 1 * (1<<SCALE_BITS);
 void animUpdate(void) {
 	for (int fx=0;fx<1;fx++) {
 		AnimFighter *f = &afight[fx];
+		const AnimDesc *fdesc = f->desc;
 
 		f->scale = scale;
 		scale -= 2;
 
-		f->x += (int)f->frames[f->curframe].movex * 32;
-		f->y += (int)f->frames[f->curframe].movey * 32;
+		f->x += (int)fdesc->frames[f->curframe].movex * 32;
+		f->y += (int)fdesc->frames[f->curframe].movey * 32;
 		if (f->cftime > 0) {
 			f->cftime--;
 		} else {
-			int ffirst = f->curframe - f->frames[f->curframe].animidx;
-			int animsz = f->frames[f->curframe].animsz;
+			int ffirst = f->curframe - fdesc->frames[f->curframe].animidx;
+			int animsz = fdesc->frames[f->curframe].animsz;
 			int flast = ffirst + animsz;
 			f->curframe++;
 			if (f->curframe == flast) {
 				f->curframe -= animsz;
 			}
-			f->cftime = f->frames[f->curframe].speed;
+			f->cftime = fdesc->frames[f->curframe].speed;
 		}
-
-		const int pivotx = 64;
-		const int pivoty = 128;
 
 		// Compute coordinates so that the scale factor is computed using the pivot as
 		// center of scaling. This means that the sprite's pivot will be positioned at
 		// the specified coordinate (f->x, f->y), and then the sprite will be scaled.
 		int scaledw = (SPRITE_W * f->scale)>>SCALE_BITS;
 		int scaledh = (SPRITE_H * f->scale)>>SCALE_BITS;
-		int x = (f->x>>8) - ((pivotx * f->scale)>>SCALE_BITS) - (SPRITE_W-scaledw)/2;
-		int y = (f->y>>8) - ((pivoty * f->scale)>>SCALE_BITS) - (SPRITE_H-scaledh)/2;
+		int x = (f->x>>8) - ((fdesc->pivotx * f->scale)>>SCALE_BITS) - (SPRITE_W-scaledw)/2;
+		int y = (f->y>>8) - ((fdesc->pivoty * f->scale)>>SCALE_BITS) - (SPRITE_H-scaledh)/2;
 
 		// Calculate inverse of scale in .8 fractional format (which is what
 		// oamRotateScale() expects).
