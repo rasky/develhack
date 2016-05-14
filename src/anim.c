@@ -3,7 +3,9 @@
 #include "debug.h"
 #include "frames.h"
 
-#define SPRITE_SIZE (64*64/2)
+#define SPRITE_W 64
+#define SPRITE_H 64
+#define SPRITE_SIZE (SPRITE_W*SPRITE_H/2)
 #define FRAME_SIZE (SPRITE_SIZE*4)
 #define MAX_FRAMES 64
 
@@ -63,8 +65,8 @@ void animInit(void) {
 			u16 *ptr = oamAllocateGfx(&oamMain, SpriteSize_64x64, SpriteColorFormat_16Color);
 			f->vramptr[i] = ptr;
 			oamSet(&oamMain, fx*4+i,
-				/*pos*/ 100, 100,
-				/*pri*/ 0,
+				/*pos*/ 0, 0,
+				/*pri*/ 3,
 				/*pal*/ 0,
 				SpriteSize_64x64, SpriteColorFormat_16Color, ptr,
 				/*affine*/ fx,0,
@@ -86,16 +88,26 @@ void animInit(void) {
 	}
 	fread(afight[0].pal, 1, 256*2, f);
 	fclose(f);
+
+	for (int i=0;i<16;i++) {
+		afight[0].pal[i]|=0x8000;
+	}
+
 	dmaCopyHalfWords(0, afight[0].pal, SPRITE_PALETTE, 256*2);
 
-	afight[0].curframe = 0;
+	afight[0].curframe = 8;
+	afight[0].x = 100<<8;
+	afight[0].y = 191<<8;
 }
+
+static int scale = 1 * (1<<8);
 
 void animUpdate(void) {
 	for (int fx=0;fx<1;fx++) {
 		AnimFighter *f = &afight[fx];
 
-		f->scale = 1.5 * (1<<8); // scale 0.5
+		f->scale = scale; // scale 0.5
+		scale += 1;
 
 		f->x += (int)f->frames[f->curframe].movex * 32;
 		f->y += (int)f->frames[f->curframe].movey * 32;
@@ -112,15 +124,22 @@ void animUpdate(void) {
 			f->cftime = f->frames[f->curframe].speed;
 		}
 
-		int offset = div32(64<<8,  f->scale);
+		const int pivotx = 64;
+		const int pivoty = 128;
 
-		int x = f->x >> 8;
-		int y = f->y >> 8;
+		// Compute coordinates so that the scale factor is computed using the pivot as
+		// center of scaling. This means that the sprite's pivot will be positioned at
+		// the specified coordinate (f->x, f->y), and then the sprite will be scaled.
+		int offsetx = div32(SPRITE_W<<8,  f->scale);
+		int offsety = div32(SPRITE_H<<8,  f->scale);
+		int x = (f->x >> 8) - div32(pivotx<<8, f->scale) - (SPRITE_W-div32(SPRITE_W<<8, f->scale))/2;
+		int y = (f->y >> 8) - div32(pivoty<<8, f->scale) - (SPRITE_H-div32(SPRITE_H<<8, f->scale))/2;
+
 		oamRotateScale(&oamMain, fx, 0, f->scale, f->scale);
 		oamSetXY(&oamMain, fx*4+0, x, y);
-		oamSetXY(&oamMain, fx*4+1, x+offset, y);
-		oamSetXY(&oamMain, fx*4+2, x, y+offset);
-		oamSetXY(&oamMain, fx*4+3, x+offset, y+offset);
+		oamSetXY(&oamMain, fx*4+1, x+offsetx, y);
+		oamSetXY(&oamMain, fx*4+2, x, y+offsety);
+		oamSetXY(&oamMain, fx*4+3, x+offsetx, y+offsety);
 	}
 }
 
