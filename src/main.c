@@ -189,7 +189,7 @@ int main(void)
 
     animInit();
 
-    uint32 last_keys = 0;
+    uint32 lastKeys = 0;
 
     while (1) {
         swiWaitForVBlank();
@@ -202,7 +202,7 @@ int main(void)
         }
 
         uint32 keys = currentKeyEvent();
-        uint32 changed = last_keys ^ keys;
+        uint32 changed = lastKeys ^ keys;
 
         changed &= ~KEY_TOUCH;
 
@@ -212,7 +212,7 @@ int main(void)
 
         animUpdate();
 
-        last_keys = keys;
+        lastKeys = keys;
     }
 
 error:
