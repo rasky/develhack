@@ -212,22 +212,22 @@ static void animProcessInput(int fx, u32 input) {
 		break;
 
 	case KEY_RIGHT:
-		if (fflags & FCWALK) {
-			if (!(f->flags & FLAGS_IS_RIGHT)) {
+		if (!(f->flags & FLAGS_IS_RIGHT)) {
+			if (fflags & FCFWD)
 				f->curframe = fdesc->keyframes.forward;
-			} else {
+		} else {
+			if (fflags & FCBWD)
 				f->curframe = fdesc->keyframes.backward;
-			}
 		}
 		break;
 
 	case KEY_LEFT:
-		if (fflags & FCWALK) {
-			if (!(f->flags & FLAGS_IS_RIGHT)) {
+		if (!(f->flags & FLAGS_IS_RIGHT)) {
+			if (fflags & FCBWD)
 				f->curframe = fdesc->keyframes.backward;
-			} else {
+		} else {
+			if (fflags & FCFWD)
 				f->curframe = fdesc->keyframes.forward;
-			}
 		}
 		break;
 	}

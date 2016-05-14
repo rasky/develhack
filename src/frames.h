@@ -30,6 +30,8 @@ typedef struct {
 // Animation Flags. Mark specific animation frames
 // with their capabilities.
 #define FCIDLE (1<<0)   // Can go back to idle (if input says so)
-#define FCWALK (1<<1)   // Can begin walking (if input says so)
+#define FCFWD  (1<<1)   // Can begin walking forward (if input says so)
+#define FCBWD  (1<<2)   // Can begin walking backward (if input says so)
+#define FCWALK (FCFWD|FCBWD)   // Can begin walking (if input says so)
 
 extern const AnimDesc Rasky;
