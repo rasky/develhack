@@ -12,6 +12,7 @@
 
 #include "debug.h"
 #include "starField.h"
+#include "anim.h"
 
 volatile int frame = 0;
 
@@ -107,15 +108,16 @@ static const int DMA_CHANNEL = 3;
 
 void displayStarField()
 {
-    dmaCopyHalfWords(DMA_CHANNEL,
-        starFieldBitmap, /* This variable is generated for us by  grit. */
-        (uint16*)BG_BMP_RAM(0), /* Our address for main  background 3 */
-        starFieldBitmapLen); /* This length (in bytes) is generated from grit. */
+    // dmaCopyHalfWords(DMA_CHANNEL,
+    //     starFieldBitmap, /* This variable is generated for us by  grit. */
+    //     (uint16*)BG_BMP_RAM(0), /* Our address for main  background 3 */
+    //     starFieldBitmapLen); /* This length (in bytes) is generated from grit. */
 }
 
 void Vblank()
 {
     displayStarField();
+    animVblank();
     frame++;
 }
 
@@ -184,6 +186,8 @@ int main(void)
 
     // ----- END LUA
 
+    animInit();
+
     uint32 last_keys = 0;
 
     while (1) {
@@ -218,6 +222,8 @@ int main(void)
                 keys & KEY_TOUCH ? 'T' : '.',
                 keys & KEY_LID ? 'L' : '.');
         }
+
+        animUpdate();
 
         last_keys = keys;
     }

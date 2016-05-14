@@ -40,6 +40,10 @@ add_executable(${EXE_NAME}
   src/debug.c
   src/debug.h
   src/main.c
+  src/anim.h
+  src/anim.c
+  src/frames.h
+  src/frames.c
   starField.s
   starField.h)
 
