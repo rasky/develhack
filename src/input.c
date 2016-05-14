@@ -13,6 +13,7 @@ static uint32_t keyBuffer[BUFFER_SIZE];
 static uint8_t current = 0;
 
 static const uint8_t HADUKEN[] = { KEY_DOWN, KEY_DOWN | KEY_RIGHT, KEY_RIGHT, KEY_A };
+static const uint8_t SHORYUKEN[] = { KEY_RIGHT, KEY_DOWN, KEY_DOWN | KEY_RIGHT, KEY_A };
 
 static void debugKeyBuffer()
 {
@@ -65,6 +66,8 @@ uint32_t currentKeyEvent()
     // Recognize special move
     if (detectSpecialMove(HADUKEN)) {
         ret ^= KEY_SPECIAL_HADUKEN;
+    } else if (detectSpecialMove(SHORYUKEN)) {
+        ret ^= KEY_SPECIAL_SHORYUKEN;
     }
 
     // Wrap around
@@ -79,7 +82,7 @@ uint32_t currentKeyEvent()
 
 void debugKeys(uint32_t keys)
 {
-    debugf("%c%c%c%c%c%c%c%c%c%c%c%c%c%c %c\n",
+    debugf("%c%c%c%c%c%c%c%c%c%c%c%c%c%c %c%c\n",
         keys & KEY_A ? 'A' : '.',
         keys & KEY_B ? 'B' : '.',
         keys & KEY_SELECT ? 's' : '.',
@@ -94,5 +97,6 @@ void debugKeys(uint32_t keys)
         keys & KEY_Y ? 'Y' : '.',
         keys & KEY_TOUCH ? 'T' : '.',
         keys & KEY_LID ? 'L' : '.',
-        keys & KEY_SPECIAL_HADUKEN ? 'H' : '.');
+        keys & KEY_SPECIAL_HADUKEN ? 'H' : '.',
+        keys & KEY_SPECIAL_SHORYUKEN ? 'S' : '.');
 }
