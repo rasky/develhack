@@ -7,7 +7,7 @@
 #define COUNTOF(x) (sizeof(x) / sizeof(x[0]))
 
 #define BUFFER_SIZE 60
-#define MAX_KEY_FRAMES 4
+#define MAX_KEY_FRAMES 8
 
 static uint32_t keyBuffer[BUFFER_SIZE];
 static uint8_t current = 0;
