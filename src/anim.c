@@ -13,18 +13,45 @@
 // Number of fractional bits for scale in AnimFighter
 #define SCALE_BITS 10
 
+// Misc flags for AnimFighter
 #define FLAGS_IS_RIGHT (1<<0)
 
 typedef struct {
-	int x,y;   // fixed point (.8)
-	int scale; // fixed point (SCALE_BITS)
+	// Position of the fighter (fixed point .8).
+	// This is the point where the fighter's pivot will be placed.
+	int x,y;
+
+	// Scale factor (fixed point, with SCALE_BITS fractional bits)
+	int scale;
+
+	// Current frame being drawn
 	u8 curframe;
+
+	// Countdown timer for current frame, before switching to next one
 	u8 cftime;
+
+	// Misc flags for this fighter (FLAGS_*)
 	u8 flags;
+
+	// Pointers to the 4 VRAM sprites that compose this fighter
+	// (each fighter is 128x128, composed by 4 64x64 hardware sprites)
 	u16 *vramptr[4];
+
+	// Pointer to the animation description of this fighter (see frames.c)
 	const AnimDesc *desc;
-	u8 gfxindex[ANIM_DESC_MAX_FRAMES];
+
+	// Full graphics for this fighter (all the frames). This is loaded by
+	// animLoad(). Notice that this cannot be indexed directly by curframe
+	// because frames (as described in AnimDesc / frames.c) can reuse the same
+	// graphics multiple times. gfxindex must be used to convert the frame index
+	// into an index for this gfx table.
 	u8 gfx[MAX_GFX_FRAMES * FRAME_SIZE];
+
+	// Conversion map between the frame index (as stored by curframe and desc),
+	// and the gfx table.
+	u8 gfxindex[ANIM_DESC_MAX_FRAMES];
+
+	// Palette for this fighter.
 	u16 pal[256];
 } AnimFighter;
 
@@ -205,6 +232,7 @@ static void animProcessInput(int fx, u32 input) {
 		break;
 	}
 
+	// DEBUG
 	if (input & KEY_L) {
 		f->scale += 2;
 	} else if (input & KEY_R) {
@@ -231,15 +259,20 @@ void animUpdate(u32 input) {
 		const AnimDesc *fdesc = f->desc;
 		const AnimFrame *curframe = &fdesc->frames[f->curframe];
 
+		// Update the position coordinates of the fighter.
 		if (!(f->flags & FLAGS_IS_RIGHT)) {
 			f->x += (int)curframe->movex * 32;
 		} else {
 			f->x -= (int)curframe->movex * 32;
 		}
 		f->y += (int)curframe->movey * 32;
+
+		// See if it's time to display next frame.
 		if (f->cftime > 0) {
 			f->cftime--;
 		} else {
+			// Check which frame must be displayed and
+			// set the new countdown.
 			if (curframe->next == 0) {
 				f->curframe++;
 			} else {
