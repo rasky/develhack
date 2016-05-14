@@ -38,7 +38,7 @@ static bool detectSpecialMove(const uint8_t* pattern)
             hit = 0;
             preKey = curKey;
             curKey--;
-        } else if (preKey != -1 && ((keyBuffer[i] ^ pattern[preKey]) == pattern[preKey])) {
+        } else if (preKey != -1 && ((keyBuffer[i] & pattern[preKey]) == pattern[preKey])) {
             keyBuffer[i] = 0;
             hit++;
         } else {
