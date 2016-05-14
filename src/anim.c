@@ -100,14 +100,15 @@ void animInit(void) {
 	afight[0].y = 191<<8;
 }
 
-static int scale = 1 * (1<<8);
+#define SCALE_BITS 10
+static int scale = 1 * (1<<SCALE_BITS);
 
 void animUpdate(void) {
 	for (int fx=0;fx<1;fx++) {
 		AnimFighter *f = &afight[fx];
 
-		f->scale = scale; // scale 0.5
-		scale += 1;
+		f->scale = scale;
+		scale -= 2;
 
 		f->x += (int)f->frames[f->curframe].movex * 32;
 		f->y += (int)f->frames[f->curframe].movey * 32;
@@ -130,16 +131,19 @@ void animUpdate(void) {
 		// Compute coordinates so that the scale factor is computed using the pivot as
 		// center of scaling. This means that the sprite's pivot will be positioned at
 		// the specified coordinate (f->x, f->y), and then the sprite will be scaled.
-		int offsetx = div32(SPRITE_W<<8,  f->scale);
-		int offsety = div32(SPRITE_H<<8,  f->scale);
-		int x = (f->x >> 8) - div32(pivotx<<8, f->scale) - (SPRITE_W-div32(SPRITE_W<<8, f->scale))/2;
-		int y = (f->y >> 8) - div32(pivoty<<8, f->scale) - (SPRITE_H-div32(SPRITE_H<<8, f->scale))/2;
+		int scaledw = (SPRITE_W * f->scale)>>SCALE_BITS;
+		int scaledh = (SPRITE_H * f->scale)>>SCALE_BITS;
+		int x = (f->x>>8) - ((pivotx * f->scale)>>SCALE_BITS) - (SPRITE_W-scaledw)/2;
+		int y = (f->y>>8) - ((pivoty * f->scale)>>SCALE_BITS) - (SPRITE_H-scaledh)/2;
 
-		oamRotateScale(&oamMain, fx, 0, f->scale, f->scale);
+		// Calculate inverse of scale in .8 fractional format (which is what
+		// oamRotateScale() expects).
+		int invscale = div32(1<<(8+SCALE_BITS), f->scale);
+		oamRotateScale(&oamMain, fx, 0, invscale, invscale);
 		oamSetXY(&oamMain, fx*4+0, x, y);
-		oamSetXY(&oamMain, fx*4+1, x+offsetx, y);
-		oamSetXY(&oamMain, fx*4+2, x, y+offsety);
-		oamSetXY(&oamMain, fx*4+3, x+offsetx, y+offsety);
+		oamSetXY(&oamMain, fx*4+1, x+scaledw, y);
+		oamSetXY(&oamMain, fx*4+2, x, y+scaledh);
+		oamSetXY(&oamMain, fx*4+3, x+scaledw, y+scaledh);
 	}
 }
 
