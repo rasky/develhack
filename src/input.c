@@ -68,3 +68,23 @@ uint32_t currentKeyEvent()
 
     return ret;
 }
+
+void debugKeys(uint32_t keys)
+{
+    debugf("%c%c%c%c%c%c%c%c%c%c%c%c%c%c %c\n",
+        keys & KEY_A ? 'A' : '.',
+        keys & KEY_B ? 'B' : '.',
+        keys & KEY_SELECT ? 's' : '.',
+        keys & KEY_START ? 'S' : '.',
+        keys & KEY_RIGHT ? 'R' : '.',
+        keys & KEY_LEFT ? 'L' : '.',
+        keys & KEY_UP ? 'U' : '.',
+        keys & KEY_DOWN ? 'D' : '.',
+        keys & KEY_R ? 'R' : '.',
+        keys & KEY_L ? 'L' : '.',
+        keys & KEY_X ? 'X' : '.',
+        keys & KEY_Y ? 'Y' : '.',
+        keys & KEY_TOUCH ? 'T' : '.',
+        keys & KEY_LID ? 'L' : '.',
+        keys & KEY_SPECIAL_HADUKEN ? 'H' : '.');
+}

@@ -10,10 +10,10 @@
 #include <lauxlib.h>
 #include <lua.h>
 
+#include "anim.h"
 #include "debug.h"
 #include "input.h"
 #include "starField.h"
-#include "anim.h"
 
 volatile int frame = 0;
 
@@ -207,22 +207,7 @@ int main(void)
         changed &= ~KEY_TOUCH;
 
         if (changed) {
-            debugf("%c%c%c%c%c%c%c%c%c%c%c%c%c%c %c\n",
-                keys & KEY_A ? 'A' : '.',
-                keys & KEY_B ? 'B' : '.',
-                keys & KEY_SELECT ? 's' : '.',
-                keys & KEY_START ? 'S' : '.',
-                keys & KEY_RIGHT ? 'R' : '.',
-                keys & KEY_LEFT ? 'L' : '.',
-                keys & KEY_UP ? 'U' : '.',
-                keys & KEY_DOWN ? 'D' : '.',
-                keys & KEY_R ? 'R' : '.',
-                keys & KEY_L ? 'L' : '.',
-                keys & KEY_X ? 'X' : '.',
-                keys & KEY_Y ? 'Y' : '.',
-                keys & KEY_TOUCH ? 'T' : '.',
-                keys & KEY_LID ? 'L' : '.',
-                keys & KEY_SPECIAL_HADUKEN ? 'H' : '.');
+            debugKeys(keys);
         }
 
         animUpdate();
