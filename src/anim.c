@@ -177,12 +177,16 @@ static void animProcessInput(int fx, u32 input) {
 			f->curframe = fdesc->keyframes.backward;
 		break;
 	}
+
+	if (input & KEY_L) {
+		f->scale += 2;
+	} else if (input & KEY_R) {
+		f->scale -= 2;
+	}
 }
 
 
 void animUpdate(u32 input) {
-	// static int DEBUG_scale = 1 * (1<<SCALE_BITS);
-
 	// Fighter #0 is our own character; process the input
 	animProcessInput(0, input);
 
@@ -190,9 +194,6 @@ void animUpdate(u32 input) {
 		AnimFighter *f = &afight[fx];
 		const AnimDesc *fdesc = f->desc;
 		const AnimFrame *curframe = &fdesc->frames[f->curframe];
-
-		// f->scale = DEBUG_scale;
-		// DEBUG_scale -= 2;
 
 		f->x += (int)curframe->movex * 32;
 		f->y += (int)curframe->movey * 32;
