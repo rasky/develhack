@@ -9,10 +9,13 @@
 #define FRAME_SIZE (SPRITE_SIZE*4)
 #define MAX_FRAMES 64
 
+// Number of fractional bits for scale in AnimFighter
+#define SCALE_BITS 10
+
 typedef struct {
-	int x,y;
-	int scale; // fixed point .8
-	int curframe; // fixed point .8
+	int x,y;   // fixed point (.8)
+	int scale; // fixed point (SCALE_BITS)
+	int curframe;
 	int cftime;
 	u16 *vramptr[4];
 	const AnimDesc *desc;
@@ -103,7 +106,29 @@ void animInit(void) {
 	afight[0].y = 191<<8;
 }
 
-#define SCALE_BITS 10
+static void animUpdateOam(int fx) {
+	AnimFighter *f = &afight[fx];
+	const AnimDesc *fdesc = f->desc;
+
+	// Compute coordinates so that the scale factor is computed using the pivot as
+	// center of scaling. This means that the sprite's pivot will be positioned at
+	// the specified coordinate (f->x, f->y), and then the sprite will be scaled.
+	int scaledw = (SPRITE_W * f->scale)>>SCALE_BITS;
+	int scaledh = (SPRITE_H * f->scale)>>SCALE_BITS;
+	int x = (f->x>>8) - ((fdesc->pivotx * f->scale)>>SCALE_BITS) - (SPRITE_W-scaledw)/2;
+	int y = (f->y>>8) - ((fdesc->pivoty * f->scale)>>SCALE_BITS) - (SPRITE_H-scaledh)/2;
+
+	// Calculate inverse of scale in .8 fractional format (which is what
+	// oamRotateScale() expects).
+	int invscale = div32(1<<(8+SCALE_BITS), f->scale);
+	oamRotateScale(&oamMain, fx, 0, invscale, invscale);
+	oamSetXY(&oamMain, fx*4+0, x, y);
+	oamSetXY(&oamMain, fx*4+1, x+scaledw, y);
+	oamSetXY(&oamMain, fx*4+2, x, y+scaledh);
+	oamSetXY(&oamMain, fx*4+3, x+scaledw, y+scaledh);
+}
+
+
 static int scale = 1 * (1<<SCALE_BITS);
 
 void animUpdate(void) {
@@ -129,22 +154,7 @@ void animUpdate(void) {
 			f->cftime = fdesc->frames[f->curframe].speed;
 		}
 
-		// Compute coordinates so that the scale factor is computed using the pivot as
-		// center of scaling. This means that the sprite's pivot will be positioned at
-		// the specified coordinate (f->x, f->y), and then the sprite will be scaled.
-		int scaledw = (SPRITE_W * f->scale)>>SCALE_BITS;
-		int scaledh = (SPRITE_H * f->scale)>>SCALE_BITS;
-		int x = (f->x>>8) - ((fdesc->pivotx * f->scale)>>SCALE_BITS) - (SPRITE_W-scaledw)/2;
-		int y = (f->y>>8) - ((fdesc->pivoty * f->scale)>>SCALE_BITS) - (SPRITE_H-scaledh)/2;
-
-		// Calculate inverse of scale in .8 fractional format (which is what
-		// oamRotateScale() expects).
-		int invscale = div32(1<<(8+SCALE_BITS), f->scale);
-		oamRotateScale(&oamMain, fx, 0, invscale, invscale);
-		oamSetXY(&oamMain, fx*4+0, x, y);
-		oamSetXY(&oamMain, fx*4+1, x+scaledw, y);
-		oamSetXY(&oamMain, fx*4+2, x, y+scaledh);
-		oamSetXY(&oamMain, fx*4+3, x+scaledw, y+scaledh);
+		animUpdateOam(fx);
 	}
 }
 
