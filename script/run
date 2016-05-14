@@ -1,12 +1,23 @@
-#!/bin/bash
+#!/bin/sh
 
-set -euo pipefail
-IFS=$'\n\t'
-cd "$(cd "$(dirname "${0}")"; pwd)/../"
+set -eux
 
-if [[ ! -x "$(which desmume)" ]]; then
-	echo "Please install desmume first. Aborting."
-	exit 1
+cd "$(dirname "${0}")/../"
+
+if [ "${PREFER_NDSEMU:-0}" = "1" ]; then
+    if [ ! -x "$(which ndsemu)" ]; then
+        echo "Please install ndsemu from https://github.com/rasky/ndsemu."
+        echo "Aborting."
+        exit 1
+    fi
+
+    exec ndsemu -homebrew-fat build/game.bin build/game.nds
+else
+    if [ ! -x "$(which desmume)" ]; then
+        echo "Please install desmume first."
+        echo "Aborting."
+        exit 1
+    fi
+
+    exec desmume --load-type=1 --cflash-image=build/data.bin build/game.nds
 fi
-
-exec desmume --load-type=1 --cflash-image=build/data.bin build/game.nds
