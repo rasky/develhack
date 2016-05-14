@@ -39,10 +39,14 @@ void initVideo()
         VRAM_C_SUB_BG_0x06200000,
         VRAM_D_LCD);
 
+    /* Bank E is mapped for sprites */
+    vramSetBankE(VRAM_E_MAIN_SPRITE);
+
     /*  Set the video mode on the main screen. */
     videoSetMode(MODE_3_2D | // Set the graphics mode to Mode 3
         DISPLAY_BG2_ACTIVE | // Enable BG2 for display
-        DISPLAY_BG3_ACTIVE); //Enable BG3 for display
+        DISPLAY_BG3_ACTIVE | // Enable BG3 for display
+        DISPLAY_SPR_ACTIVE); // Enable sprites for display
 
     /*  Set the video mode on the sub screen. */
     videoSetModeSub(MODE_3_2D | // Set the graphics mode to Mode 3
