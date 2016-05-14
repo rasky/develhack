@@ -2,12 +2,13 @@
 #include <nds.h>
 #include "debug.h"
 #include "frames.h"
+#include "input.h"
 
 #define SPRITE_W 64
 #define SPRITE_H 64
 #define SPRITE_SIZE (SPRITE_W*SPRITE_H/2)
 #define FRAME_SIZE (SPRITE_SIZE*4)
-#define MAX_FRAMES 64
+#define MAX_GFX_FRAMES 64
 
 // Number of fractional bits for scale in AnimFighter
 #define SCALE_BITS 10
@@ -19,42 +20,67 @@ typedef struct {
 	int cftime;
 	u16 *vramptr[4];
 	const AnimDesc *desc;
-	u8 gfx[MAX_FRAMES * FRAME_SIZE];
+	u8 gfxindex[ANIM_DESC_MAX_FRAMES];
+	u8 gfx[MAX_GFX_FRAMES * FRAME_SIZE];
 	u16 pal[256];
 } AnimFighter;
 
 AnimFighter afight[2];
 
 static void fighterInit(int fidx, const AnimDesc *desc) {
-	const char *lastfn = NULL;
+	const int MAX_ANIMS = 16;
+
+	int lastgfxindex = 0;
+	struct  {
+		const char *filename;
+		int gfxindex;
+	} loadedAnims[MAX_ANIMS];
+	memset(loadedAnims, 0, sizeof(loadedAnims));
 
 	AnimFighter *f = &afight[fidx];
 	f->desc = desc;
 	for (int i=0;i<ANIM_DESC_MAX_FRAMES;i++) {
-		if (desc->frames[i].filename == NULL) {
+		const AnimFrame *cur = &desc->frames[i];
+
+		if (cur->filename == NULL) {
 			break;
 		}
-		if (desc->frames[i].idx != i) {  // consistency check
+		if (cur->idx != i) {  // consistency check
 			debugf("error: invalid index in frame\n");
 			return;
 		}
 
-		const AnimFrame *cur = &desc->frames[i];
-		if (lastfn != cur->filename) {
+		// Find the animation (if already loaded)
+		int a = 0;
+		for (;a<MAX_ANIMS;a++) {
+			if (loadedAnims[a].filename == NULL ||
+				loadedAnims[a].filename == cur->filename) {
+				break;
+			}
+		}
+		// ... or load the new animation
+		if (loadedAnims[a].filename != cur->filename) {
 			char fnbuf[128];
 			strcpy(fnbuf, cur->filename);
 			strcat(fnbuf, ".img.bin");
 
+			debugf("loading %s\n", fnbuf);
 			FILE *fp = fopen(fnbuf, "rb");
 			if (fp == NULL) {
 				debugf("error: cannot load %s\n", fnbuf);
 				return;
 			}
-			fread(&f->gfx[i * FRAME_SIZE], cur->animsz, FRAME_SIZE, fp);
+			fread(&f->gfx[lastgfxindex * FRAME_SIZE], cur->animsz, FRAME_SIZE, fp);
 			fclose(fp);
 
-			lastfn = cur->filename;
+			loadedAnims[a].filename = cur->filename;
+			loadedAnims[a].gfxindex = lastgfxindex;
+			lastgfxindex += cur->animsz;
 		}
+
+		// Compute the global gfx index for this frame, by adding
+		// the index within the animation to the animation base index.
+		f->gfxindex[i] = loadedAnims[a].gfxindex + cur->animidx;
 	}
 }
 
@@ -80,6 +106,10 @@ void animInit(void) {
 				/*flip*/ 0, 0,
 				/*mosaic*/ 0);
 		}
+
+		// Start with idle animation
+		f->scale = 1<<SCALE_BITS;
+		f->curframe = f->desc->keyframes.idle;
 	}
 
 
@@ -95,15 +125,10 @@ void animInit(void) {
 	fread(afight[0].pal, 1, 256*2, f);
 	fclose(f);
 
-	for (int i=0;i<16;i++) {
-		afight[0].pal[i]|=0x8000;
-	}
-
 	dmaCopyHalfWords(0, afight[0].pal, SPRITE_PALETTE, 256*2);
 
-	afight[0].curframe = 8;
 	afight[0].x = 100<<8;
-	afight[0].y = 191<<8;
+	afight[0].y = 150<<8;
 }
 
 static void animUpdateOam(int fx) {
@@ -128,30 +153,58 @@ static void animUpdateOam(int fx) {
 	oamSetXY(&oamMain, fx*4+3, x+scaledw, y+scaledh);
 }
 
+#define INPUT_DIR_MASK (KEY_UP|KEY_DOWN|KEY_LEFT|KEY_RIGHT)
 
-static int scale = 1 * (1<<SCALE_BITS);
+static void animProcessInput(int fx, u32 input) {
+	AnimFighter *f = &afight[fx];
+	const AnimDesc *fdesc = f->desc;
+	u16 fflags = fdesc->frames[f->curframe].flags;
 
-void animUpdate(void) {
+	u32 dirinput = input & INPUT_DIR_MASK;
+	switch (dirinput) {
+	case 0:
+		if (fflags & FCIDLE)
+			f->curframe = fdesc->keyframes.idle;
+		break;
+
+	case KEY_RIGHT:
+		if (fflags & FCWALK)
+			f->curframe = fdesc->keyframes.forward;
+		break;
+
+	case KEY_LEFT:
+		if (fflags & FCWALK)
+			f->curframe = fdesc->keyframes.backward;
+		break;
+	}
+}
+
+
+void animUpdate(u32 input) {
+	// static int DEBUG_scale = 1 * (1<<SCALE_BITS);
+
+	// Fighter #0 is our own character; process the input
+	animProcessInput(0, input);
+
 	for (int fx=0;fx<1;fx++) {
 		AnimFighter *f = &afight[fx];
 		const AnimDesc *fdesc = f->desc;
+		const AnimFrame *curframe = &fdesc->frames[f->curframe];
 
-		f->scale = scale;
-		scale -= 2;
+		// f->scale = DEBUG_scale;
+		// DEBUG_scale -= 2;
 
-		f->x += (int)fdesc->frames[f->curframe].movex * 32;
-		f->y += (int)fdesc->frames[f->curframe].movey * 32;
+		f->x += (int)curframe->movex * 32;
+		f->y += (int)curframe->movey * 32;
 		if (f->cftime > 0) {
 			f->cftime--;
 		} else {
-			int ffirst = f->curframe - fdesc->frames[f->curframe].animidx;
-			int animsz = fdesc->frames[f->curframe].animsz;
-			int flast = ffirst + animsz;
-			f->curframe++;
-			if (f->curframe == flast) {
-				f->curframe -= animsz;
+			if (curframe->next == 0) {
+				f->curframe++;
+			} else {
+				f->curframe = curframe->next-1;
 			}
-			f->cftime = fdesc->frames[f->curframe].speed;
+			f->cftime = curframe->speed;
 		}
 
 		animUpdateOam(fx);
@@ -163,7 +216,8 @@ void animVblank(void) {
 
 	for (int fx=0;fx<1;fx++) {
 		AnimFighter *f = &afight[fx];
-		u8 *gfx = &f->gfx[f->curframe * FRAME_SIZE];
+		int gfxidx = f->gfxindex[f->curframe];
+		u8 *gfx = &f->gfx[gfxidx * FRAME_SIZE];
 
 		for (int i=0;i<4;i++) {
 			dmaCopyHalfWords(2,

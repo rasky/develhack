@@ -214,7 +214,7 @@ int main(void)
             debugKeys(keys);
         }
 
-        animUpdate();
+        animUpdate(keys);
 
         lastKeys = keys;
     }

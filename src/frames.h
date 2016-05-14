@@ -1,28 +1,35 @@
 #pragma once
 
-#include <stdint.h>
+#include <nds/ndstypes.h>
 
 #define ANIM_DESC_MAX_FRAMES 64
 
 typedef struct {
-	uint8_t idx;
-	int8_t movex;
-	int8_t movey;
+	u8 idx;
+	u8 next;
+	s8 movex;
+	s8 movey;
 	const char *filename;
-	uint8_t animidx : 4;
-	uint8_t animsz : 4;
-	uint8_t speed;
+	u8 animidx : 4;
+	u8 animsz : 4;
+	u8 speed;
+	u16 flags;
 } AnimFrame;
 
 typedef struct {
 	AnimFrame frames[ANIM_DESC_MAX_FRAMES];
 	struct {
-		uint8_t idle;
-		uint8_t forward;
-		uint8_t backward;
+		u8 idle;
+		u8 forward;
+		u8 backward;
 	} keyframes;
-	uint8_t pivotx, pivoty;
+	u8 pivotx, pivoty;
 
 } AnimDesc;
+
+// Animation Flags. Mark specific animation frames
+// with their capabilities.
+#define FCIDLE (1<<0)   // Can go back to idle (if input says so)
+#define FCWALK (1<<1)   // Can begin walking (if input says so)
 
 extern const AnimDesc Rasky;
