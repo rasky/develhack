@@ -3,7 +3,7 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_SOURCE_DIR}/cmake/Modules)
 find_package(DevkitPRO REQUIRED)
 project(develfighter C ASM)
 
-set(PROJ_C_FLAGS "-Os -mthumb -mthumb-interwork -specs=ds_arm9.specs")
+set(PROJ_C_FLAGS "-Os -march=armv5te -mthumb -mthumb-interwork -specs=ds_arm9.specs")
 set(CMAKE_C_FLAGS ${PROJ_C_FLAGS})
 set(CMAKE_C_FLAGS_DEBUG ${PROJ_C_FLAGS})
 set(CMAKE_C_FLAGS_RELEASE ${PROJ_C_FLAGS})
