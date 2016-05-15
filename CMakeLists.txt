@@ -38,16 +38,11 @@ include_directories(${NDS_INCLUDE_DIR} ${CMAKE_CURRENT_BINARY_DIR})
 
 add_executable(${EXE_NAME}
   src/debug.c
-  src/debug.h
   src/input.c
-  src/input.h
   src/main.c
-  src/anim.h
   src/anim.c
-  src/frames.h
   src/frames.c
-  starField.s
-  starField.h)
+  starField.s)
 
 target_link_libraries(${EXE_NAME} ${NDS_FAT_LIBRARY} ${NDS9_LIBRARY} ${LUA_LIBRARIES})
 
