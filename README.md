@@ -11,6 +11,7 @@ This project implements GitHub's [normalized script pattern](http://githubengine
 * `./script/setup`: Sets-up the development environment;
 * `./script/build`: Builds the project and leaves a ROM in `build/game.nds`;
 * `./script/run`: Runs the game using DeSmuME (it must be in your `$PATH`);
+* `./script/oneshot`: Runs `./script/build` and `./script/run` in one shot;
 
 
 ## Downloads
