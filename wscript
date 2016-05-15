@@ -27,7 +27,7 @@ def configure(conf):
     common_flags = ['-march=armv5te', '-mthumb', '-mthumb-interwork', '-specs=ds_arm9.specs']
 
     conf.env.CFLAGS = ['-Os'] + common_flags
-    conf.env.LINKFLAGS = common_flags
+    conf.env.LINKFLAGS = ['-Wl,-Map,game.map'] + common_flags
     conf.env.DEVKITPRO = os.getenv('DEVKITPRO', '/usr/local/devkitPRO')
 
     devkitarm = os.getenv('DEVKITARM', '%s/devkitARM')
