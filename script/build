@@ -16,6 +16,5 @@ docker run \
     ${TTY+--interactive} ${TTY+--tty} \
     develhack:latest \
     sh -c "\
-    test -d build || ( mkdir -p build && cd build && cmake .. ) \
-        && cd build \
-        && make -j\$(getconf _NPROCESSORS_ONLN)"
+    test -f build/c4che/build.config.py || ( ./waf configure ) \
+        && ./waf -j \$(getconf _NPROCESSORS_ONLN)"
