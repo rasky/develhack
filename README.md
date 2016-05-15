@@ -13,6 +13,9 @@ This project implements GitHub's [normalized script pattern](http://githubengine
 * `./script/run`: Runs the game using DeSmuME (it must be in your `$PATH`);
 * `./script/oneshot`: Runs `./script/build` and `./script/run` in one shot;
 
+Exporting the environment variable `PREFER_NDSEMU=1` will run the game with
+[ndsemu](https://github.com/rasky/ndsemu).
+
 
 ## Downloads
 
