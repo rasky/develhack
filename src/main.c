@@ -13,7 +13,6 @@
 #include "anim.h"
 #include "debug.h"
 #include "input.h"
-#include "starField.h"
 
 volatile int frame = 0;
 
@@ -111,14 +110,6 @@ void initBackgrounds()
 /* Select a low priority DMA channel to perform our background copying. */
 static const int DMA_CHANNEL = 3;
 
-void displayStarField()
-{
-    // dmaCopyHalfWords(DMA_CHANNEL,
-    //     starFieldBitmap, /* This variable is generated for us by  grit. */
-    //     (uint16*)BG_BMP_RAM(0), /* Our address for main  background 3 */
-    //     starFieldBitmapLen); /* This length (in bytes) is generated from grit. */
-}
-
 bool mustDumpStats() {
     // FIXME: for now every once in a while; could be bound to a key
     return ((frame & 255) == 0);
@@ -126,7 +117,6 @@ bool mustDumpStats() {
 
 void Vblank()
 {
-    displayStarField();
     animVblank();
     frame++;
     if (mustDumpStats()) {
@@ -151,14 +141,14 @@ int main(void)
     irqSet(IRQ_VBLANK, Vblank);
 
     if (!fatInitDefault()) {
-        debugf("Unable to initialize libfat");
+        debugf("Unable to initialize libfat\n");
         goto error;
     }
 
     FILE* hello = fopen("hello.txt", "rb");
 
     if (hello == NULL) {
-        debugf("Unable to read hello.txt");
+        debugf("Unable to read hello.txt\n");
         goto error;
     }
 
@@ -176,11 +166,11 @@ int main(void)
 
     lua_State* lstate = luaL_newstate();
     if (lstate == NULL) {
-        debugf("Unable to create Lua state");
+        debugf("Unable to create Lua state\n");
         goto error;
     }
 
-    int rc = luaL_dofile(lstate, "luac.out");
+    int rc = luaL_dofile(lstate, "hello.luac");
     if (rc != LUA_OK) {
         debugf(lua_tostring(lstate, -1));
         goto error;
