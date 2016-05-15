@@ -39,31 +39,17 @@ def configure(conf):
 
 
 def build(bld):
-    # Build Lua
-    lua = bld.path.find_dir('3rdparty/lua-5.3.2')
-
-    lua_files = ['lapi.c', 'lcode.c', 'lctype.c', 'ldebug.c', 'ldo.c',
-                 'ldump.c', 'lfunc.c', 'lgc.c', 'llex.c', 'lmem.c',
-                 'lobject.c', 'lopcodes.c', 'lparser.c', 'lstate.c',
-                 'lstring.c', 'ltable.c', 'ltm.c', 'lundump.c', 'lvm.c',
-                 'lzio.c', 'lauxlib.c', 'lbaselib.c', 'lbitlib.c',
-                 'lcorolib.c', 'ldblib.c', 'linit.c', 'liolib.c',
-                 'lmathlib.c', 'loadlib.c', 'loslib.c', 'lstrlib.c',
-                 'ltablib.c', 'lutf8lib.c']
-
     bld.stlib(
         target='lua',
-        source=['3rdparty/lua-5.3.2/src/{0}'.format(f) for f in lua_files],
+        source=bld.path.ant_glob("3rdparty/lua-5.3.2/src/*.c"),
         defines='LUA_COMPAT_5_2')
 
     # Build game executable
-    game_files = ['anim.c', 'debug.c', 'frames.c', 'input.c', 'main.c']
-
     bld.read_stlib('nds9', paths=['%s/libnds/lib' % bld.env.DEVKITPRO])
     bld.read_stlib('fat', paths=['%s/libnds/lib' % bld.env.DEVKITPRO])
 
     bld.program(
-        source=['src/{0}'.format(f) for f in game_files],
+        source=bld.path.ant_glob("src/*.c"),
         target='game',
         defines=['ARM9', 'LUA_COMPAT_5_2'],
         includes=['%s/libnds/include' % bld.env.DEVKITPRO,
