@@ -119,11 +119,22 @@ void displayStarField()
     //     starFieldBitmapLen); /* This length (in bytes) is generated from grit. */
 }
 
+bool mustDumpStats() {
+    // FIXME: for now every once in a while; could be bound to a key
+    return ((frame & 255) == 0);
+}
+
 void Vblank()
 {
     displayStarField();
     animVblank();
     frame++;
+    if (mustDumpStats()) {
+        u16 y = REG_VCOUNT;
+        // vblank period: lines 192-262 (inclusive)
+        u32 perc = ((u32)(y - 192) * 100) / (263-192);
+        debugf("vblank usage: %d%%\n", perc);
+    }
 }
 
 int main(void)
@@ -217,6 +228,20 @@ int main(void)
         animUpdate(keys);
 
         lastKeys = keys;
+
+        if (mustDumpStats()) {
+            u16 y = REG_VCOUNT;
+            // frame period: all 263 lines, starting from 192
+            // and wrapping around (inclusive). Part of it will be
+            // used by vblank interrupt anyway.
+            if (y >= 192) {
+                y -= 192;
+            } else {
+                y += (263-192);
+            }
+            u32 perc = (u32)y*100 / 263;
+            debugf("CPU usage: %d%%\n", perc);
+        }
     }
 
 error:
