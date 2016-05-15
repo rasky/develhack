@@ -112,6 +112,10 @@ static void animLoad(int fidx, const AnimDesc *desc) {
 		// the index within the animation to the animation base index.
 		f->gfxindex[i] = loadedAnims[a].gfxindex + cur->animidx;
 	}
+
+	// Flush the data cache for graphics, so that it can be
+	// immediately blitted to VRAM.
+	DC_FlushRange(f->gfx, sizeof(f->gfx));
 }
 
 
