@@ -36,6 +36,12 @@ RUN wget 'http://downloads.sourceforge.net/project/devkitpro/Automated%20Install
 ENV PATH "${DEVKITARM}/bin:${PATH}"
 
 #
+# Add new stuff here
+#
+
+RUN apt-get -y install python-minimal
+
+#
 # Code
 #
 

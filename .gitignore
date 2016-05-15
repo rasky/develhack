@@ -1,3 +1,5 @@
 *.sublime-workspace
 bios/
 build/
+.waf-*/
+.lock-waf*
