@@ -35,6 +35,8 @@ set(LUA_OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/data/luac.out)
 set(EXE_NAME game)
 
 grit(gfx/starField.png)
+grit_bin(gfx/fighters/rasky-idle.png)
+grit_bin(gfx/fighters/rasky-walk.png)
 
 include_directories(${NDS_INCLUDE_DIR} ${CMAKE_CURRENT_BINARY_DIR})
 
@@ -44,6 +46,11 @@ add_executable(${EXE_NAME}
   src/main.c
   src/anim.c
   src/frames.c
+  # Generated
+  data/rasky-idle.img.bin
+  data/rasky-idle.pal.bin
+  data/rasky-walk.img.bin
+  data/rasky-walk.pal.bin
   starField.s)
 
 target_link_libraries(${EXE_NAME} ${NDS_FAT_LIBRARY} ${NDS9_LIBRARY} ${LUA_LIBRARIES})

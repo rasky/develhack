@@ -112,6 +112,31 @@ macro(GRIT PNG_FILE)
   set_source_files_properties(${FO} PROPERTIES GENERATED TRUE)
 endmacro()
 
+macro(GRIT_BIN PNG_FILE)
+  make_directory(${CMAKE_CURRENT_BINARY_DIR})
+
+  get_filename_component(BASE "${PNG_FILE}" NAME_WE)
+
+  set(FO ${CMAKE_CURRENT_BINARY_DIR}/data/${BASE}.img.bin ${CMAKE_CURRENT_BINARY_DIR}/data/${BASE}.pal.bin)
+  set(FI ${CMAKE_CURRENT_SOURCE_DIR}/${PNG_FILE})
+
+  add_custom_command(
+    OUTPUT ${FO}
+    COMMAND grit
+    ARGS ${FI} -gt -Mh8 -Mw8 -gB4 -ftb -pS -o${CMAKE_CURRENT_BINARY_DIR}/data/${BASE}
+    MAIN_DEPENDENCY ${FI})
+
+  get_directory_property(extra_clean_files ADDITIONAL_MAKE_CLEAN_FILES)
+
+  set_directory_properties(
+    PROPERTIES
+    ADDITIONAL_MAKE_CLEAN_FILES "${extra_clean_files};${FO}")
+
+  file(REMOVE ${CMAKE_CURRENT_BINARY_DIR}/data/${BASE}.h)
+
+  set_source_files_properties(${FO} PROPERTIES GENERATED TRUE)
+endmacro()
+
 macro(NDSTOOL_FILE EXE_NAME)
   set(FO ${CMAKE_CURRENT_BINARY_DIR}/${EXE_NAME}.nds)
   set(I9 ${CMAKE_CURRENT_BINARY_DIR}/${EXE_NAME}.bin)
