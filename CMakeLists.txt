@@ -13,6 +13,8 @@ set(CMAKE_EXE_LINKER_FLAGS "-Wl,-Map,game.map")
 
 add_definitions(-DARM9)
 
+make_directory(${CMAKE_CURRENT_BINARY_DIR}/data)
+
 #
 # Lua
 #
@@ -24,7 +26,7 @@ find_package(Luac REQUIRED)
 
 set(LUA_FILES ${CMAKE_CURRENT_SOURCE_DIR}/lua/hello.lua)
 set(LUA_LIBRARIES lua ${MATH_LIBRARY})
-set(LUA_OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/luac.out)
+set(LUA_OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/data/luac.out)
 
 #
 # Game Binary
@@ -65,4 +67,4 @@ add_custom_command(
   TARGET ${EXE_NAME}
   POST_BUILD
   COMMAND ${CMAKE_SOURCE_DIR}/script/mkdatadisk
-  ARGS ${CMAKE_CURRENT_BINARY_DIR}/data.bin ${CMAKE_CURRENT_SOURCE_DIR}/data/*.* ${LUA_OUTPUT})
+  ARGS ${CMAKE_CURRENT_BINARY_DIR}/data.bin ${CMAKE_CURRENT_SOURCE_DIR}/data/*.* ${CMAKE_CURRENT_BINARY_DIR}/data/*.*)
