@@ -11,7 +11,7 @@ if [ "${PREFER_NDSEMU:-0}" = "1" ]; then
         exit 1
     fi
 
-    exec ndsemu -homebrew-fat build/game.bin build/game.nds
+    exec ndsemu -homebrew-fat build/game.dat build/game.nds
 else
     if [ ! -x "$(which desmume)" ]; then
         echo "Please install desmume first."
@@ -19,5 +19,5 @@ else
         exit 1
     fi
 
-    exec desmume --load-type=1 --cflash-image=build/data.bin build/game.nds
+    exec desmume --load-type=1 --cflash-image=build/game.dat build/game.nds
 fi
