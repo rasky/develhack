@@ -1,3 +1,5 @@
+# -*- python -*-
+
 import os
 from waflib import TaskGen
 
