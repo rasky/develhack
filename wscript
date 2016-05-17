@@ -104,7 +104,6 @@ def build(bld):
     bld(source='lua/hello.lua')
 
     data_files = [
-        'data/hello.txt',
         'gfx/fighters/rasky-walk.img.bin',
         'gfx/fighters/rasky-walk.pal.bin',
         'gfx/fighters/rasky-idle.img.bin',
