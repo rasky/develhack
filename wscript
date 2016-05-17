@@ -13,7 +13,7 @@ def grit_rule(task):
 
 def grit_decider(task, node):
     if '-ftb' not in task.options:
-        raise Error('Only -ftb is supported at the moment')
+        raise Exception('Only -ftb is supported at the moment')
     extensions = ['.h', '.img.bin', '.pal.bin']
     if '-m' in task.options:
         extensions.append('.map.bin')
@@ -113,3 +113,13 @@ def build(bld):
     ]
 
     bld(rule=copy_fat_file, source=data_files, target='game.dat')
+
+    # Collect resources in a single folder
+    def cp(task):
+        tgt = task.outputs[0].abspath()
+        os.makedirs(tgt)
+        for src in task.inputs:
+            ret = task.exec_command('cp {0} {1}'.format(src.abspath(), tgt))
+        return ret
+
+    bld(rule=cp, source=data_files, target='resources')
