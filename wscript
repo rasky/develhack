@@ -117,7 +117,7 @@ def build(bld):
     # Collect resources in a single folder
     def cp(task):
         tgt = task.outputs[0].abspath()
-        os.makedirs(tgt)
+        os.makedirs(tgt, exist_ok=True)
         for src in task.inputs:
             ret = task.exec_command('cp {0} {1}'.format(src.abspath(), tgt))
         return ret
