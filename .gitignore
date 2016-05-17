@@ -1,5 +1,6 @@
 *.sublime-workspace
+.DS_Store
+.lock-waf*
+.waf*/
 bios/
 build/
-.waf*/
-.lock-waf*
