@@ -3,14 +3,29 @@
 import os
 from waflib import TaskGen
 
-# This is for images with no tilemap.
+
+def grit_rule(task):
+    for src in task.inputs:
+        output_dir = task.outputs[0].parent.abspath()
+        command = ['grit'] + [src.abspath()] + list(task.generator.options)
+        task.exec_command(' '.join(command), cwd=output_dir)
+
+
+def grit_decider(task, node):
+    if '-ftb' not in task.options:
+        raise Error('Only -ftb is supported at the moment')
+    extensions = ['.h', '.img.bin', '.pal.bin']
+    if '-m' in task.options:
+        extensions.append('.map.bin')
+        if any(opt.startswith('-Mh') or opt.startswith('-Mw') for opt in task.options):
+            extensions.append('.meta.bin')
+    return extensions
+
 TaskGen.declare_chain(
     name='grit',
-    rule='grit ${SRC} -ftb -pS -Mh8 -Mw8 -gB4 -o${TGT[0].bldpath()[:-8]}',
-    shell=False,
-    ext_in='.png',
-    ext_out='.img.bin .pal.bin',
-    install_path=None
+    rule=grit_rule,
+    decider=grit_decider,
+    ext_in='.png'
 )
 
 
@@ -69,7 +84,10 @@ def build(bld):
         target='game.nds')
 
     # Run GRIT on images
-    bld(source='gfx/fighters/rasky-walk.png gfx/fighters/rasky-idle.png')
+    fighters = ['rasky-walk', 'rasky-idle']
+
+    bld(options=('-ftb', '-pS', '-Mh8', '-Mw8', '-gB4'),
+        source=['gfx/fighters/{0}.png'.format(f) for f in fighters])
 
     # Build FAT data image
     def copy_fat_file(task):
