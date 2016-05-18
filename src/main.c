@@ -46,10 +46,10 @@ void initVideo()
     vramSetBankE(VRAM_E_MAIN_SPRITE);
 
     /*  Set the video mode on the main screen. */
-    videoSetMode(MODE_3_2D);
+    videoSetMode(MODE_2_2D);
 
     /*  Set the video mode on the sub screen. */
-    videoSetModeSub(MODE_3_2D); // Set the graphics mode to Mode 3
+    videoSetModeSub(MODE_2_2D); // Set the graphics mode to Mode 3
 }
 
 void initBackgrounds()

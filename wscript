@@ -127,7 +127,7 @@ def build(bld):
     bld(options=('-ftb', '-pS', '-Mh8', '-Mw8', '-gB4'),
         source=bld.path.ant_glob("gfx/fighters/**/*.png"))
 
-    bld(options=('-m', '-gt', '-ftb', '-pS', '-gB4'),
+    bld(options=('-ftb', '-pS', '-m', '-mLa', '-gB8'),
         source=['gfx/levels/test.png'])
 
     # Build FAT data image
