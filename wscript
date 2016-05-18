@@ -81,7 +81,7 @@ def build(bld):
 
     bld.program(
         source=bld.path.ant_glob("src/*.c"),
-        target='game',
+        target='game.arm9',
         defines=['LUA_COMPAT_5_2'],
         includes=['%s/libnds/include' % bld.env.DEVKITPRO,
                   '%s/libnds/include/nds' % bld.env.DEVKITPRO,
@@ -89,12 +89,13 @@ def build(bld):
         use='ARM9 lua fat nds9',
         stlib='m')
 
+    # ARM9
     bld(rule='${OBJCOPY} -O binary ${SRC} ${TGT}',
-        source='game',
-        target='game.bin')
+        source='game.arm9',
+        target='game.arm9.bin')
 
     bld(rule='${NDSTOOL} -c ${TGT} -9 ${SRC}',
-        source='game.bin',
+        source='game.arm9.bin',
         target='game.nds')
 
     # Run GRIT on images
