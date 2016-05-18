@@ -6,6 +6,7 @@ cd "$(dirname "${0}")/../" || exit 1
 
 ./script/build
 
+cp build/game.arm7.map "${CIRCLE_ARTIFACTS}/game.arm7.map"
 cp build/game.arm9.map "${CIRCLE_ARTIFACTS}/game.arm9.map"
 cp build/game.dat "${CIRCLE_ARTIFACTS}/game.dat"
 cp build/game.nds "${CIRCLE_ARTIFACTS}/game.nds"
