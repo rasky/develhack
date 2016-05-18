@@ -127,6 +127,9 @@ def build(bld):
     bld(options=('-ftb', '-pS', '-Mh8', '-Mw8', '-gB4'),
         source=bld.path.ant_glob("gfx/fighters/**/*.png"))
 
+    bld(options=('-m', '-gt', '-ftb', '-pS', '-gB4'),
+        source=['gfx/levels/test.png'])
+
     # Build FAT data image
     def copy_fat_file(task):
         tgt = task.outputs[0].abspath()

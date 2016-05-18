@@ -16,6 +16,7 @@
 #include "input.h"
 #include "levels.h"
 #include "sound.h"
+#include "stage.h"
 
 volatile int frame = 0;
 
@@ -45,14 +46,10 @@ void initVideo()
     vramSetBankE(VRAM_E_MAIN_SPRITE);
 
     /*  Set the video mode on the main screen. */
-    videoSetMode(MODE_3_2D | // Set the graphics mode to Mode 3
-        DISPLAY_BG2_ACTIVE | // Enable BG2 for display
-        DISPLAY_BG3_ACTIVE | // Enable BG3 for display
-        DISPLAY_SPR_ACTIVE); // Enable sprites for display
+    videoSetMode(MODE_3_2D);
 
     /*  Set the video mode on the sub screen. */
-    videoSetModeSub(MODE_3_2D | // Set the graphics mode to Mode 3
-        DISPLAY_BG3_ACTIVE); // Enable BG3 for display
+    videoSetModeSub(MODE_3_2D); // Set the graphics mode to Mode 3
 }
 
 void initBackgrounds()
@@ -139,7 +136,6 @@ int main(void)
     powerOn(POWER_ALL_2D);
 
     initVideo();
-    initBackgrounds();
     lcdMainOnBottom();
 
     irqSet(IRQ_VBLANK, Vblank);
@@ -193,6 +189,7 @@ int main(void)
     // ----- END SOUND
 
     animInit();
+    loadStage();
 
     uint32 lastKeys = 0;
 
