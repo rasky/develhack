@@ -115,7 +115,7 @@ def build(bld):
         target='game.arm7.bin')
 
     # Final game binary
-    bld(rule='${NDSTOOL} -c ${TGT} -9 ${SRC[0]}',
+    bld(rule='${NDSTOOL} -c ${TGT} -9 ${SRC[0]} -7 ${SRC[1]}',
         source='game.arm9.bin game.arm7.bin',
         target='game.nds')
 
