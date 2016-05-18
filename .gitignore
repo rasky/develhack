@@ -1,3 +1,4 @@
+*.dump
 *.sublime-workspace
 .DS_Store
 .lock-waf*
