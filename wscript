@@ -1,6 +1,7 @@
 # -*- python -*-
 
 import os
+
 from waflib import TaskGen
 
 
@@ -14,11 +15,15 @@ def grit_rule(task):
 def grit_decider(task, node):
     if '-ftb' not in task.options:
         raise Exception('Only -ftb is supported at the moment')
+
     extensions = ['.h', '.img.bin', '.pal.bin']
+
     if '-m' in task.options:
         extensions.append('.map.bin')
+
         if any(opt.startswith('-Mh') or opt.startswith('-Mw') for opt in task.options):
             extensions.append('.meta.bin')
+
     return extensions
 
 TaskGen.declare_chain(

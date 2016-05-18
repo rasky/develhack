@@ -110,7 +110,8 @@ void initBackgrounds()
 /* Select a low priority DMA channel to perform our background copying. */
 static const int DMA_CHANNEL = 3;
 
-bool mustDumpStats() {
+bool mustDumpStats()
+{
     // FIXME: for now every once in a while; could be bound to a key
     return ((frame & 255) == 0);
 }
@@ -122,7 +123,7 @@ void Vblank()
     if (mustDumpStats()) {
         u16 y = REG_VCOUNT;
         // vblank period: lines 192-262 (inclusive)
-        u32 perc = ((u32)(y - 192) * 100) / (263-192);
+        u32 perc = ((u32)(y - 192) * 100) / (263 - 192);
         debugf("vblank usage: %d%%\n", perc);
     }
 }
@@ -210,9 +211,9 @@ int main(void)
             if (y >= 192) {
                 y -= 192;
             } else {
-                y += (263-192);
+                y += (263 - 192);
             }
-            u32 perc = (u32)y*100 / 263;
+            u32 perc = (u32)y * 100 / 263;
             debugf("CPU usage: %d%%\n", perc);
         }
     }
