@@ -102,7 +102,7 @@ def build(bld):
 
     # ARM7
     bld.program(
-        source=bld.path.ant_glob("src/arm7/*.c"),
+        source=bld.path.ant_glob("src/debug.c src/arm7/*.c"),
         target='game.arm7',
         includes=[
             '%s/libnds/include' % bld.env.DEVKITPRO,
