@@ -79,7 +79,12 @@ int debugf(const char* format, ...)
     vsnprintf(buffer, sizeof(buffer), format, args);
     va_end(args);
 
+#ifdef DEBUG_ON_SECONDARY_SCREEN
+    iprintf("%s", buffer);
+#else
     output_debug_string_internal(buffer);
+#endif
+
     return 1;
 }
 

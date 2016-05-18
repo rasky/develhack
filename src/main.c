@@ -141,6 +141,10 @@ int main(void)
 
     irqSet(IRQ_VBLANK, Vblank);
 
+#ifdef DEBUG_ON_SECONDARY_SCREEN
+    consoleDemoInit();
+#endif
+
     if (!fatInitDefault()) {
         debugf("Unable to initialize libfat\n");
         goto error;

@@ -38,6 +38,8 @@ def options(opt):
     opt.load('lua')
     opt.load('compiler_c')
 
+    opt.add_option('-d', '--debug-on-screen', action='store_true', default=False)
+
 
 def configure(conf):
     conf.env.LUAC = 'luac5.3'
@@ -51,6 +53,9 @@ def configure(conf):
     conf.env.CFLAGS = ['-Os', '-Wall'] + common_flags
     conf.env.LINKFLAGS = ['-Wl,-Map,game.map'] + common_flags
     conf.env.DEVKITPRO = os.getenv('DEVKITPRO', '/usr/local/devkitPRO')
+
+    if conf.options.debug_on_screen:
+        conf.env.DEFINES += ['DEBUG_ON_SECONDARY_SCREEN']
 
     devkitarm = os.getenv('DEVKITARM', '%s/devkitARM')
     devkitarm_bin = '%s/bin' % (devkitarm)
