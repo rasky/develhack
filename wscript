@@ -48,12 +48,14 @@ def configure(conf):
     conf.env.CC = 'arm-none-eabi-gcc'
     conf.env.LINK_CC = 'arm-none-eabi-gcc'
 
+    # Common
+    conf.env.CFLAGS = ['-Os', '-Wall', '-march=armv5te', '-mthumb', '-mthumb-interwork']
     conf.env.DEVKITPRO = os.getenv('DEVKITPRO', '/usr/local/devkitPRO')
 
     # ARM9
-    common_flags = ['-march=armv5te', '-mthumb', '-mthumb-interwork', '-specs=ds_arm9.specs']
-    conf.env.CFLAGS_ARM9 = ['-Os', '-Wall'] + common_flags
-    conf.env.LINKFLAGS_ARM9 = ['-Wl,-Map,game.map'] + common_flags
+    conf.env.CFLAGS_ARM9 = conf.env.CFLAGS + ['-specs=ds_arm9.specs']
+    conf.env.DEFINES_ARM9 = ['ARM9']
+    conf.env.LINKFLAGS_ARM9 = conf.env.CFLAGS_ARM9 + ['-Wl,-Map,game.map']
 
     if conf.options.debug_on_screen:
         conf.env.DEFINES += ['DEBUG_ON_SECONDARY_SCREEN']
@@ -80,7 +82,7 @@ def build(bld):
     bld.program(
         source=bld.path.ant_glob("src/*.c"),
         target='game',
-        defines=['ARM9', 'LUA_COMPAT_5_2'],
+        defines=['LUA_COMPAT_5_2'],
         includes=['%s/libnds/include' % bld.env.DEVKITPRO,
                   '%s/libnds/include/nds' % bld.env.DEVKITPRO,
                   '3rdparty/lua-5.3.2/src/'],
