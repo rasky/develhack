@@ -57,6 +57,11 @@ def configure(conf):
     conf.env.DEFINES_ARM9 = ['ARM9']
     conf.env.LINKFLAGS_ARM9 = conf.env.CFLAGS_ARM9 + ['-Wl,-Map,game.arm9.map']
 
+    # ARM7
+    conf.env.CFLAGS_ARM7 = conf.env.CFLAGS + ['-specs=ds_arm7.specs']
+    conf.env.DEFINES_ARM7 = ['ARM7']
+    conf.env.LINKFLAGS_ARM7 = conf.env.CFLAGS_ARM7 + ['-Wl,-Map,game.arm7.map']
+
     if conf.options.debug_on_screen:
         conf.env.DEFINES += ['DEBUG_ON_SECONDARY_SCREEN']
 
@@ -76,9 +81,11 @@ def build(bld):
         use='ARM9')
 
     # Build game executable
-    bld.read_stlib('nds9', paths=['%s/libnds/lib' % bld.env.DEVKITPRO])
     bld.read_stlib('fat', paths=['%s/libnds/lib' % bld.env.DEVKITPRO])
+    bld.read_stlib('nds7', paths=['%s/libnds/lib' % bld.env.DEVKITPRO])
+    bld.read_stlib('nds9', paths=['%s/libnds/lib' % bld.env.DEVKITPRO])
 
+    # ARM9
     bld.program(
         source=bld.path.ant_glob("src/*.c"),
         target='game.arm9',
@@ -89,13 +96,27 @@ def build(bld):
         use='ARM9 lua fat nds9',
         stlib='m')
 
-    # ARM9
     bld(rule='${OBJCOPY} -O binary ${SRC} ${TGT}',
         source='game.arm9',
         target='game.arm9.bin')
 
-    bld(rule='${NDSTOOL} -c ${TGT} -9 ${SRC}',
-        source='game.arm9.bin',
+    # ARM7
+    bld.program(
+        source=bld.path.ant_glob("src/arm7/*.c"),
+        target='game.arm7',
+        includes=[
+            '%s/libnds/include' % bld.env.DEVKITPRO,
+            '%s/libnds/include/nds' % bld.env.DEVKITPRO,
+        ],
+        use='ARM7 nds7')
+
+    bld(rule='${OBJCOPY} -O binary ${SRC} ${TGT}',
+        source='game.arm7',
+        target='game.arm7.bin')
+
+    # Final game binary
+    bld(rule='${NDSTOOL} -c ${TGT} -9 ${SRC[0]}',
+        source='game.arm9.bin game.arm7.bin',
         target='game.nds')
 
     # Run GRIT on images
