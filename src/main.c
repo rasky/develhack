@@ -130,7 +130,7 @@ void Vblank()
 
 int main(void)
 {
-    debugf("Powering on\n");
+    debugf("ARM9: Powering on\n");
     touchPosition touchXY;
 
     powerOn(POWER_ALL_2D);
