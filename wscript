@@ -55,7 +55,7 @@ def configure(conf):
     # ARM9
     conf.env.CFLAGS_ARM9 = conf.env.CFLAGS + ['-specs=ds_arm9.specs']
     conf.env.DEFINES_ARM9 = ['ARM9']
-    conf.env.LINKFLAGS_ARM9 = conf.env.CFLAGS_ARM9 + ['-Wl,-Map,game.map']
+    conf.env.LINKFLAGS_ARM9 = conf.env.CFLAGS_ARM9 + ['-Wl,-Map,game.arm9.map']
 
     if conf.options.debug_on_screen:
         conf.env.DEFINES += ['DEBUG_ON_SECONDARY_SCREEN']
