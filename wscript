@@ -48,11 +48,12 @@ def configure(conf):
     conf.env.CC = 'arm-none-eabi-gcc'
     conf.env.LINK_CC = 'arm-none-eabi-gcc'
 
-    common_flags = ['-march=armv5te', '-mthumb', '-mthumb-interwork', '-specs=ds_arm9.specs']
-
-    conf.env.CFLAGS = ['-Os', '-Wall'] + common_flags
-    conf.env.LINKFLAGS = ['-Wl,-Map,game.map'] + common_flags
     conf.env.DEVKITPRO = os.getenv('DEVKITPRO', '/usr/local/devkitPRO')
+
+    # ARM9
+    common_flags = ['-march=armv5te', '-mthumb', '-mthumb-interwork', '-specs=ds_arm9.specs']
+    conf.env.CFLAGS_ARM9 = ['-Os', '-Wall'] + common_flags
+    conf.env.LINKFLAGS_ARM9 = ['-Wl,-Map,game.map'] + common_flags
 
     if conf.options.debug_on_screen:
         conf.env.DEFINES += ['DEBUG_ON_SECONDARY_SCREEN']
@@ -69,7 +70,8 @@ def build(bld):
     bld.stlib(
         target='lua',
         source=bld.path.ant_glob("3rdparty/lua-5.3.2/src/*.c"),
-        defines='LUA_COMPAT_5_2')
+        defines='LUA_COMPAT_5_2',
+        use='ARM9')
 
     # Build game executable
     bld.read_stlib('nds9', paths=['%s/libnds/lib' % bld.env.DEVKITPRO])
@@ -82,7 +84,7 @@ def build(bld):
         includes=['%s/libnds/include' % bld.env.DEVKITPRO,
                   '%s/libnds/include/nds' % bld.env.DEVKITPRO,
                   '3rdparty/lua-5.3.2/src/'],
-        use='lua fat nds9',
+        use='ARM9 lua fat nds9',
         stlib='m')
 
     bld(rule='${OBJCOPY} -O binary ${SRC} ${TGT}',
