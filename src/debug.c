@@ -110,12 +110,11 @@ int enable_debug_output(int enable)
     return old;
 }
 
-void debugBreakpoint() {
+void debugBreakpoint()
+{
 #ifdef __thumb__
-    asm volatile ("bkpt 0");
+    asm volatile("bkpt 0");
 #else
-    asm volatile ("bkpt 0");
+    asm volatile("bkpt 0");
 #endif
 }
-
-
