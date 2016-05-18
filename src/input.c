@@ -9,28 +9,28 @@
 #define BUFFER_SIZE 60
 #define MAX_KEY_FRAMES 8
 
-static uint32_t keyBuffer[BUFFER_SIZE];
-static uint8_t current = 0;
+static u32 keyBuffer[BUFFER_SIZE];
+static u8 current = 0;
 
-static const uint8_t HADUKEN[] = { KEY_DOWN, KEY_DOWN | KEY_RIGHT, KEY_RIGHT, KEY_A };
-static const uint8_t SHORYUKEN[] = { KEY_RIGHT, KEY_DOWN, KEY_DOWN | KEY_RIGHT, KEY_A };
+static const u8 HADUKEN[] = { KEY_DOWN, KEY_DOWN | KEY_RIGHT, KEY_RIGHT, KEY_A };
+static const u8 SHORYUKEN[] = { KEY_RIGHT, KEY_DOWN, KEY_DOWN | KEY_RIGHT, KEY_A };
 
 static void debugKeyBuffer()
 {
-    for (uint8_t i = 0; i < BUFFER_SIZE; i++) {
+    for (u8 i = 0; i < BUFFER_SIZE; i++) {
         debugf("%d: ", i);
         debugKeys(keyBuffer[i]);
     }
 }
 
-static bool detectSpecialMove(const uint8_t* pattern)
+static bool detectSpecialMove(const u8* pattern)
 {
-    uint8_t scanned = 0;
-    uint8_t i = current + 1;
+    u8 scanned = 0;
+    u8 i = current + 1;
 
-    int8_t hit = 0;
-    int8_t curKey = COUNTOF(pattern) - 1;
-    int8_t matchIdx = -1;
+    s8 hit = 0;
+    s8 curKey = COUNTOF(pattern) - 1;
+    s8 matchIdx = -1;
 
     while (scanned <= BUFFER_SIZE) {
         i--;
@@ -58,10 +58,10 @@ static bool detectSpecialMove(const uint8_t* pattern)
     }
 }
 
-uint32_t currentKeyEvent()
+u32 currentKeyEvent()
 {
     // Store current frame's keys
-    uint32_t ret = keyBuffer[current] = keysCurrent();
+    u32 ret = keyBuffer[current] = keysCurrent();
 
     // Recognize special move
     if (detectSpecialMove(HADUKEN)) {
@@ -80,7 +80,7 @@ uint32_t currentKeyEvent()
     return ret;
 }
 
-void debugKeys(uint32_t keys)
+void debugKeys(u32 keys)
 {
     debugf("%c%c%c%c%c%c%c%c%c%c%c%c%c%c %c%c\n",
         keys & KEY_A ? 'A' : '.',
