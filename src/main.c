@@ -13,6 +13,7 @@
 #include "anim.h"
 #include "debug.h"
 #include "input.h"
+#include "sound.h"
 
 volatile int frame = 0;
 
@@ -179,6 +180,11 @@ int main(void)
     debugf("Lua: %d\n", z);
 
     // ----- END LUA
+
+    // ----- BEGIN SOUND
+    initSound();
+    playBackgroundMusic("street_fighter.xm");
+    // ----- END SOUND
 
     animInit();
 
