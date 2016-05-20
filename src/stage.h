@@ -4,4 +4,4 @@
 // controls the various background layers and may include some sprites
 // as well.
 
-void loadStage();
+void loadStage(const char *id);

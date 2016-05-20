@@ -37,10 +37,10 @@ void initVideo()
      *  We map bank D to LCD. This setting is generally used for when we aren't
      *  using a particular bank.
      */
-    vramSetPrimaryBanks(VRAM_A_MAIN_BG_0x06000000,
-        VRAM_B_MAIN_BG_0x06020000,
-        VRAM_C_SUB_BG_0x06200000,
-        VRAM_D_LCD);
+    vramSetPrimaryBanks(VRAM_A_MAIN_BG,
+        VRAM_B_MAIN_BG,
+        VRAM_C_MAIN_BG,
+        VRAM_D_MAIN_BG);
 
     /* Bank E is mapped for sprites */
     vramSetBankE(VRAM_E_MAIN_SPRITE);
@@ -189,7 +189,7 @@ int main(void)
     // ----- END SOUND
 
     animInit();
-    loadStage();
+    loadStage("forest");
 
     uint32 lastKeys = 0;
 

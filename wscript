@@ -1,6 +1,7 @@
 # -*- python -*-
 
 import os
+from itertools import chain
 
 from waflib import TaskGen
 
@@ -16,7 +17,15 @@ def grit_decider(task, node):
     if '-ftb' not in task.options:
         raise Exception('Only -ftb is supported at the moment')
 
-    extensions = ['.h', '.img.bin', '.pal.bin']
+    extensions = []
+    if '-fh!' not in task.options:
+        extensions.append('.h')
+
+    if '-g!' not in task.options:
+        extensions.append('.img.bin')
+
+    if '-p!' not in task.options:
+        extensions.append('.pal.bin')
 
     if '-m' in task.options:
         extensions.append('.map.bin')
@@ -127,8 +136,21 @@ def build(bld):
     bld(options=('-ftb', '-pS', '-Mh8', '-Mw8', '-gB4'),
         source=bld.path.ant_glob("gfx/fighters/**/*.png"))
 
-    bld(options=('-ftb', '-pS', '-m', '-mLa', '-gB8'),
-        source=['gfx/levels/test.png'])
+    text_levels = [
+        'forest-00',
+        'forest-03',
+    ]
+
+    affine_levels = [
+        'forest-01',
+        'forest-02',
+    ]
+
+    bld(options=('-ftb', '-fh!', '-m', '-gB8'),
+        source=['gfx/levels/{0}.png'.format(f) for f in text_levels])
+
+    bld(options=('-ftb', '-fh!', '-m', '-mLa', '-gB8'),
+        source=['gfx/levels/{0}.png'.format(f) for f in affine_levels])
 
     # Build FAT data image
     def copy_fat_file(task):
@@ -158,11 +180,12 @@ def build(bld):
 
     # Collect resources in a single folder
     def cp(task):
-        tgt = task.outputs[0].abspath()
+        tgt = task.outputs[0].parent.abspath()
         if not os.path.exists(tgt):
             os.makedirs(tgt)
         for src in task.inputs:
             ret = task.exec_command('cp {0} {1}'.format(src.abspath(), tgt))
         return ret
 
-    bld(rule=cp, source=data_files, target='resources')
+    bld(rule=cp, source=data_files,
+        target=['resources/{0}'.format(os.path.basename(f)) for f in data_files])
