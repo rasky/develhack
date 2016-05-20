@@ -15,6 +15,7 @@
 #include "input.h"
 #include "levels.h"
 #include "fight.h"
+#include "sound.h"
 
 volatile int frame = 0;
 
@@ -183,6 +184,13 @@ int main(void)
     // ----- END LUA
 
     fightInit(&LoungeRoom);
+
+    // ----- BEGIN SOUND
+    initSound();
+    playBackgroundMusic("street_fighter.xm");
+    // ----- END SOUND
+
+    animInit();
 
     uint32 lastKeys = 0;
 

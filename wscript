@@ -81,9 +81,13 @@ def build(bld):
         use='ARM9')
 
     # Build game executable
+    libxm_path = '3rdparty/libxm7-1.06'
+
     bld.read_stlib('fat', paths=['%s/libnds/lib' % bld.env.DEVKITPRO])
     bld.read_stlib('nds7', paths=['%s/libnds/lib' % bld.env.DEVKITPRO])
     bld.read_stlib('nds9', paths=['%s/libnds/lib' % bld.env.DEVKITPRO])
+    bld.read_stlib('xm77', paths=[libxm_path], export_includes=[libxm_path])
+    bld.read_stlib('xm79', paths=[libxm_path], export_includes=[libxm_path])
 
     # ARM9
     bld.program(
@@ -93,7 +97,7 @@ def build(bld):
         includes=['%s/libnds/include' % bld.env.DEVKITPRO,
                   '%s/libnds/include/nds' % bld.env.DEVKITPRO,
                   '3rdparty/lua-5.3.2/src/'],
-        use='ARM9 lua fat nds9',
+        use='ARM9 lua fat xm79 nds9',
         stlib='m')
 
     bld(rule='${OBJCOPY} -O binary ${SRC} ${TGT}',
@@ -108,7 +112,7 @@ def build(bld):
             '%s/libnds/include' % bld.env.DEVKITPRO,
             '%s/libnds/include/nds' % bld.env.DEVKITPRO,
         ],
-        use='ARM7 nds7')
+        use='ARM7 xm77 nds7')
 
     bld(rule='${OBJCOPY} -O binary ${SRC} ${TGT}',
         source='game.arm7',
@@ -130,7 +134,7 @@ def build(bld):
         tgt = task.outputs[0].abspath()
 
         if not os.path.exists(tgt):
-            task.exec_command('mformat -C -t 1 -h 1 -s 512 -i %s' % (tgt))
+            task.exec_command('mformat -C -t 1 -h 1 -s 1024 -i %s' % (tgt))
 
         for src in task.inputs:
             task.exec_command('mcopy -o -i %s %s ::' % (tgt, src.abspath()))
@@ -144,7 +148,8 @@ def build(bld):
         'gfx/fighters/rasky-walk.pal.bin',
         'gfx/fighters/rasky-idle.img.bin',
         'gfx/fighters/rasky-idle.pal.bin',
-        'lua/hello.luac'
+        'lua/hello.luac',
+        'snd/street_fighter.xm'
     ]
 
     bld(rule=copy_fat_file, source=data_files, target='game.dat')
