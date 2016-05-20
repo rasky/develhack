@@ -1,0 +1,21 @@
+#!/bin/sh
+
+set -eux
+
+cd "$(dirname "${0}")/../"
+
+if [ "$(uname -s)" != "Darwin" ]; then
+    echo "Unsupported platform. Yet."
+    exit 1
+fi
+
+MOUNT_POINT="/Volumes/3DS"
+
+cp build/game.dat "${MOUNT_POINT}/game.dat"
+cp build/game.nds "${MOUNT_POINT}/game.nds"
+
+rsync -av build/resources/ "${MOUNT_POINT}/"
+
+sync
+
+diskutil unmount "${MOUNT_POINT}"
