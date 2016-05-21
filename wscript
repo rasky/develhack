@@ -146,7 +146,7 @@ def build(bld):
         'forest-02',
     ]
 
-    bld(options=('-ftb', '-gt', '-fh!', '-m', '-mRtpf', '-gB4'),
+    bld(options=('-ftb', '-gt', '-fh!', '-m', '-mLs', '-mRtpf', '-gB4'),
         source=['gfx/levels/{0}.png'.format(f) for f in text_levels])
 
     bld(options=('-ftb', '-gt', '-fh!', '-m', '-mLa', '-gB8'),
