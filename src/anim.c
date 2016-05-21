@@ -3,6 +3,7 @@
 #include "debug.h"
 #include "frames.h"
 #include "input.h"
+#include "anim.h"
 
 #define SPRITE_W 64
 #define SPRITE_H 64
@@ -10,16 +11,13 @@
 #define FRAME_SIZE (SPRITE_SIZE*4)
 #define MAX_GFX_FRAMES 64
 
-// Number of fractional bits for scale in AnimFighter
-#define SCALE_BITS 10
-
 // Misc flags for AnimFighter
 #define FLAGS_IS_RIGHT (1<<0)
 
 typedef struct {
-	// Position of the fighter (fixed point .8).
+	// Screen position of the fighter (fixed point .8).
 	// This is the point where the fighter's pivot will be placed.
-	int x,y;
+	u32 x,y;
 
 	// Scale factor (fixed point, with SCALE_BITS fractional bits)
 	int scale;
@@ -55,7 +53,7 @@ typedef struct {
 	u16 pal[256];
 } AnimFighter;
 
-AnimFighter afight[2];
+AnimFighter gFighters[2];
 
 static void animLoad(int fidx, const AnimDesc *desc) {
 	const int MAX_ANIMS = 16;
@@ -67,7 +65,7 @@ static void animLoad(int fidx, const AnimDesc *desc) {
 	} loadedAnims[MAX_ANIMS];
 	memset(loadedAnims, 0, sizeof(loadedAnims));
 
-	AnimFighter *f = &afight[fidx];
+	AnimFighter *f = &gFighters[fidx];
 	f->desc = desc;
 	for (int i=0;i<ANIM_DESC_MAX_FRAMES;i++) {
 		const AnimFrame *cur = &desc->frames[i];
@@ -127,7 +125,7 @@ void animInit(void) {
 	oamDisable(&oamMain);
 
 	for (int fx=0;fx<2;fx++) {
-		AnimFighter *f = &afight[fx];
+		AnimFighter *f = &gFighters[fx];
 		for (int i=0;i<4;i++) {
 			u16 *ptr = oamAllocateGfx(&oamMain, SpriteSize_64x64, SpriteColorFormat_16Color);
 			f->vramptr[i] = ptr;
@@ -157,22 +155,19 @@ void animInit(void) {
 		debugf("error cannot load rasky-pal\n");
 		return;
 	}
-	fread(afight[0].pal, 1, 256*2, f);
+	fread(gFighters[0].pal, 1, 256*2, f);
 	fclose(f);
 
-	dmaCopyHalfWords(0, afight[0].pal, SPRITE_PALETTE, 256*2);
+	dmaCopyHalfWords(0, gFighters[0].pal, SPRITE_PALETTE, 256*2);
 
-	afight[0].x = 80<<8;
-	afight[0].y = 150<<8;
-	afight[0].scale = 0.5 * (1<<SCALE_BITS);
-
-	afight[1].x = 150<<8;
-	afight[1].y = 150<<8;
-	afight[1].scale = 0.5 * (1<<SCALE_BITS);
+	// Sane defaults for scaling (position can be 0,0, it doesn't matter,
+	// but scale=0 means nothing is displayed by default).
+	gFighters[0].scale = 1 * (1<<SCALE_BITS);
+	gFighters[1].scale = 1 * (1<<SCALE_BITS);
 }
 
 static void animUpdateOam(int fx) {
-	AnimFighter *f = &afight[fx];
+	AnimFighter *f = &gFighters[fx];
 	const AnimDesc *fdesc = f->desc;
 
 	// Compute coordinates so that the scale factor is computed using the pivot as
@@ -204,7 +199,7 @@ static void animUpdateOam(int fx) {
 #define INPUT_DIR_MASK (KEY_UP|KEY_DOWN|KEY_LEFT|KEY_RIGHT)
 
 static void animProcessInput(int fx, u32 input) {
-	AnimFighter *f = &afight[fx];
+	AnimFighter *f = &gFighters[fx];
 	const AnimDesc *fdesc = f->desc;
 	u16 fflags = fdesc->frames[f->curframe].flags;
 
@@ -235,41 +230,28 @@ static void animProcessInput(int fx, u32 input) {
 		}
 		break;
 	}
-
-	// DEBUG
-	if (input & KEY_L) {
-		f->scale += 2;
-	} else if (input & KEY_R) {
-		f->scale -= 2;
-	}
 }
 
 
-void animUpdate(u32 input) {
+void animUpdateStatus(u32 input) {
 	// Update left<->right flags
-	if (afight[0].x < afight[1].x) {
-		afight[0].flags &= ~FLAGS_IS_RIGHT;
-		afight[1].flags |= FLAGS_IS_RIGHT;
+	if (gFighters[0].x < gFighters[1].x) {
+		gFighters[0].flags &= ~FLAGS_IS_RIGHT;
+		gFighters[1].flags |= FLAGS_IS_RIGHT;
 	} else {
-		afight[0].flags |= FLAGS_IS_RIGHT;
-		afight[1].flags &= ~FLAGS_IS_RIGHT;
+		gFighters[0].flags |= FLAGS_IS_RIGHT;
+		gFighters[1].flags &= ~FLAGS_IS_RIGHT;
 	}
 
 	// Fighter #0 is our own character; process the input
 	animProcessInput(0, input);
+}
 
+void animRedraw() {
 	for (int fx=0;fx<2;fx++) {
-		AnimFighter *f = &afight[fx];
+		AnimFighter *f = &gFighters[fx];
 		const AnimDesc *fdesc = f->desc;
 		const AnimFrame *curframe = &fdesc->frames[f->curframe];
-
-		// Update the position coordinates of the fighter.
-		if (!(f->flags & FLAGS_IS_RIGHT)) {
-			f->x += (int)curframe->movex * 32;
-		} else {
-			f->x -= (int)curframe->movex * 32;
-		}
-		f->y += (int)curframe->movey * 32;
 
 		// See if it's time to display next frame.
 		if (f->cftime > 0) {
@@ -293,7 +275,7 @@ void animVblank(void) {
 	oamUpdate(&oamMain);
 
 	for (int fx=0;fx<2;fx++) {
-		AnimFighter *f = &afight[fx];
+		AnimFighter *f = &gFighters[fx];
 		int gfxidx = f->gfxindex[f->curframe];
 		u8 *gfx = &f->gfx[gfxidx * FRAME_SIZE];
 
@@ -304,4 +286,24 @@ void animVblank(void) {
 				SPRITE_SIZE);
 		}
 	}
+}
+
+
+void animFighterSetPosition(int fx, u32 x, u32 y) {
+	gFighters[fx].x = x;
+	gFighters[fx].y = y;
+}
+
+void animFighterSetScale(int fx, u32 scale) {
+	gFighters[fx].scale = scale;
+}
+
+void animFighterGetState(int fx, int *status, int *movex, int *movey) {
+	AnimFighter *f = &gFighters[fx];
+	const AnimDesc *fdesc = f->desc;
+	const AnimFrame *fframe = &fdesc->frames[f->curframe];
+
+	if (status) *status = FSTATUS(fframe->flags);
+	if (movex)  *movex = fframe->movex;
+	if (movey)  *movey = fframe->movey;
 }

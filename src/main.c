@@ -13,6 +13,8 @@
 #include "anim.h"
 #include "debug.h"
 #include "input.h"
+#include "levels.h"
+#include "fight.h"
 
 volatile int frame = 0;
 
@@ -118,7 +120,7 @@ bool mustDumpStats()
 
 void Vblank()
 {
-    animVblank();
+    fightVblank();
     frame++;
     if (mustDumpStats()) {
         u16 y = REG_VCOUNT;
@@ -180,7 +182,7 @@ int main(void)
 
     // ----- END LUA
 
-    animInit();
+    fightInit(&LoungeRoom);
 
     uint32 lastKeys = 0;
 
@@ -203,7 +205,7 @@ int main(void)
             debugKeys(keys);
         }
 
-        animUpdate(keys);
+        fightUpdate(keys);
 
         lastKeys = keys;
 

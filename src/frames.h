@@ -34,4 +34,10 @@ typedef struct {
 #define FCBWD  (1<<2)   // Can begin walking backward (if input says so)
 #define FCWALK (FCFWD|FCBWD)   // Can begin walking (if input says so)
 
+#define FSTATUS(f) ((f)&(3<<8))  // Extract status
+#define FST_IDL  (0<<8)  // Status: idle
+#define FST_FWD  (1<<8)  // Status: moving forward
+#define FST_BWD  (2<<8)  // Status: moving backward
+#define FST_JMP  (3<<8)  // Status: jumping
+
 extern const AnimDesc Rasky;
