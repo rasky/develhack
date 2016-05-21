@@ -49,16 +49,16 @@ def configure(conf):
     conf.env.LINK_CC = 'arm-none-eabi-gcc'
 
     # Common
-    conf.env.CFLAGS = ['-Os', '-Wall', '-march=armv5te', '-mthumb', '-mthumb-interwork']
+    conf.env.CFLAGS = ['-Os', '-Wall', '-mthumb', '-mthumb-interwork']
     conf.env.DEVKITPRO = os.getenv('DEVKITPRO', '/usr/local/devkitPRO')
 
     # ARM9
-    conf.env.CFLAGS_ARM9 = conf.env.CFLAGS + ['-specs=ds_arm9.specs']
+    conf.env.CFLAGS_ARM9 = conf.env.CFLAGS + ['-specs=ds_arm9.specs', '-march=armv5te',]
     conf.env.DEFINES_ARM9 = ['ARM9']
     conf.env.LINKFLAGS_ARM9 = conf.env.CFLAGS_ARM9 + ['-Wl,-Map,game.arm9.map']
 
     # ARM7
-    conf.env.CFLAGS_ARM7 = conf.env.CFLAGS + ['-specs=ds_arm7.specs']
+    conf.env.CFLAGS_ARM7 = conf.env.CFLAGS + ['-specs=ds_arm7.specs', '-march=arm7tdmi',]
     conf.env.DEFINES_ARM7 = ['ARM7']
     conf.env.LINKFLAGS_ARM7 = conf.env.CFLAGS_ARM7 + ['-Wl,-Map,game.arm7.map']
 
