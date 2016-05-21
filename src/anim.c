@@ -136,7 +136,7 @@ void animInit(void) {
 				/*pri*/ 3,
 				/*pal*/ 0,
 				SpriteSize_64x64, SpriteColorFormat_16Color, ptr,
-				/*affine*/ fx, 1,
+				/*affine*/ fx, 0,
 				/*hide*/ 0,
 				/*flip*/ 0, 0,
 				/*mosaic*/ 0);
