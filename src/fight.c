@@ -8,13 +8,17 @@
 #define SCREEN_WIDTH 256
 #define SCREEN_HEIGHT 192
 
-#define FLOAT_TO_FIXED8(x) ((x) * (1<<8))
-#define MARGIN_LEFT_MIN  FLOAT_TO_FIXED8(0.1)
-#define MARGIN_LEFT_MAX  FLOAT_TO_FIXED8(0.3)
-#define MARGIN_RIGHT_MIN FLOAT_TO_FIXED8((1-0.1))
-#define MARGIN_RIGHT_MAX FLOAT_TO_FIXED8((1-0.3))
+// Margin is the minimum distance that we allow a fighter to stay from the border
+// When a fighter is closer than this to the border, we scroll the screen and/or
+// zoom out.
+#define MARGIN_MIN (50 << 8)
 
-#define MAX_DIST  FLOAT_TO_FIXED8(0.5)
+// This is the maximum distance that we allow a character to stay from the border
+// before we begin zooming in.
+#define MARGIN_MAX (90 << 8)
+
+// This is the maximum zoom level. After reaching this level, we don't zoom anymore
+#define ZOOM_MAX   (1<<SCALE_BITS)
 
 /*
  * World coordinates:
@@ -97,42 +101,56 @@ static void updateCamera() {
 	u32 cameraw = gFight.camera.x1 - gFight.camera.x0;
 	int leftfx = 0;
 
-	// Compute current relative position on screen ([0,1] range)
-	s32 xf0 = div32((gFight.fighters[0].wx - gFight.camera.x0)<<8, cameraw);
-	s32 xf1 = div32((gFight.fighters[1].wx - gFight.camera.x0)<<8, cameraw);
-	debugf("init: f0.wx=%d, f0.wy=%d, cx0=%d, cx1=%d, camera.w=%d\n",
-		gFight.fighters[0].wx>>8, gFight.fighters[1].wx>>8,
-		gFight.camera.x0>>8, gFight.camera.x1>>8, cameraw>>8);
+	s32 xl = gFight.fighters[0].wx;
+	s32 xr = gFight.fighters[1].wx;
 
-	if (xf0 > xf1) {
-		u32 app = xf0; xf0 = xf1; xf1 = app;
+	if (xl > xr) {
+		s32 app = xl; xl = xr; xr = app;
 		leftfx = 1;
 	}
 
-	s32 dist = xf1-xf0;
-	debugf("dist: %ld (MAX=%d, xf0=%d, xf1=%d)\n", dist,(u32)MAX_DIST,xf0,xf1);
-	if (dist >= MAX_DIST) {
-		u32 newcamw = div32(xf1*cameraw - xf0*cameraw, MAX_DIST);
-		u32 delta = (newcamw-cameraw)/2;
-		gFight.camera.x0 -= delta/2;
-		// gFight.camera.x1 += delta/2;
-		gFight.camera.zoom = div32(SCREEN_WIDTH<<(8+SCALE_BITS), newcamw);
-		debugf("new camera: w=%d, (%d,%d), zoom: %d\n",
-			newcamw, gFight.camera.x0>>8, gFight.camera.x1>>8, gFight.camera.zoom);
+	s32 lmargin = xl - gFight.camera.x0;
+	s32 rmargin = gFight.camera.x1 - xr;
 
-		cameraw = gFight.camera.x1 - gFight.camera.x0;
+	bool changed = false;
+
+	if (lmargin < MARGIN_MIN) {
+		if (rmargin < MARGIN_MAX) {
+			// zoom out
+			gFight.camera.x0 = xl - MARGIN_MIN;
+		} else {
+			// scroll left
+			gFight.camera.x0 = xl - MARGIN_MIN;
+			gFight.camera.x1 = gFight.camera.x0 + cameraw;
+		}
+		changed = true;
+	}
+	if (lmargin > MARGIN_MAX && gFight.camera.zoom < ZOOM_MAX) {
+		// zoom in
+		gFight.camera.x0 = xl - MARGIN_MAX;
+		changed = true;
+	}
+	if (rmargin < MARGIN_MIN) {
+		if (lmargin < MARGIN_MAX) {
+			// zoom out
+			gFight.camera.x1 = xr + MARGIN_MIN;
+		} else {
+			// scroll right
+			gFight.camera.x1 = xr + MARGIN_MIN;
+			gFight.camera.x0 = gFight.camera.x1 - cameraw;
+		}
+		changed = true;
+	}
+	if (rmargin > MARGIN_MAX && gFight.camera.zoom < ZOOM_MAX) {
+		// zoom in
+		gFight.camera.x1 = xr + MARGIN_MAX;
+		changed = true;
 	}
 
-
-	xf0 = div32((gFight.fighters[0].wx - gFight.camera.x0)<<8, cameraw);
-	xf1 = div32((gFight.fighters[1].wx - gFight.camera.x0)<<8, cameraw);
-	animFighterSetPosition(leftfx, (SCREEN_WIDTH*xf0), 130<<8);
-	animFighterSetPosition(1-leftfx, (SCREEN_WIDTH*xf1), 130<<8);
-
-	debugf("new fpos: %d %d\n", (SCREEN_WIDTH*xf0)>>8, (SCREEN_WIDTH*xf1)>>8);
-
-	animFighterSetScale(0, gFight.camera.zoom);
-	animFighterSetScale(1, gFight.camera.zoom);
+	if (changed) {
+		cameraw = gFight.camera.x1 - gFight.camera.x0;
+		gFight.camera.zoom = div32(SCREEN_WIDTH<<(8+SCALE_BITS), cameraw);
+	}
 }
 
 static void updateFighters() {
