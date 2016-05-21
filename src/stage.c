@@ -43,6 +43,17 @@ Layer LAYERS[] = {
     {NULL, NULL}
 };
 
+int num_chunks(int size, int chunk_size)
+{
+    int chunks = 0;
+    while (size > 0)
+    {
+        size -= chunk_size;
+        ++chunks;
+    }
+    return chunks;
+}
+
 void loadStage(const char *id)
 {
     for (Stage *stage = STAGES; stage->id != NULL; ++stage)
@@ -59,8 +70,12 @@ void loadStage(const char *id)
         }
     }
 
+    // an offset into VRAM in 2K chunks
     int tile_map_offset = 0;
+
+    // an offset into VRAM in 16K chunks
     int graphics_data_offset = 2;
+
     int background = 0;
     for (Layer *layer = LAYERS; layer->id != NULL; ++layer)
     {
@@ -80,9 +95,15 @@ void loadStage(const char *id)
         snprintf(filename, 63, "%s.map.bin", layer->file);
         Bytes map = slurp(filename);
 
+        int old_tile_offset = tile_map_offset;
+        int old_graphics_offset = graphics_data_offset;
+
         int bg = bgInit(background, layer->bg_type, layer->bg_size, tile_map_offset, graphics_data_offset);
-        tile_map_offset += 4;
-        graphics_data_offset += 2;
+        tile_map_offset += num_chunks(map.size, 2048);
+        graphics_data_offset += num_chunks(image.size, 16384);
+        debugf("Offsets: Tile: %x..%x / Graphics: %x..%x\n",
+            old_tile_offset * 2048, (tile_map_offset) * 2048,
+            old_graphics_offset * 16384, (graphics_data_offset) * 16384);
         bgSetPriority(bg, layer->priority);
 
         dmaCopy(image.data, bgGetGfxPtr(bg), image.size);
@@ -94,5 +115,9 @@ void loadStage(const char *id)
             debugf("Ran out of backgrounds\n");
             break;
         }
+
+        free(map.data);
+        free(palette.data);
+        free(image.data);
     }
 }

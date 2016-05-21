@@ -146,10 +146,10 @@ def build(bld):
         'forest-02',
     ]
 
-    bld(options=('-ftb', '-fh!', '-m', '-gB8'),
+    bld(options=('-ftb', '-gt', '-fh!', '-m', '-mRtpf', '-gB4'),
         source=['gfx/levels/{0}.png'.format(f) for f in text_levels])
 
-    bld(options=('-ftb', '-fh!', '-m', '-mLa', '-gB8'),
+    bld(options=('-ftb', '-gt', '-fh!', '-m', '-mLa', '-gB8'),
         source=['gfx/levels/{0}.png'.format(f) for f in affine_levels])
 
     # Build FAT data image
