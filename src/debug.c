@@ -110,6 +110,7 @@ int enable_debug_output(int enable)
     return old;
 }
 
+#ifdef ARM9
 void debugBreakpoint()
 {
 #ifdef __thumb__
@@ -118,3 +119,4 @@ void debugBreakpoint()
     asm volatile("bkpt 0");
 #endif
 }
+#endif
