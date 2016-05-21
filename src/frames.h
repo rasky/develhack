@@ -22,6 +22,7 @@ typedef struct {
 		u8 idle;
 		u8 forward;
 		u8 backward;
+		u8 jump;
 	} keyframes;
 	u8 pivotx, pivoty;
 
@@ -33,6 +34,7 @@ typedef struct {
 #define FCFWD  (1<<1)   // Can begin walking forward (if input says so)
 #define FCBWD  (1<<2)   // Can begin walking backward (if input says so)
 #define FCWALK (FCFWD|FCBWD)   // Can begin walking (if input says so)
+#define FCJMP  (1<<3)   // Can begin jumping (if input says so)
 
 #define FSTATUS(f) ((f)&(3<<8))  // Extract status
 #define FST_IDL  (0<<8)  // Status: idle

@@ -40,9 +40,10 @@ struct {
 
 	struct {
 		// World coordinates of the rectangle that is shown on screen.
-		// (fixed .8)
-		s32 x0, y0;
-		s32 x1, y1;
+		// (fixed .8). y1 is not calculated, as it is implicit given the
+		// scale factor defined by the x0-x1 range.
+		s32 x0, x1;
+		s32 y0;
 		u32 zoom;
 	} camera;
 } gFight;
@@ -56,10 +57,11 @@ void fightInit(const LevelDesc *desc) {
 	gFight.level.desc = desc;
 	gFight.fighters[0].wx = (u32)desc->fighterStartX[0] << 8;
 	gFight.fighters[1].wx = (u32)desc->fighterStartX[1] << 8;
+	gFight.fighters[0].wy = desc->floory << 8;
+	gFight.fighters[1].wy = desc->floory << 8;
 	gFight.camera.x0 = 0<<8;
 	gFight.camera.x1 = SCREEN_WIDTH<<8;
 	gFight.camera.y0 = 0<<8;
-	gFight.camera.y1 = SCREEN_HEIGHT<<8;
 	gFight.camera.zoom = 1<<SCALE_BITS;
 }
 
@@ -88,6 +90,15 @@ static void fightUpdateStatus(int fx, u32 keys) {
 		// 	f->wx = gFight.level.desc->h<<8;
 		// if (f->wx < 0)
 		// 	f->wx = 0;
+		break;
+
+	case FST_JMP:
+		f->wy += (s32)movey * 64;
+		if (keys & KEY_LEFT) {
+			f->wx -= (s32)movex * 64;
+		} else if (keys & KEY_RIGHT) {
+			f->wx += (s32)movex * 64;
+		}
 		break;
 	}
 }
@@ -156,8 +167,11 @@ static void updateFighters() {
 
 	s32 xf0 = div32((gFight.fighters[0].wx - gFight.camera.x0)<<8, cameraw);
 	s32 xf1 = div32((gFight.fighters[1].wx - gFight.camera.x0)<<8, cameraw);
-	animFighterSetPosition(0, (SCREEN_WIDTH*xf0), 130<<8);
-	animFighterSetPosition(1, (SCREEN_WIDTH*xf1), 130<<8);
+	s32 yf0 = div32((gFight.fighters[0].wy - gFight.camera.y0)<<8, cameraw);
+	s32 yf1 = div32((gFight.fighters[1].wy - gFight.camera.y0)<<8, cameraw);
+
+	animFighterSetPosition(0, (SCREEN_WIDTH*xf0), (SCREEN_WIDTH*yf0));
+	animFighterSetPosition(1, (SCREEN_WIDTH*xf1), (SCREEN_WIDTH*yf1));
 
 	// debugf("new fpos: %d %d\n", (SCREEN_WIDTH*xf0)>>8, (SCREEN_WIDTH*xf1)>>8);
 

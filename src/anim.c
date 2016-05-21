@@ -204,29 +204,48 @@ static void animProcessInput(int fx, u32 input) {
 	u16 fflags = fdesc->frames[f->curframe].flags;
 
 	u32 dirinput = input & INPUT_DIR_MASK;
+
+	if (dirinput & KEY_UP) {
+		if (fflags & FCJMP) {
+			f->curframe = fdesc->keyframes.jump;
+			f->cftime = fdesc->frames[f->curframe].speed;
+			return;
+		}
+	}
+
 	switch (dirinput) {
 	case 0:
-		if (fflags & FCIDLE)
+		if (fflags & FCIDLE) {
 			f->curframe = fdesc->keyframes.idle;
+			f->cftime = fdesc->frames[f->curframe].speed;
+		}
 		break;
 
 	case KEY_RIGHT:
 		if (!(f->flags & FLAGS_IS_RIGHT)) {
-			if (fflags & FCFWD)
+			if (fflags & FCFWD) {
 				f->curframe = fdesc->keyframes.forward;
+				f->cftime = fdesc->frames[f->curframe].speed;
+			}
 		} else {
-			if (fflags & FCBWD)
+			if (fflags & FCBWD) {
 				f->curframe = fdesc->keyframes.backward;
+				f->cftime = fdesc->frames[f->curframe].speed;
+			}
 		}
 		break;
 
 	case KEY_LEFT:
 		if (!(f->flags & FLAGS_IS_RIGHT)) {
-			if (fflags & FCBWD)
+			if (fflags & FCBWD) {
 				f->curframe = fdesc->keyframes.backward;
+				f->cftime = fdesc->frames[f->curframe].speed;
+			}
 		} else {
-			if (fflags & FCFWD)
+			if (fflags & FCFWD) {
 				f->curframe = fdesc->keyframes.forward;
+				f->cftime = fdesc->frames[f->curframe].speed;
+			}
 		}
 		break;
 	}
