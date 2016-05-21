@@ -162,7 +162,7 @@ int main(void)
 
     int rc = luaL_dofile(lstate, "hello.luac");
     if (rc != LUA_OK) {
-        debugf(lua_tostring(lstate, -1));
+        debugf("%s\n", lua_tostring(lstate, -1));
         goto error;
     }
 
@@ -225,6 +225,7 @@ int main(void)
     }
 
 error:
+    debugf("CRASHED\n");
     while (1) {
         swiWaitForVBlank();
     }
