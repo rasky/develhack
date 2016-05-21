@@ -49,7 +49,7 @@ def configure(conf):
     conf.env.LINK_CC = 'arm-none-eabi-gcc'
 
     # Common
-    conf.env.CFLAGS = ['-Os', '-Wall', '-march=armv5te', '-mthumb', '-mthumb-interwork']
+    conf.env.CFLAGS = ['-Os', '-Wall', "-Werror", '-march=armv5te', '-mthumb', '-mthumb-interwork']
     conf.env.DEVKITPRO = os.getenv('DEVKITPRO', '/usr/local/devkitPRO')
 
     # ARM9

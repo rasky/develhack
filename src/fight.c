@@ -99,14 +99,12 @@ static void fightUpdateStatus(int fx, u32 keys) {
 static void updateCamera() {
 
 	u32 cameraw = gFight.camera.x1 - gFight.camera.x0;
-	int leftfx = 0;
 
 	s32 xl = gFight.fighters[0].wx;
 	s32 xr = gFight.fighters[1].wx;
 
 	if (xl > xr) {
 		s32 app = xl; xl = xr; xr = app;
-		leftfx = 1;
 	}
 
 	s32 lmargin = xl - gFight.camera.x0;

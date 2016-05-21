@@ -15,6 +15,7 @@ static u8 current = 0;
 static const u8 HADUKEN[] = { KEY_DOWN, KEY_DOWN | KEY_RIGHT, KEY_RIGHT, KEY_A };
 static const u8 SHORYUKEN[] = { KEY_RIGHT, KEY_DOWN, KEY_DOWN | KEY_RIGHT, KEY_A };
 
+#if 0
 static void debugKeyBuffer()
 {
     for (u8 i = 0; i < BUFFER_SIZE; i++) {
@@ -22,6 +23,7 @@ static void debugKeyBuffer()
         debugKeys(keyBuffer[i]);
     }
 }
+#endif
 
 static bool detectSpecialMove(const u8* pattern)
 {
@@ -56,6 +58,7 @@ static bool detectSpecialMove(const u8* pattern)
 
         scanned++;
     }
+    return false;
 }
 
 u32 currentKeyEvent()
