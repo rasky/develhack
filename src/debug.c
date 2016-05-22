@@ -22,15 +22,16 @@ __attribute__((noinline)) int is_emulator()
     int mov_r0_0 = 0x2000; // mov r0, #0
 
     asm volatile(
-        "mov  r0, %1     \n\t" // r0 = mov_r0_r0
-        "mov  r2, %2     \n\t" // r2 = mov_r0_0
+        "mov  r0, %[old]     \n\t" // r0 = mov_r0_r0
+        "mov  r2, %[new]     \n\t" // r2 = mov_r0_0
         "mov  r1, pc     \n\t" // r1 = program counter
         "strh r0, [r1]   \n\t" // Overwrites following instruction with mov_r0_r0
         "mov  r0, #0     \n\t" // r0 = 0
         "strh r2, [r1]   \n\t" // Restore previous instruction
-        : "=r"(mov_r0_r0) // output registers
-        : "r"(mov_r0_r0), "r"(mov_r0_0) // input registers
-        : "%r1", "%r2" // clobbered registers
+        "mov  %[result], r0 \n\t"
+        : [result]"=l"(mov_r0_r0) // output registers
+        : [old]"l"(mov_r0_r0), [new]"l"(mov_r0_0) // input registers
+        : "r0", "r1", "r2" // clobbered registers
         );
 
 #else
@@ -38,15 +39,16 @@ __attribute__((noinline)) int is_emulator()
     int mov_r0_0 = 0xe3a00000; // mov r0, #0
 
     asm volatile(
-        "mov  r0, %1     \n\t" // r0 = mov_r0_r0
-        "mov  r2, %2     \n\t" // r2 = mov_r0_0
+        "mov  r0, %[old]     \n\t" // r0 = mov_r0_r0
+        "mov  r2, %[new]     \n\t" // r2 = mov_r0_0
         "mov  r1, pc     \n\t" // r1 = program counter
         "str  r0, [r1]   \n\t" // Overwrites following instruction with mov_r0_r0
         "mov  r0, #0     \n\t" // r0 = 0
         "str  r2, [r1]   \n\t" // Restore previous instruction
-        : "=r"(mov_r0_r0) // output registers
-        : "r"(mov_r0_r0), "r"(mov_r0_0) // input registers
-        : "%r1", "%r2" // clobbered registers
+        "mov  %[result],r0 \n\t"
+        : [result]"=r"(mov_r0_r0) // output registers
+        : [old]"r"(mov_r0_r0), "r"(mov_r0_0) // input registers
+        : "r0", "r1", "r2" // clobbered registers
         );
 #endif
 
