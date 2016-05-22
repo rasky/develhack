@@ -176,6 +176,8 @@ def build(bld):
         bld.path.ant_glob("build/lua/**") + \
         bld.path.ant_glob("sfx/**")
 
+    data_files += ['snd/hyo-fate.xm', 'snd/punch.wav']
+
     bld(rule=copy_fat_file, source=data_files, target='game.dat')
 
     # Collect resources in a single folder
