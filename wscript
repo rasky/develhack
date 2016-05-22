@@ -134,10 +134,14 @@ def build(bld):
         tgt = task.outputs[0].abspath()
 
         if not os.path.exists(tgt):
-            task.exec_command('mformat -C -t 1 -h 1 -s 1024 -i %s' % (tgt))
+            ret = task.exec_command('mformat -C -t 1 -h 1 -s 1024 -i %s' % (tgt))
+            if ret != 0:
+                return ret
 
         for src in task.inputs:
-            task.exec_command('mcopy -o -i %s %s ::' % (tgt, src.abspath()))
+            ret = task.exec_command('mcopy -o -i %s %s ::' % (tgt, src.abspath()))
+            if ret != 0:
+                return ret
 
         return task.exec_command('mdir -i %s' % (tgt,))
 
