@@ -2,8 +2,17 @@
 
 #include <stdarg.h>
 #include <stdio.h>
+#include <string.h>
 
 #include <nds.h>
+
+#ifdef ARM9
+static const char* DEBUG_TAG = "ARM9: ";
+#elif ARM7
+static const char* DEBUG_TAG = "ARM7: ";
+#else
+#error "Target must be either ARM7 or ARM9"
+#endif
 
 static int DEBUG_OUTPUT_ENABLED = 1;
 
@@ -73,14 +82,20 @@ static __attribute__((noinline)) void output_debug_string_internal(const char* t
 
 int debugf(const char* format, ...)
 {
-    va_list args;
-    char buffer[128]; // increase to support more characters
-
-    if (!DEBUG_OUTPUT_ENABLED || !is_emulator())
+    if (!DEBUG_OUTPUT_ENABLED || !is_emulator()) {
         return 0;
+    }
+
+    va_list args;
+
+    char buffer[128]; // increase to support more characters
+    memset(buffer, 0, 128);
+
+    size_t offset = strlen(DEBUG_TAG);
+    memcpy(buffer, DEBUG_TAG, offset);
 
     va_start(args, 0);
-    vsnprintf(buffer, sizeof(buffer), format, args);
+    vsnprintf(buffer + offset, sizeof(buffer) - offset, format, args);
     va_end(args);
 
 #ifdef DEBUG_ON_SECONDARY_SCREEN
