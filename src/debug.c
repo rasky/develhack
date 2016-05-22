@@ -54,6 +54,7 @@ __attribute__((noinline)) int is_emulator()
     return mov_r0_r0 != 0;
 }
 
+#ifndef DEBUG_ON_SECONDARY_SCREEN
 // This function must be noinline, because
 // iDeaS expects the text to output in register r0.
 // If this code is inlined somewhere, it's not guaranteed
@@ -66,6 +67,7 @@ static __attribute__((noinline)) void output_debug_string_internal(const char* t
     asm volatile("swi #0xfc000" ::"r"(text));
 #endif
 }
+#endif
 
 int debugf(const char* format, ...)
 {
