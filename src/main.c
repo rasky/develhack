@@ -12,9 +12,9 @@
 
 #include "anim.h"
 #include "debug.h"
+#include "fight.h"
 #include "input.h"
 #include "levels.h"
-#include "fight.h"
 #include "sound.h"
 
 volatile int frame = 0;
@@ -133,7 +133,7 @@ void Vblank()
 
 int main(void)
 {
-    debugf("ARM9: Powering on\n");
+    debugf("powering on\n");
     touchPosition touchXY;
 
     powerOn(POWER_ALL_2D);

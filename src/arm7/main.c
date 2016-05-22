@@ -30,7 +30,7 @@ void XM7_Value32Handler(u32 command, void* userdata)
 
 int main()
 {
-    debugf("ARM7: Powering on\n");
+    debugf("powering on\n");
 
     irqInit();
     fifoInit();
@@ -45,7 +45,7 @@ int main()
 
     XM7_Initialize();
     fifoSetValue32Handler(FIFO_XM7, XM7_Value32Handler, 0);
-    debugf("ARM7: XM7 initialized\n");
+    debugf("XM7 initialized\n");
 
     installSystemFIFO();
 
