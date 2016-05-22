@@ -153,8 +153,8 @@ def build(bld):
         'gfx/fighters/rasky-walk.img.bin',
         'gfx/fighters/rasky-walk.pal.bin',
         'lua/hello.luac',
+        'snd/hyo-fate.xm',
         'snd/punch.wav',
-        'snd/street_fighter.xm',
     ]
 
     bld(rule=copy_fat_file, source=data_files, target='game.dat')

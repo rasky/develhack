@@ -189,7 +189,7 @@ int main(void)
 
     // ----- BEGIN SOUND
     initSound();
-    playBackgroundMusic("street_fighter.xm");
+    playBackgroundMusic("hyo-fate.xm");
     // ----- END SOUND
 
     animInit();
