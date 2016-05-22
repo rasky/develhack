@@ -37,3 +37,11 @@ Bytes slurp(const char* path)
 
     return blob;
 }
+
+void freeBytes(Bytes* bytes)
+{
+    free(bytes->data);
+
+    bytes->data = NULL;
+    bytes->size = 0;
+}

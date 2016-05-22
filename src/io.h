@@ -11,3 +11,5 @@ typedef struct
 // Find out a file's size, allocate memory and read the whole thing in
 // The caller is responsible for freeing Bytes.data.
 Bytes slurp(const char *path);
+
+void freeBytes(Bytes* bytes);
