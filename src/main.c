@@ -153,6 +153,7 @@ int main(void)
         goto error;
     }
 
+#if 0
     // ---- BEGIN LUA
 
     lua_State* lstate = luaL_newstate();
@@ -182,6 +183,7 @@ int main(void)
     debugf("Lua: %d\n", z);
 
     // ----- END LUA
+#endif
 
     fightInit(&LoungeRoom);
 
