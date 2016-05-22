@@ -53,12 +53,12 @@ def configure(conf):
     conf.env.DEVKITPRO = os.getenv('DEVKITPRO', '/usr/local/devkitPRO')
 
     # ARM9
-    conf.env.CFLAGS_ARM9 = conf.env.CFLAGS + ['-specs=ds_arm9.specs', '-march=armv5te',]
+    conf.env.CFLAGS_ARM9 = conf.env.CFLAGS + ['-specs=ds_arm9.specs', '-march=armv5te']
     conf.env.DEFINES_ARM9 = ['ARM9']
     conf.env.LINKFLAGS_ARM9 = conf.env.CFLAGS_ARM9 + ['-Wl,-Map,game.arm9.map']
 
     # ARM7
-    conf.env.CFLAGS_ARM7 = conf.env.CFLAGS + ['-specs=ds_arm7.specs', '-mcpu=arm7tdmi',]
+    conf.env.CFLAGS_ARM7 = conf.env.CFLAGS + ['-specs=ds_arm7.specs', '-mcpu=arm7tdmi']
     conf.env.DEFINES_ARM7 = ['ARM7']
     conf.env.LINKFLAGS_ARM7 = conf.env.CFLAGS_ARM7 + ['-Wl,-Map,game.arm7.map']
 
