@@ -19,7 +19,7 @@ Exporting the environment variable `PREFER_NDSEMU=1` will run the game with
 
 ## Downloads
 
-__NOTE:__ These come from the latest successful build.
+__NOTE:__ These come from the latest successful build. (You must login in https://circleci.com first).
 
 * &#x1f3ae; [Game Binary](https://circleci.com/api/v1/project/rasky/develhack/latest/artifacts/0/$CIRCLE_ARTIFACTS/game.nds?branch=master&filter=successful)
 * &#x1f4be; [FAT Image](https://circleci.com/api/v1/project/rasky/develhack/latest/artifacts/0/$CIRCLE_ARTIFACTS/game.dat?branch=master&filter=successful)
