@@ -134,7 +134,7 @@ def build(bld):
         tgt = task.outputs[0].abspath()
 
         if not os.path.exists(tgt):
-            ret = task.exec_command('mformat -C -t 1 -h 1 -s 1024 -i %s' % (tgt))
+            ret = task.exec_command('mformat -C -t 1 -h 1 -s 2048 -i %s' % (tgt))
             if ret != 0:
                 return ret
 
