@@ -14,13 +14,13 @@ static XM7_ModuleManager_Type* backgroundMod = NULL;
 void initSound()
 {
     debugf("sound: enabling\n");
-    fifoSendValue32(FIFO_SOUND, SOUND_MASTER_ENABLE);
+    soundEnable();
 }
 
 void unloadSound()
 {
     debugf("sound: disabling and freeing resources\n");
-    fifoSendValue32(FIFO_SOUND, SOUND_MASTER_DISABLE);
+    soundDisable();
     stopBackgroundMusic();
 }
 
