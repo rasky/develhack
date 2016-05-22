@@ -13,8 +13,7 @@ MOUNT_POINT="/Volumes/3DS"
 
 cp build/game.dat "${MOUNT_POINT}/game.dat"
 cp build/game.nds "${MOUNT_POINT}/game.nds"
-
-rsync -av build/resources/ "${MOUNT_POINT}/"
+cp -rv build/resources/* "${MOUNT_POINT}/"
 
 sync
 
