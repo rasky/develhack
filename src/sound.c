@@ -12,6 +12,8 @@
 static Bytes backgroundSnd;
 static XM7_ModuleManager_Type backgroundMod;
 
+static Bytes soundEffect;
+
 void initSound()
 {
     debugf("sound: enabling\n");
@@ -23,6 +25,14 @@ void unloadSound()
     debugf("sound: disabling and freeing resources\n");
     soundDisable();
     stopBackgroundMusic();
+}
+
+void playSoundEffect(const char* filename)
+{
+    debugf("sound: playing effect %s\n", filename);
+    soundEffect = slurp(filename);
+    soundPlaySample(soundEffect.data, SoundFormat_16Bit, soundEffect.size, 48000, 127, 64, 0, 0);
+    freeBytes(&soundEffect); // FIXME: I don't know why this free() doesn't break anything...
 }
 
 void playBackgroundMusic(const char* filename)

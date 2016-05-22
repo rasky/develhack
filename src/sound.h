@@ -23,3 +23,8 @@ void playBackgroundMusic(const char* filename);
  * Stops playing background music (if any) and frees resources.
  */
 void stopBackgroundMusic();
+
+/*
+ * Plays a sound effect.
+ */
+void playSoundEffect(const char* filename);

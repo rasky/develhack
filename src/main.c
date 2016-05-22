@@ -213,6 +213,10 @@ int main(void)
 
         if (changed) {
             debugKeys(keys);
+
+            if ((keys & KEY_A) == KEY_A) {
+                playSoundEffect("punch.wav");
+            }
         }
 
         fightUpdate(keys);

@@ -148,12 +148,13 @@ def build(bld):
     bld(source='lua/hello.lua')
 
     data_files = [
-        'gfx/fighters/rasky-walk.img.bin',
-        'gfx/fighters/rasky-walk.pal.bin',
         'gfx/fighters/rasky-idle.img.bin',
         'gfx/fighters/rasky-idle.pal.bin',
+        'gfx/fighters/rasky-walk.img.bin',
+        'gfx/fighters/rasky-walk.pal.bin',
         'lua/hello.luac',
-        'snd/street_fighter.xm'
+        'snd/punch.wav',
+        'snd/street_fighter.xm',
     ]
 
     bld(rule=copy_fat_file, source=data_files, target='game.dat')
