@@ -2,6 +2,6 @@
 
 const LevelDesc LoungeRoom = {
 	/*w,h*/ 512, 256,
-	/*floory*/ 175,
+	/*floory*/ 165,
 	/*startx*/ { 64, 160 },
 };

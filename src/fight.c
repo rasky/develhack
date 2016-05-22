@@ -159,6 +159,11 @@ static void updateCamera() {
 	if (changed) {
 		cameraw = gFight.camera.x1 - gFight.camera.x0;
 		gFight.camera.zoom = div32(SCREEN_WIDTH<<(8+SCALE_BITS), cameraw);
+
+		// FIXME: This keeps the floory line always at the same point. Not sure
+		// if it's what we want, but for it's OK.
+		gFight.camera.y0 = (gFight.level.desc->floory<<8) -
+			cameraw * gFight.level.desc->floory / SCREEN_WIDTH;
 	}
 }
 
