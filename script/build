@@ -17,4 +17,5 @@ docker run \
     develhack:latest \
     sh -c "\
     test -f build/c4che/build.config.py || ( ./waf configure $* ) \
-        && ./waf -j \$(getconf _NPROCESSORS_ONLN)"
+        && ./waf -j \$(getconf _NPROCESSORS_ONLN) \
+        && sync"
