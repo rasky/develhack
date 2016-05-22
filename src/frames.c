@@ -29,10 +29,13 @@ const AnimDesc Rasky = {
 		{ 18, 0,        MOVE(-7,0), "rasky-walk", 1, 6, SPEED(13),  FST_BWD|FCIDLE|FCFWD|FCJMP},
 		{ 19, NEXT(14), MOVE(-7,0), "rasky-walk", 0, 6, SPEED(13),  FST_BWD|FCIDLE|FCFWD|FCJMP},
 		/******************************************************************/
-		{ 20, 0,        MOVE(8,-12), "rasky-idle", 0, 8, SPEED(0), FST_JMP},
-		{ 21, 0,        MOVE(8,-5), "rasky-idle", 0, 8, SPEED(0), FST_JMP},
-		{ 22, 0,        MOVE(8,5),  "rasky-idle", 0, 8, SPEED(0), FST_JMP},
-		{ 23, NEXT(0),  MOVE(8,12),  "rasky-idle", 0, 8, SPEED(0), FST_JMP},
+		{ 20, 0,        MOVE(8,-15), "rasky-idle", 0, 8, SPEED(8), FST_JMP},
+		{ 21, 0,        MOVE(8,-10), "rasky-idle", 0, 8, SPEED(8), FST_JMP},
+		{ 22, 0,        MOVE(8,-5),  "rasky-idle", 0, 8, SPEED(8), FST_JMP},
+		{ 23, 0,        MOVE(8,0),   "rasky-idle", 0, 8, SPEED(8), FST_JMP},
+		{ 24, 0,        MOVE(8,5),   "rasky-idle", 0, 8, SPEED(8), FST_JMP},
+		{ 25, 0,        MOVE(8,10),  "rasky-idle", 0, 8, SPEED(8), FST_JMP},
+		{ 26, NEXT(0),  MOVE(8,15),  "rasky-idle", 0, 8, SPEED(8), FST_JMP},
 		{ 0, 0, },
 	},
 	{ // keyframes
