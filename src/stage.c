@@ -1,14 +1,18 @@
+#include "stage.h"
+
 #include <nds.h>
 #include <stdio.h>
 
 #include "io.h"
 
+#include "anim.h" // just for SCALE_BITS
+
 #include "debug.h"
 
 typedef struct
 {
-    const char *id;
-    const char *file;
+    const char* id;
+    const char* file;
     int priority;
     BgType bg_type;
     BgSize bg_size;
@@ -19,105 +23,164 @@ typedef struct
     bool wraps;
 } Layer;
 
-typedef struct
-{
-    const char *id;
-    Layer layers[];
-} Stage;
-
-Stage STAGES[] = {
-    {"forest"},
-    {"industrial"},
-    {NULL}
+StageDesc STAGES[] = {
+    { "forest", 500, 256, 165, { 64, 160 } },
+    { NULL }
 };
 
 Layer LAYERS[] = {
-    {"forest", "forest-00", 0, BgType_Text4bpp, BgSize_T_512x512, 0, 0, 272, 160, false},
-    {"forest", "forest-03", 3, BgType_Text4bpp, BgSize_T_512x512, 0, 0, 272, 160, false},
-    {"forest", "forest-01", 1, BgType_Rotation, BgSize_R_512x512, 0, 0, 272, 160, false},
-    {"forest", "forest-02", 2, BgType_Rotation, BgSize_R_512x512, 0, 0, 272, 160, false},
-    {"industrial", "industrial-00", 0, BgType_Rotation, BgSize_R_512x512, 0, 0, 272, 170, false},
-    {"industrial", "industrial-01", 1, BgType_Rotation, BgSize_R_512x512, 0, 0, 272, 170, false},
-    {"industrial", "industrial-02", 2, BgType_Rotation, BgSize_R_256x256, 0, 0, 272, 170, false},
-    {"industrial", "industrial-03", 3, BgType_Rotation, BgSize_R_512x512, 0, 0, 272, 170, false},
-    {NULL, NULL}
+    { "forest", "forest-00", 1, BgType_Text8bpp, BgSize_ER_512x512, 0, 0, 512, 192, true },
+    { "forest", "forest-03", 3, BgType_Text8bpp, BgSize_ER_512x512, 0, 0, 512, 160, true },
+    { "forest", "forest-01", 0, BgType_ExRotation, BgSize_ER_512x512, 0, 0, 512, 160, true },
+    { "forest", "forest-02", 2, BgType_ExRotation, BgSize_ER_512x512, 0, 0, 512, 160, true },
+    { NULL, NULL }
 };
+
+struct {
+    Layer* layers[4];
+
+    struct {
+        int id;
+        s32 scale;
+    } backgrounds[4];
+
+    struct {
+        s32 x;
+        s32 y;
+        u32 zoom;
+    } camera;
+} gStage;
+
 
 int num_chunks(int size, int chunk_size)
 {
     int chunks = 0;
-    while (size > 0)
-    {
+    while (size > 0) {
         size -= chunk_size;
         ++chunks;
     }
     return chunks;
 }
 
-void loadStage(const char *id)
+const StageDesc* stageLoad(const char* id)
 {
-    for (Stage *stage = STAGES; stage->id != NULL; ++stage)
-    {
-        if (stage->id == NULL)
-        {
+    StageDesc* stage = STAGES;
+    for ( ; stage->id != NULL; ++stage) {
+        if (stage->id == NULL) {
             debugf("Stage not found: %s\n", id);
-            return;
+            return NULL;
         }
 
-        if (strcmp(stage->id, id) == 0)
-        {
+        if (strcmp(stage->id, id) == 0) {
             break;
         }
     }
+
+    char filename[64];
 
     // an offset into VRAM in 2K chunks
     int tile_map_offset = 0;
 
-    // an offset into VRAM in 16K chunks
-    int graphics_data_offset = 2;
+    snprintf(filename, sizeof(filename), "%s.pal.bin", id);
+    Bytes palette = slurp(filename);
+    dmaCopy(palette.data, BG_PALETTE, palette.size);
+
+    free(palette.data);
 
     int background = 0;
-    for (Layer *layer = LAYERS; layer->id != NULL; ++layer)
-    {
-        if (strcmp(layer->id, id) != 0)
-        {
+    for (Layer* layer = LAYERS; layer->id != NULL; ++layer) {
+        if (strcmp(layer->id, id) != 0) {
             continue;
         }
 
-        char filename[64];
+        int bg = bgInit(background, layer->bg_type, layer->bg_size, tile_map_offset, 2);
+        bgSetPriority(bg, layer->priority);
+        if (layer->wraps) {
+            bgWrapOn(bg);
+        } else {
+            bgWrapOff(bg);
+        }
 
-        snprintf(filename, 63, "%s.img.bin", layer->file);
-        Bytes image = slurp(filename);
+        gStage.layers[background] = layer;
+        gStage.backgrounds[background].id = bg;
+        s32 scale = div32(SCREEN_HEIGHT << (16+SCALE_BITS), layer->height << 16);
 
-        snprintf(filename, 63, "%s.pal.bin", layer->file);
-        Bytes palette = slurp(filename);
+        debugf("%i scale: (%i %i) %f\n", background, SCREEN_HEIGHT, layer->height,
+            fixedToFloat(scale, SCALE_BITS));
 
-        snprintf(filename, 63, "%s.map.bin", layer->file);
+        gStage.backgrounds[background].scale = scale;
+
+        if (background == 0) {
+            snprintf(filename, sizeof(filename), "%s.img.bin", id);
+            Bytes image = slurp(filename);
+            dmaCopy(image.data, bgGetGfxPtr(bg), image.size);
+            free(image.data);
+        }
+
+        snprintf(filename, sizeof(filename), "%s.map.bin", layer->file);
         Bytes map = slurp(filename);
 
-        int old_tile_offset = tile_map_offset;
-        int old_graphics_offset = graphics_data_offset;
-
-        int bg = bgInit(background, layer->bg_type, layer->bg_size, tile_map_offset, graphics_data_offset);
         tile_map_offset += num_chunks(map.size, 2048);
-        graphics_data_offset += num_chunks(image.size, 16384);
-        debugf("Offsets: Tile: %x..%x / Graphics: %x..%x\n",
-            old_tile_offset * 2048, (tile_map_offset) * 2048,
-            old_graphics_offset * 16384, (graphics_data_offset) * 16384);
-        bgSetPriority(bg, layer->priority);
 
-        dmaCopy(image.data, bgGetGfxPtr(bg), image.size);
-        dmaCopy(palette.data, BG_PALETTE, palette.size);
         dmaCopy(map.data, bgGetMapPtr(bg), map.size);
 
-        if (++background > 3)
-        {
+        free(map.data);
+
+        if (++background > 3) {
             debugf("Ran out of backgrounds\n");
             break;
         }
-
-        free(map.data);
-        free(palette.data);
-        free(image.data);
     }
+
+    return stage;
+}
+
+void stageSetPosition(s32 x, s32 y)
+{
+    if (x != gStage.camera.x || y != gStage.camera.y)
+    {
+        debugf("STAGE: Stage Position %ix%i\n", x >> 8, y >> 8);
+        gStage.camera.x = x;
+        gStage.camera.y = y;
+    }
+}
+
+void stageSetZoom(u32 zoom)
+{
+    if (zoom != gStage.camera.zoom)
+    {
+        gStage.camera.zoom = zoom;
+
+        s32 invscale = div32(1<<(8+SCALE_BITS), gStage.camera.zoom);
+
+        debugf("STAGE: Zoom %f (%f)\n",
+            fixedToFloat(gStage.camera.zoom, SCALE_BITS),
+            fixedToFloat(invscale, 8));
+    }
+}
+
+void stageUpdate()
+{
+    s32 invscale = div32(1<<(8+SCALE_BITS), gStage.camera.zoom);
+
+    for (int i=0; i<4; ++i)
+    {
+        Layer* layer = gStage.layers[i];
+
+        // s32 scale = gStage.backgrounds[i].scale;
+
+        s32 x_offset = (-layer->x_offset * invscale);
+        // s32 y_offset = (-layer->y_offset * invscale);
+
+        bgSet(gStage.backgrounds[i].id, 0, invscale, invscale,
+            x_offset + (gStage.camera.x * (4-i)),
+            0,
+            0, 0);
+    }
+
+    bgUpdate();
+}
+
+void stageVblank()
+{
 }

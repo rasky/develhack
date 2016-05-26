@@ -1,7 +1,7 @@
 #pragma once
 
-#include "levels.h"
+#include "stage.h"
 
-void fightInit(const LevelDesc *desc);
+void fightInit(const StageDesc *desc);
 void fightUpdate(u32 keys);
 void fightVblank();

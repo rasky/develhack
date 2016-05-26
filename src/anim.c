@@ -142,7 +142,7 @@ void animInit(void) {
 			f->vramptr[i] = ptr;
 			oamSet(&oamMain, fx*4+i,
 				/*pos*/ 0, 0,
-				/*pri*/ 3,
+				/*pri*/ 0,
 				/*pal*/ fx,
 				SpriteSize_64x64, SpriteColorFormat_16Color, ptr,
 				/*affine*/ fx, 0,

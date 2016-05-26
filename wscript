@@ -4,9 +4,6 @@ import os
 from itertools import chain
 
 
-FAT_IMAGE = 'game.dat'
-
-
 def parse_grit(grit):
     """
     Parse a .grit file and return a tuple of the options to the grit command
@@ -159,7 +156,7 @@ def build(bld):
         target='game.nds')
 
     # Run GRIT on images
-    graphics = []
+    data_files = []
 
     for gritfile in bld.path.ant_glob('gfx/**/*.grit'):
         options, inputs, outputs = parse_grit(gritfile)
@@ -168,20 +165,20 @@ def build(bld):
             source=inputs,
             target=outputs,
             cwd=outputs[0].parent.abspath())
-        graphics.extend(outputs)
+        data_files.extend(outputs)
 
     bld(source=bld.path.ant_glob('lua/*.lua'))
 
-    data_files = [i.bldpath() for i in graphics]
-    data_files += [i.bldpath() for i in bld.path.path('lua/*.lua')]
-    data_files += [bld.path.ant_glob('sfx/**')]
+    data_files += [i.change_ext('.luac') for i in bld.path.ant_glob('lua/*.lua')]
+    data_files += list(bld.path.ant_glob('sfx/**'))
 
     # Build FAT data image
     def copy_fat_file(task):
         tgt = task.outputs[0].abspath()
 
         if not os.path.exists(tgt):
-            ret = task.exec_command('mformat -C -t 1 -h 1 -s 4096 -i %s' % (tgt))
+            # 10 is roughly the size, in megs, of the resulting disk image
+            ret = task.exec_command('mformat -C -t 10 -h 64 -s 32 -H 32 -i %s' % (tgt))
             if ret != 0:
                 return ret
 
@@ -192,7 +189,7 @@ def build(bld):
 
         return task.exec_command('mdir -i %s' % (tgt,))
 
-    bld(rule=copy_fat_file, source=data_files, target=FAT_IMAGE)
+    bld(rule=copy_fat_file, source=data_files, target='game.dat')
 
     # Collect resources in a single folder
     def cp(task):
@@ -203,4 +200,4 @@ def build(bld):
         return ret
 
     bld(rule=cp, source=data_files,
-        target=['resources/{0}'.format(os.path.basename(f)) for f in data_files])
+        target=['resources/{0}'.format(os.path.basename(f.abspath())) for f in data_files])

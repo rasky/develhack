@@ -14,7 +14,6 @@
 #include "debug.h"
 #include "fight.h"
 #include "input.h"
-#include "levels.h"
 #include "sound.h"
 #include "stage.h"
 
@@ -46,7 +45,7 @@ void initVideo()
     vramSetBankE(VRAM_E_MAIN_SPRITE);
 
     /*  Set the video mode on the main screen. */
-    videoSetMode(MODE_2_2D);
+    videoSetMode(MODE_5_2D);
 
     /*  Set the video mode on the sub screen. */
     videoSetModeSub(MODE_2_2D); // Set the graphics mode to Mode 3
@@ -119,6 +118,7 @@ bool mustDumpStats()
 void Vblank()
 {
     fightVblank();
+    stageVblank();
     frame++;
     if (mustDumpStats()) {
         u16 y = REG_VCOUNT;
@@ -181,7 +181,14 @@ int main(void)
     // ----- END LUA
 #endif
 
-    fightInit(&LoungeRoom);
+    const StageDesc* stage = stageLoad("forest");
+    if (stage == NULL)
+    {
+        debugf("Unable to load stage\n");
+        goto error;
+    }
+
+    fightInit(stage);
 
     // ----- BEGIN SOUND
     initSoundSystem();
@@ -189,7 +196,6 @@ int main(void)
     // ----- END SOUND
 
     animInit();
-    loadStage("forest");
 
     uint32 lastKeys = 0;
 
@@ -217,6 +223,7 @@ int main(void)
         }
 
         fightUpdate(keys);
+        stageUpdate();
 
         lastKeys = keys;
 

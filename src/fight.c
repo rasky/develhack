@@ -1,9 +1,9 @@
 #include <nds.h>
 #include <string.h>
-#include "levels.h"
 #include "anim.h"
 #include "debug.h"
 #include "frames.h"
+#include "stage.h"
 
 #define SCREEN_WIDTH 256
 #define SCREEN_HEIGHT 192
@@ -35,8 +35,8 @@ struct {
 	} fighters[2];
 
 	struct {
-		const LevelDesc *desc;
-	} level;
+		const StageDesc *desc;
+	} stage;
 
 	struct {
 		// World coordinates of the rectangle that is shown on screen.
@@ -49,12 +49,12 @@ struct {
 } gFight;
 
 
-void fightInit(const LevelDesc *desc) {
+void fightInit(const StageDesc *desc) {
 	animInit();
 
 	memset(&gFight, 0, sizeof(gFight));
 
-	gFight.level.desc = desc;
+	gFight.stage.desc = desc;
 	gFight.fighters[0].wx = (u32)desc->fighterStartX[0] << 8;
 	gFight.fighters[1].wx = (u32)desc->fighterStartX[1] << 8;
 	gFight.fighters[0].wy = desc->floory << 8;
@@ -86,8 +86,8 @@ static void fightUpdateStatus(int fx, u32 keys) {
 			f->wx += (s32)movex * 64;
 		else
 			f->wx -= (s32)movex * 64;
-		// if (f->wx > gFight.level.desc->w<<8)
-		// 	f->wx = gFight.level.desc->h<<8;
+		// if (f->wx > gFight.stage.desc->w<<8)
+		// 	f->wx = gFight.stage.desc->h<<8;
 		// if (f->wx < 0)
 		// 	f->wx = 0;
 		break;
@@ -105,7 +105,7 @@ static void fightUpdateStatus(int fx, u32 keys) {
 
 
 // Calculate the "camera" position; this basically means calculating
-// which portion (rectangle) of the level is currently viewable on
+// which portion (rectangle) of the stage is currently viewable on
 // the screen, which depends on the position of the fighters.
 static void updateCamera() {
 
@@ -162,8 +162,8 @@ static void updateCamera() {
 
 		// FIXME: This keeps the floory line always at the same point. Not sure
 		// if it's what we want, but for it's OK.
-		gFight.camera.y0 = (gFight.level.desc->floory<<8) -
-			cameraw * gFight.level.desc->floory / SCREEN_WIDTH;
+		gFight.camera.y0 = (gFight.stage.desc->floory<<8) -
+			cameraw * gFight.stage.desc->floory / SCREEN_WIDTH;
 	}
 }
 
@@ -191,6 +191,9 @@ void fightUpdate(u32 keys) {
 	fightUpdateStatus(0, keys);
 	updateCamera();
 	updateFighters();
+
+	stageSetPosition(gFight.camera.x1 - gFight.camera.x0, gFight.camera.y0);
+	stageSetZoom(gFight.camera.zoom);
 }
 
 void fightVblank() {
