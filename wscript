@@ -3,44 +3,70 @@
 import os
 from itertools import chain
 
-from waflib import TaskGen
+
+FAT_IMAGE = 'game.dat'
 
 
-def grit_rule(task):
-    for src in task.inputs:
-        output_dir = task.outputs[0].parent.abspath()
-        command = ['grit'] + [src.abspath()] + list(task.generator.options)
-        task.exec_command(' '.join(command), cwd=output_dir)
+def parse_grit(grit):
+    """
+    Parse a .grit file and return a tuple of the options to the grit command
+    line, the inputs to be used (all the .png files in the same directory as
+    the .grit file) and the outputs that will be produced (calculated based
+    on the options found in the grit file).
+    """
+    options = []
+    with open(grit.abspath(), 'r') as optfile:
+        for line in optfile:
+            line = line.strip().split('#', 1)[0]
+            if not line:
+                continue
+            options.extend(line.split(' '))
 
-
-def grit_decider(task, node):
-    if '-ftb' not in task.options:
-        raise Exception('Only -ftb is supported at the moment')
+    inputs = grit.parent.ant_glob('*.png')
 
     extensions = []
-    if '-fh!' not in task.options:
+    shared_extensions = []
+
+    shared = None
+    try:
+        shared = options[options.index('-O')+1]
+    except ValueError:
+        for opt in options:
+            if opt.startswith('-O'):
+                shared = opt[2:]
+
+    if not shared:
+        shared = inputs[0].change_ext('')
+
+    if '-fh!' not in options:
         extensions.append('.h')
 
-    if '-g!' not in task.options:
-        extensions.append('.img.bin')
+    if '-g!' not in options:
+        if '-gS' in options:
+            shared_extensions.append('.img.bin')
+        else:
+            extensions.append('.img.bin')
 
-    if '-p!' not in task.options:
-        extensions.append('.pal.bin')
+    if '-p!' not in options:
+        if '-pS' in options:
+            shared_extensions.append('.pal.bin')
+        else:
+            extensions.append('.pal.bin')
 
-    if '-m' in task.options:
+    if '-m' in options:
         extensions.append('.map.bin')
 
-        if any(opt.startswith('-Mh') or opt.startswith('-Mw') for opt in task.options):
+        if any(opt.startswith('-Mh') or opt.startswith('-Mw') for opt in options):
             extensions.append('.meta.bin')
 
-    return extensions
+    out = grit.get_bld().parent
 
-TaskGen.declare_chain(
-    name='grit',
-    rule=grit_rule,
-    decider=grit_decider,
-    ext_in='.png'
-)
+    outputs = list(chain(
+        (png.change_ext(ext) for ext in extensions for png in inputs),
+        (out.make_node('{0}{1}'.format(shared, ext)) for ext in shared_extensions)
+    ))
+
+    return options, inputs, outputs
 
 
 def options(opt):
@@ -133,31 +159,29 @@ def build(bld):
         target='game.nds')
 
     # Run GRIT on images
-    bld(options=('-ftb', '-pS', '-Mh8', '-Mw8', '-gB4'),
-        source=bld.path.ant_glob("gfx/fighters/**/*.png"))
+    graphics = []
 
-    text_levels = [
-        'forest-00',
-        'forest-03',
-    ]
+    for gritfile in bld.path.ant_glob('gfx/**/*.grit'):
+        options, inputs, outputs = parse_grit(gritfile)
+        input_paths = " ".join(i.abspath() for i in inputs)
+        bld(rule="${{GRIT}} {0} {1}".format(input_paths, " ".join(options)),
+            source=inputs,
+            target=outputs,
+            cwd=outputs[0].parent.abspath())
+        graphics.extend(outputs)
 
-    affine_levels = [
-        'forest-01',
-        'forest-02',
-    ]
+    bld(source=bld.path.ant_glob('lua/*.lua'))
 
-    bld(options=('-ftb', '-gt', '-fh!', '-m', '-mLs', '-mRtpf', '-gB4'),
-        source=['gfx/levels/{0}.png'.format(f) for f in text_levels])
-
-    bld(options=('-ftb', '-gt', '-fh!', '-m', '-mLa', '-gB8'),
-        source=['gfx/levels/{0}.png'.format(f) for f in affine_levels])
+    data_files = [i.bldpath() for i in graphics]
+    data_files += [i.bldpath() for i in bld.path.path('lua/*.lua')]
+    data_files += [bld.path.ant_glob('sfx/**')]
 
     # Build FAT data image
     def copy_fat_file(task):
         tgt = task.outputs[0].abspath()
 
         if not os.path.exists(tgt):
-            ret = task.exec_command('mformat -C -t 4 -h 2 -s 2048 -i %s' % (tgt))
+            ret = task.exec_command('mformat -C -t 1 -h 1 -s 4096 -i %s' % (tgt))
             if ret != 0:
                 return ret
 
@@ -168,25 +192,14 @@ def build(bld):
 
         return task.exec_command('mdir -i %s' % (tgt,))
 
-    bld(source='lua/hello.lua')
-
-    # FIXME: we shouldn't explicitly name the "build" output directory
-    data_files = \
-        bld.path.ant_glob("build/gfx/**/*.bin") + \
-        bld.path.ant_glob("build/lua/**") + \
-        bld.path.ant_glob("sfx/**")
-
-    data_files += ['snd/hyo-fate.xm', 'snd/punch.wav']
-
-    bld(rule=copy_fat_file, source=data_files, target='game.dat')
+    bld(rule=copy_fat_file, source=data_files, target=FAT_IMAGE)
 
     # Collect resources in a single folder
     def cp(task):
-        tgt = task.outputs[0].parent.abspath()
-        if not os.path.exists(tgt):
-            os.makedirs(tgt)
+        tgt = task.outputs[0].parent
+        tgt.mkdir()
         for src in task.inputs:
-            ret = task.exec_command('cp {0} {1}'.format(src.abspath(), tgt))
+            ret = task.exec_command('cp {0} {1}'.format(src.abspath(), tgt.abspath()))
         return ret
 
     bld(rule=cp, source=data_files,

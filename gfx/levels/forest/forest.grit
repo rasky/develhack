@@ -1,0 +1,29 @@
+# binary output mode
+-ftb
+
+# tiled output
+-gt
+
+# shared graphics
+-gS
+
+# no header file
+-fh!
+
+# include map data
+-m
+
+# SBB map layout
+-mLs
+
+# tile reduction with support for flipped tiles
+-mRtf
+
+# 8-bit output
+-gB8
+
+# shared palette
+-pS
+
+# output shared data with this file name
+-O forest
