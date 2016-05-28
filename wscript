@@ -149,7 +149,7 @@ def build(bld):
     data_files = \
         bld.path.ant_glob("build/gfx/**/*.bin") + \
         bld.path.ant_glob("build/lua/**") + \
-        bld.path.ant_glob("build/sfx/**")
+        bld.path.ant_glob("sfx/**")
 
     bld(rule=copy_fat_file, source=data_files, target='game.dat')
 
