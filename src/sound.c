@@ -18,7 +18,7 @@ static Bytes GLOBAL_SFX[GlobalSfxSize];
 static void loadGlobalSfx()
 {
     GLOBAL_SFX[GlobalSfxMenu] = slurp("hyo-fate.xm");
-    GLOBAL_SFX[GlobalSfxPunch] = slurp("punch.wav");
+    GLOBAL_SFX[GlobalSfxPunch] = slurp("punch.ima");
 }
 
 void initSoundSystem()
@@ -51,7 +51,7 @@ void playSoundEffect(const GlobalSfx sfx)
 {
     const Bytes* effect = &GLOBAL_SFX[sfx];
 
-    soundPlaySample(effect->data, SoundFormat_16Bit, effect->size, 48000, 127, 64, 0, 0);
+    soundPlaySample(effect->data, SoundFormat_ADPCM, effect->size, 48000, 127, 64, 0, 0);
 }
 
 /*

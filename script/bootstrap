@@ -1,13 +1,16 @@
-#!/bin/bash
+#!/bin/sh
 
-set -euo pipefail
-IFS=$'\n\t'
-cd "$(cd "$(dirname "${0}")"; pwd)/../"
+set -eux
 
-if [[ "$(uname -s)" == "Darwin" ]]; then
-    brew install docker docker-machine
+cd "$(dirname "${0}")/../"
 
-    brew cask install desmume
-elif [[ -x "$(which lsb_release)" && "$(lsb_release -is)" == "Ubuntu" ]]; then
+if [ "$(uname -s)" = "Darwin" ]; then
+    if [ ! -x "/usr/local/bin/docker" ]; then
+        # Assume that the user installed Docker for Mac Beta if the 'docker' binary is there.
+        brew install docker docker-machine
+    fi
+
+    brew cask install desmume sox
+elif [ -x "$(which lsb_release)" ] && [ "$(lsb_release -is)" = "Ubuntu" ]; then
     sudo apt install -y desmume docker.io
 fi
