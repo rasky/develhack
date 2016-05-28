@@ -124,17 +124,15 @@ def build(bld):
         target='game.nds')
 
     # Run GRIT on images
-    fighters = ['rasky-walk', 'rasky-idle']
-
     bld(options=('-ftb', '-pS', '-Mh8', '-Mw8', '-gB4'),
-        source=['gfx/fighters/{0}.png'.format(f) for f in fighters])
+        source=bld.path.ant_glob("gfx/fighters/**/*.png"))
 
     # Build FAT data image
     def copy_fat_file(task):
         tgt = task.outputs[0].abspath()
 
         if not os.path.exists(tgt):
-            ret = task.exec_command('mformat -C -t 1 -h 1 -s 2048 -i %s' % (tgt))
+            ret = task.exec_command('mformat -C -t 4 -h 2 -s 2048 -i %s' % (tgt))
             if ret != 0:
                 return ret
 
@@ -147,15 +145,11 @@ def build(bld):
 
     bld(source='lua/hello.lua')
 
-    data_files = [
-        'gfx/fighters/rasky-idle.img.bin',
-        'gfx/fighters/rasky-idle.pal.bin',
-        'gfx/fighters/rasky-walk.img.bin',
-        'gfx/fighters/rasky-walk.pal.bin',
-        'lua/hello.luac',
-        'sfx/hyo-fate.xm',
-        'sfx/punch.wav',
-    ]
+    # FIXME: we shouldn't explicitly name the "build" output directory
+    data_files = \
+        bld.path.ant_glob("build/gfx/**/*.bin") + \
+        bld.path.ant_glob("build/lua/**") + \
+        bld.path.ant_glob("build/sfx/**")
 
     bld(rule=copy_fat_file, source=data_files, target='game.dat')
 
