@@ -9,15 +9,30 @@
 #include "debug.h"
 #include "io.h"
 
-static Bytes backgroundSnd;
-static XM7_ModuleManager_Type backgroundMod;
+/*
+ * Sound System Setup/Teardown
+ */
 
-static Bytes soundEffect;
+static Bytes GLOBAL_SFX[GlobalSfxSize];
+
+static void loadGlobalSfx()
+{
+    GLOBAL_SFX[GlobalSfxMenu] = slurp("hyo-fate.xm");
+    GLOBAL_SFX[GlobalSfxPunch] = slurp("punch.wav");
+}
 
 void initSoundSystem()
 {
     debugf("sound: enabling\n");
+    loadGlobalSfx();
     soundEnable();
+}
+
+static void freeGlobalSfx()
+{
+    for (u8 i = 0; i < GlobalSfxSize; i++) {
+        freeBytes(&GLOBAL_SFX[i]);
+    }
 }
 
 void destroySoundSystem()
@@ -25,36 +40,41 @@ void destroySoundSystem()
     debugf("sound: disabling and freeing resources\n");
     soundDisable();
     stopBackgroundMusic();
+    freeGlobalSfx();
 }
 
-void playSoundEffect(const char* filename)
+/*
+ * Effect API
+ */
+
+void playSoundEffect(const GlobalSfx sfx)
 {
-    debugf("sound: playing effect %s\n", filename);
-    soundEffect = slurp(filename);
-    soundPlaySample(soundEffect.data, SoundFormat_16Bit, soundEffect.size, 48000, 127, 64, 0, 0);
-    freeBytes(&soundEffect); // FIXME: I don't know why this free() doesn't break anything...
+    const Bytes* effect = &GLOBAL_SFX[sfx];
+
+    soundPlaySample(effect->data, SoundFormat_16Bit, effect->size, 48000, 127, 64, 0, 0);
 }
 
-void playBackgroundMusic(const char* filename)
-{
-    backgroundSnd = slurp(filename);
+/*
+ * Background Music API
+ */
 
-    u16 ret = XM7_LoadXM(&backgroundMod, (XM7_XMModuleHeader_Type*)backgroundSnd.data);
+static XM7_ModuleManager_Type backgroundMod;
+
+void playBackgroundMusic(const GlobalSfx sfx)
+{
+    const Bytes* backgroundSnd = &GLOBAL_SFX[sfx];
+
+    u16 ret = XM7_LoadXM(&backgroundMod, (XM7_XMModuleHeader_Type*)GLOBAL_SFX[sfx].data);
     if (ret != 0) {
-        debugf("sound: unable to load background %s\n", filename);
+        debugf("sound: unable to load background %d\n", sfx);
         return;
     }
 
-    DC_FlushRange(backgroundSnd.data, backgroundSnd.size);
-
-    debugf("sound: sending over FIFO %d\n", backgroundMod);
+    DC_FlushRange(backgroundSnd->data, backgroundSnd->size);
     fifoSendValue32(FIFO_XM7, (u32)&backgroundMod);
-
-    debugf("sound: playing background %s\n", filename);
 }
 
 void stopBackgroundMusic()
 {
     fifoSendValue32(FIFO_XM7, 0);
-    freeBytes(&backgroundSnd);
 }

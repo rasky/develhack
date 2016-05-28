@@ -189,7 +189,7 @@ int main(void)
 
     // ----- BEGIN SOUND
     initSoundSystem();
-    playBackgroundMusic("hyo-fate.xm");
+    playBackgroundMusic(GlobalSfxMenu);
     // ----- END SOUND
 
     animInit();
@@ -215,7 +215,7 @@ int main(void)
             debugKeys(keys);
 
             if ((keys & KEY_A) == KEY_A) {
-                playSoundEffect("punch.wav");
+                playSoundEffect(GlobalSfxPunch);
             }
         }
 

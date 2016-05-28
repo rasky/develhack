@@ -4,6 +4,12 @@
 
 #define FIFO_XM7  (FIFO_USER_07)
 
+typedef enum GlobalSfx {
+    GlobalSfxMenu,
+    GlobalSfxPunch,
+    GlobalSfxSize, // This must always be the last one.
+} GlobalSfx;
+
 /*
  * Initializes the sound system and unmutes the master sound.
  */
@@ -17,7 +23,7 @@ void destroySoundSystem();
 /*
  * Allocates all resources needed to start playing the given XM file.
  */
-void playBackgroundMusic(const char* filename);
+void playBackgroundMusic(const GlobalSfx sfx);
 
 /*
  * Stops playing background music (if any) and frees resources.
@@ -27,4 +33,4 @@ void stopBackgroundMusic();
 /*
  * Plays a sound effect.
  */
-void playSoundEffect(const char* filename);
+void playSoundEffect(const GlobalSfx effect);
