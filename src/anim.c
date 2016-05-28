@@ -118,7 +118,7 @@ static void animLoad(int fidx, const AnimDesc *desc) {
 
 
 void animInit(void) {
-	animLoad(0, &Rasky);
+	animLoad(0, &Dummy);
 	animLoad(1, &Rasky);
 
 	oamInit(&oamMain, SpriteMapping_1D_64, false);
@@ -143,20 +143,20 @@ void animInit(void) {
 		// Start with idle animation
 		f->scale = 1<<SCALE_BITS;
 		f->curframe = f->desc->keyframes.idle;
+
+		// Load palette and copy to palette RAM
+		FILE *fp = fopen(f->desc->palette, "rb");
+		if (fp == NULL) {
+			debugf("error cannot load rasky-pal\n");
+			return;
+		}
+		fread(gFighters[0].pal, 1, 256*2, fp);
+		fclose(fp);
 	}
 
 
 	oamEnable(&oamMain);
 	debugf("sprites ok!\n");
-
-	// Load palette and copy to palette RAM
-	FILE *f = fopen("rasky-idle.pal.bin", "rb");
-	if (f == NULL) {
-		debugf("error cannot load rasky-pal\n");
-		return;
-	}
-	fread(gFighters[0].pal, 1, 256*2, f);
-	fclose(f);
 
 	dmaCopyHalfWords(0, gFighters[0].pal, SPRITE_PALETTE, 256*2);
 

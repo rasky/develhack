@@ -25,7 +25,7 @@ typedef struct {
 		u8 jump;
 	} keyframes;
 	u8 pivotx, pivoty;
-
+	const char *palette;
 } AnimDesc;
 
 // Animation Flags. Mark specific animation frames
@@ -43,3 +43,4 @@ typedef struct {
 #define FST_JMP  (3<<8)  // Status: jumping
 
 extern const AnimDesc Rasky;
+extern const AnimDesc Dummy;
