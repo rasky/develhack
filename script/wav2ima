@@ -5,4 +5,4 @@ set -eu
 IN="${1}"
 OUT="${2}"
 
-sox -t wav "${IN}" -t ima -e ima-adpcm -b 16 "${OUT}"
+sox -t wav "${IN}" -t ima -e ima-adpcm -r 48000 "${OUT}"
