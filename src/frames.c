@@ -88,6 +88,6 @@ const AnimDesc Dummy = {
 		/* bwd  */ 13,
 		/* jump */ 21,
 	},
-	/* pivot */ 64, 122,
+	/* pivot */ 45,119,
 	/* palette */ "dummy-idle.pal.bin",
 };
