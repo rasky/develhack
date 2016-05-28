@@ -189,7 +189,7 @@ int main(void)
 
     // ----- BEGIN SOUND
     initSoundSystem();
-    playBackgroundMusic(GlobalSfxMenu);
+    // playBackgroundMusic(GlobalSfxMenu);
     // ----- END SOUND
 
     animInit();
