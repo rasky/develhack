@@ -111,9 +111,20 @@ static void animLoad(int fidx, const AnimDesc *desc) {
 		f->gfxindex[i] = loadedAnims[a].gfxindex + cur->animidx;
 	}
 
+	// Load palette and copy to palette RAM
+	debugf("loading palette %s\n", f->desc->palette);
+	FILE *fp = fopen(f->desc->palette, "rb");
+	if (fp == NULL) {
+		debugf("error: cannot load %s\n", f->desc->palette);
+		return;
+	}
+	fread(f->pal, 1, 256*2, fp);
+	fclose(fp);
+
 	// Flush the data cache for graphics, so that it can be
 	// immediately blitted to VRAM.
 	DC_FlushRange(f->gfx, sizeof(f->gfx));
+	DC_FlushRange(f->pal, sizeof(f->pal));
 }
 
 
@@ -132,7 +143,7 @@ void animInit(void) {
 			oamSet(&oamMain, fx*4+i,
 				/*pos*/ 0, 0,
 				/*pri*/ 3,
-				/*pal*/ 0,
+				/*pal*/ fx,
 				SpriteSize_64x64, SpriteColorFormat_16Color, ptr,
 				/*affine*/ fx, 0,
 				/*hide*/ 0,
@@ -143,22 +154,13 @@ void animInit(void) {
 		// Start with idle animation
 		f->scale = 1<<SCALE_BITS;
 		f->curframe = f->desc->keyframes.idle;
-
-		// Load palette and copy to palette RAM
-		FILE *fp = fopen(f->desc->palette, "rb");
-		if (fp == NULL) {
-			debugf("error cannot load rasky-pal\n");
-			return;
-		}
-		fread(gFighters[0].pal, 1, 256*2, fp);
-		fclose(fp);
 	}
 
+	dmaCopyHalfWords(0, gFighters[0].pal, SPRITE_PALETTE, 16*2);
+	dmaCopyHalfWords(0, gFighters[1].pal, SPRITE_PALETTE+16, 16*2);
 
 	oamEnable(&oamMain);
 	debugf("sprites ok!\n");
-
-	dmaCopyHalfWords(0, gFighters[0].pal, SPRITE_PALETTE, 256*2);
 
 	// Sane defaults for scaling (position can be 0,0, it doesn't matter,
 	// but scale=0 means nothing is displayed by default).
