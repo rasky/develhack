@@ -7,12 +7,12 @@
 /*
  * Initializes the sound system and unmutes the master sound.
  */
-void initSound();
+void initSoundSystem();
 
 /*
  * Frees up all resources used by the sound system and mutes the master sound.
  */
-void unloadSound();
+void destroySoundSystem();
 
 /*
  * Allocates all resources needed to start playing the given XM file.

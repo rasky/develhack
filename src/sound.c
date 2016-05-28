@@ -14,13 +14,13 @@ static XM7_ModuleManager_Type backgroundMod;
 
 static Bytes soundEffect;
 
-void initSound()
+void initSoundSystem()
 {
     debugf("sound: enabling\n");
     soundEnable();
 }
 
-void unloadSound()
+void destroySoundSystem()
 {
     debugf("sound: disabling and freeing resources\n");
     soundDisable();

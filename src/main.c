@@ -188,7 +188,7 @@ int main(void)
     fightInit(&LoungeRoom);
 
     // ----- BEGIN SOUND
-    initSound();
+    initSoundSystem();
     playBackgroundMusic("hyo-fate.xm");
     // ----- END SOUND
 
