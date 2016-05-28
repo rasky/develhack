@@ -172,13 +172,19 @@ static void animUpdateOam(int fx) {
 	AnimFighter *f = &gFighters[fx];
 	const AnimDesc *fdesc = f->desc;
 
+	int pivotx = fdesc->pivotx;
+	int pivoty = fdesc->pivoty;
+	if (f->flags & FLAGS_IS_RIGHT) {
+		pivotx = 127-pivotx;
+	}
+
 	// Compute coordinates so that the scale factor is computed using the pivot as
 	// center of scaling. This means that the sprite's pivot will be positioned at
 	// the specified coordinate (f->x, f->y), and then the sprite will be scaled.
 	int scaledw = (SPRITE_W * f->scale)>>SCALE_BITS;
 	int scaledh = (SPRITE_H * f->scale)>>SCALE_BITS;
-	int x = (f->x>>8) - ((fdesc->pivotx * f->scale)>>SCALE_BITS) - (SPRITE_W-scaledw)/2;
-	int y = (f->y>>8) - ((fdesc->pivoty * f->scale)>>SCALE_BITS) - (SPRITE_H-scaledh)/2;
+	int x = (f->x>>8) - ((pivotx * f->scale)>>SCALE_BITS) - (SPRITE_W-scaledw)/2;
+	int y = (f->y>>8) - ((pivoty * f->scale)>>SCALE_BITS) - (SPRITE_H-scaledh)/2;
 
 	// Calculate inverse of scale in .8 fractional format (which is what
 	// oamRotateScale() expects).
