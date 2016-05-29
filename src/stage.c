@@ -13,6 +13,7 @@ typedef struct
 {
     const char* id;
     const char* file;
+    int background;
     int priority;
     BgType bg_type;
     BgSize bg_size;
@@ -29,19 +30,18 @@ StageDesc STAGES[] = {
 };
 
 Layer LAYERS[] = {
-    { "forest", "forest-00", 1, BgType_Text8bpp, BgSize_ER_512x512, 0, 0, 512, 192, true },
-    { "forest", "forest-03", 3, BgType_Text8bpp, BgSize_ER_512x512, 0, 0, 512, 160, true },
-    { "forest", "forest-01", 0, BgType_ExRotation, BgSize_ER_512x512, 0, 0, 512, 160, true },
-    { "forest", "forest-02", 2, BgType_ExRotation, BgSize_ER_512x512, 0, 0, 512, 160, true },
+    { "forest", "forest-00", 0, 1, BgType_Text8bpp, BgSize_ER_512x512, 0, 0, 512, 192, true },
+    { "forest", "forest-03", 1, 3, BgType_Text8bpp, BgSize_ER_512x512, 0, 0, 512, 160, true },
+    { "forest", "forest-01", 2, 0, BgType_ExRotation, BgSize_ER_512x512, 0, 0, 512, 160, true },
+    { "forest", "forest-02", 3, 2, BgType_ExRotation, BgSize_ER_512x512, 0, 0, 512, 160, true },
     { NULL, NULL }
 };
 
 struct {
-    Layer* layers[4];
-
     struct {
-        int id;
+        int id; // the background id returned from bgInit; -1 if unused
         s32 scale;
+        Layer *layer;
     } backgrounds[4];
 
     struct {
@@ -78,6 +78,10 @@ const StageDesc* stageLoad(const char* id)
 
     char filename[64];
 
+    for (int i=0; i<4; ++i) {
+        gStage.backgrounds[i].id = -1;
+    }
+
     // an offset into VRAM in 2K chunks
     int tile_map_offset = 0;
 
@@ -87,13 +91,13 @@ const StageDesc* stageLoad(const char* id)
 
     free(palette.data);
 
-    int background = 0;
+    bool loaded_tiles = false;
     for (Layer* layer = LAYERS; layer->id != NULL; ++layer) {
         if (strcmp(layer->id, id) != 0) {
             continue;
         }
 
-        int bg = bgInit(background, layer->bg_type, layer->bg_size, tile_map_offset, 2);
+        int bg = bgInit(layer->background, layer->bg_type, layer->bg_size, tile_map_offset, 2);
         bgSetPriority(bg, layer->priority);
         if (layer->wraps) {
             bgWrapOn(bg);
@@ -101,20 +105,21 @@ const StageDesc* stageLoad(const char* id)
             bgWrapOff(bg);
         }
 
-        gStage.layers[background] = layer;
-        gStage.backgrounds[background].id = bg;
+        gStage.backgrounds[layer->background].layer = layer;
+        gStage.backgrounds[layer->background].id = bg;
         s32 scale = div32(SCREEN_HEIGHT << (16+SCALE_BITS), layer->height << 16);
 
-        debugf("%i scale: (%i %i) %f\n", background, SCREEN_HEIGHT, layer->height,
+        debugf("%i scale: (%i %i) %f\n", layer->background, SCREEN_HEIGHT, layer->height,
             fixedToFloat(scale, SCALE_BITS));
 
-        gStage.backgrounds[background].scale = scale;
+        gStage.backgrounds[layer->background].scale = scale;
 
-        if (background == 0) {
+        if (!loaded_tiles) {
             snprintf(filename, sizeof(filename), "%s.img.bin", id);
             Bytes image = slurp(filename);
             dmaCopy(image.data, bgGetGfxPtr(bg), image.size);
             free(image.data);
+            loaded_tiles = true;
         }
 
         snprintf(filename, sizeof(filename), "%s.map.bin", layer->file);
@@ -125,11 +130,6 @@ const StageDesc* stageLoad(const char* id)
         dmaCopy(map.data, bgGetMapPtr(bg), map.size);
 
         free(map.data);
-
-        if (++background > 3) {
-            debugf("Ran out of backgrounds\n");
-            break;
-        }
     }
 
     return stage;
@@ -165,7 +165,11 @@ void stageUpdate()
 
     for (int i=0; i<4; ++i)
     {
-        Layer* layer = gStage.layers[i];
+        if (gStage.backgrounds[i].id == -1) {
+            continue;
+        }
+
+        Layer* layer = gStage.backgrounds[i].layer;
 
         // s32 scale = gStage.backgrounds[i].scale;
 
