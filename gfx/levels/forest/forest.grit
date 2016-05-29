@@ -27,3 +27,6 @@
 
 # output shared data with this file name
 -O forest
+
+# use 00ff00 as transparent colour
+-gT 00ff00
