@@ -13,6 +13,7 @@
 #include "anim.h"
 #include "debug.h"
 #include "fight.h"
+#include "hitbox.h"
 #include "input.h"
 #include "sound.h"
 #include "stage.h"
@@ -139,6 +140,10 @@ int main(void)
     lcdMainOnBottom();
 
     irqSet(IRQ_VBLANK, Vblank);
+
+#ifdef WITH_UNIT_TESTS
+    testHitbox();
+#endif
 
 #ifdef DEBUG_ON_SECONDARY_SCREEN
     consoleDemoInit();

@@ -71,6 +71,7 @@ def options(opt):
     opt.load('compiler_c')
 
     opt.add_option('-d', '--debug-on-screen', action='store_true', default=False)
+    opt.add_option('-u', '--with-unit-tests', action='store_true', default=False)
 
 
 def configure(conf):
@@ -96,6 +97,9 @@ def configure(conf):
 
     if conf.options.debug_on_screen:
         conf.env.DEFINES += ['DEBUG_ON_SECONDARY_SCREEN']
+
+    if conf.options.with_unit_tests:
+        conf.env.DEFINES += ['WITH_UNIT_TESTS']
 
     devkitarm = os.getenv('DEVKITARM', '%s/devkitARM')
     devkitarm_bin = '%s/bin' % (devkitarm)
