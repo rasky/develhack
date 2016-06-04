@@ -10,7 +10,7 @@ if tty -s; then
 fi
 
 docker run \
-    --user=`id -u` \
+    --user=$(id -u) \
     --volume="$(pwd):/home/code" \
     ${TTY+--interactive} ${TTY+--tty} \
     develhack:latest \

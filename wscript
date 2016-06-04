@@ -26,7 +26,7 @@ def parse_grit(grit):
 
     shared = None
     try:
-        shared = options[options.index('-O')+1]
+        shared = options[options.index('-O') + 1]
     except ValueError:
         for opt in options:
             if opt.startswith('-O'):
