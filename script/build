@@ -9,9 +9,11 @@ if tty -s; then
     TTY=1
 fi
 
+ARGS="${@:-}"
+
 docker run \
     --user=$(id -u) \
     --volume="$(pwd):/home/code" \
     ${TTY+--interactive} ${TTY+--tty} \
     develhack:latest \
-    sh -c "./waf configure build"
+    sh -c "./waf configure build ${ARGS}"
