@@ -186,7 +186,7 @@ int main(void)
     // ----- END LUA
 #endif
 
-    const StageDesc* stage = stageLoad("forest");
+    const StageDesc* stage = stageLoad("lounge");
     if (stage == NULL)
     {
         debugf("Unable to load stage\n");

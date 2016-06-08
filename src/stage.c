@@ -17,23 +17,20 @@ typedef struct
     int priority;
     BgType bg_type;
     BgSize bg_size;
-    int x_offset;
-    int y_offset;
-    int width;
-    int height;
+    s32 x_offset;
+    s32 y_offset;
+    s32 width;
+    s32 height;
     bool wraps;
 } Layer;
 
 StageDesc STAGES[] = {
-    { "forest", 500, 256, 165, { 64, 160 } },
+    { "lounge", 1024, 256, 250, { 64, 160 } },
     { NULL }
 };
 
 Layer LAYERS[] = {
-    { "forest", "forest-00", 0, 1, BgType_Text8bpp, BgSize_ER_512x512, 0, 0, 512, 192, true },
-    { "forest", "forest-03", 1, 3, BgType_Text8bpp, BgSize_ER_512x512, 0, 0, 512, 160, true },
-    { "forest", "forest-01", 2, 0, BgType_ExRotation, BgSize_ER_512x512, 0, 0, 512, 160, true },
-    { "forest", "forest-02", 3, 2, BgType_ExRotation, BgSize_ER_512x512, 0, 0, 512, 160, true },
+    { "lounge", "lounge-00", 3, 0, BgType_ExRotation, BgSize_ER_1024x1024, 0, 0, 1024, 256, false },
     { NULL, NULL }
 };
 
@@ -107,12 +104,7 @@ const StageDesc* stageLoad(const char* id)
 
         gStage.backgrounds[layer->background].layer = layer;
         gStage.backgrounds[layer->background].id = bg;
-        s32 scale = div32(SCREEN_HEIGHT << (16+SCALE_BITS), layer->height << 16);
-
-        debugf("%i scale: (%i %i) %f\n", layer->background, SCREEN_HEIGHT, layer->height,
-            fixedToFloat(scale, SCALE_BITS));
-
-        gStage.backgrounds[layer->background].scale = scale;
+        gStage.backgrounds[layer->background].scale = 1 << SCALE_BITS;
 
         if (!loaded_tiles) {
             snprintf(filename, sizeof(filename), "%s.img.bin", id);
@@ -171,14 +163,13 @@ void stageUpdate()
 
         Layer* layer = gStage.backgrounds[i].layer;
 
-        // s32 scale = gStage.backgrounds[i].scale;
+        // if each layer had a scale value associated with it, you'd use it here:
+        s32 scale = (invscale * gStage.backgrounds[i].scale) >> SCALE_BITS;
 
-        s32 x_offset = (-layer->x_offset * invscale);
-        // s32 y_offset = (-layer->y_offset * invscale);
-
-        bgSet(gStage.backgrounds[i].id, 0, invscale, invscale,
-            x_offset + (gStage.camera.x * (4-i)),
-            0,
+        // TODO: offset the different layers by different amounts for parallax
+        bgSet(gStage.backgrounds[i].id, 0, scale, scale,
+            layer->x_offset + gStage.camera.x,
+            layer->y_offset + gStage.camera.y,
             0, 0);
     }
 

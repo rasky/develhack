@@ -13,11 +13,11 @@
 # include map data
 -m
 
-# SBB map layout
--mLs
+# flat map layout
+-mLf
 
 # tile reduction with support for flipped tiles
--mRtf
+-mRt
 
 # 8-bit output
 -gB8
@@ -26,7 +26,7 @@
 -pS
 
 # output shared data with this file name
--O forest
+-O lounge
 
 # use 00ff00 as transparent colour
--gT 00ff00
+# -gT 00ff00
