@@ -204,6 +204,14 @@ static void animUpdateOam(int fx) {
 	}
 }
 
+static void animBeginAnimation(int fx, int keyframe) {
+	AnimFighter *f = &gFighters[fx];
+	const AnimDesc *fdesc = f->desc;
+
+	f->curframe = keyframe;
+	f->cftime = fdesc->frames[f->curframe].speed;
+}
+
 #define INPUT_DIR_MASK (KEY_UP|KEY_DOWN|KEY_LEFT|KEY_RIGHT)
 
 static void animProcessInput(int fx, u32 input) {
@@ -211,12 +219,32 @@ static void animProcessInput(int fx, u32 input) {
 	const AnimDesc *fdesc = f->desc;
 	u16 fflags = fdesc->frames[f->curframe].flags;
 
+	// Check keys for hit/special moves
+	if (FSTATUS(fflags) != FST_NONE) {
+		// Normal walk/jump animation, check buttons
+		if (input & KEY_A) {
+			if (FSTATUS(fflags) != FST_JMP) {
+				animBeginAnimation(fx, fdesc->keyframes.punch);
+				return;
+			} else {
+				// TODO: jump punch
+			}
+		} else if (input & KEY_B) {
+			if (FSTATUS(fflags) != FST_JMP) {
+				animBeginAnimation(fx, fdesc->keyframes.kick);
+				return;
+			} else {
+				// TODO: jump kick
+			}
+		}
+	}
+
+	// Check inputs for movements
 	u32 dirinput = input & INPUT_DIR_MASK;
 
 	if (dirinput & KEY_UP) {
 		if (fflags & FCJMP) {
-			f->curframe = fdesc->keyframes.jump;
-			f->cftime = fdesc->frames[f->curframe].speed;
+			animBeginAnimation(fx, fdesc->keyframes.jump);
 			return;
 		}
 	}
@@ -224,21 +252,18 @@ static void animProcessInput(int fx, u32 input) {
 	switch (dirinput) {
 	case 0:
 		if (fflags & FCIDLE) {
-			f->curframe = fdesc->keyframes.idle;
-			f->cftime = fdesc->frames[f->curframe].speed;
+			animBeginAnimation(fx, fdesc->keyframes.idle);
 		}
 		break;
 
 	case KEY_RIGHT:
 		if (!(f->flags & FLAGS_IS_RIGHT)) {
 			if (fflags & FCFWD) {
-				f->curframe = fdesc->keyframes.forward;
-				f->cftime = fdesc->frames[f->curframe].speed;
+				animBeginAnimation(fx, fdesc->keyframes.forward);
 			}
 		} else {
 			if (fflags & FCBWD) {
-				f->curframe = fdesc->keyframes.backward;
-				f->cftime = fdesc->frames[f->curframe].speed;
+				animBeginAnimation(fx, fdesc->keyframes.backward);
 			}
 		}
 		break;
@@ -246,13 +271,11 @@ static void animProcessInput(int fx, u32 input) {
 	case KEY_LEFT:
 		if (!(f->flags & FLAGS_IS_RIGHT)) {
 			if (fflags & FCBWD) {
-				f->curframe = fdesc->keyframes.backward;
-				f->cftime = fdesc->frames[f->curframe].speed;
+				animBeginAnimation(fx, fdesc->keyframes.backward);
 			}
 		} else {
 			if (fflags & FCFWD) {
-				f->curframe = fdesc->keyframes.forward;
-				f->cftime = fdesc->frames[f->curframe].speed;
+				animBeginAnimation(fx, fdesc->keyframes.forward);
 			}
 		}
 		break;

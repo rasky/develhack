@@ -80,6 +80,19 @@ const AnimDesc Dummy = {
 		{ 24, 0,        MOVE(8,5),   "dummy-jump", 3, 6, SPEED(8), FST_JMP},
 		{ 25, 0,        MOVE(8,10),  "dummy-jump", 4, 6, SPEED(8), FST_JMP},
 		{ 26, NEXT(0),  MOVE(8,15),  "dummy-jump", 5, 6, SPEED(8), FST_JMP},
+		/******************************************************************/
+		{ 27,  0,        MOVE(0,0), "dummy-punch", 0, 3, SPEED(14), 0},
+		{ 28,  0,        MOVE(0,0), "dummy-punch", 1, 3, SPEED(14), 0},
+		{ 29,  0,        MOVE(0,0), "dummy-punch", 2, 3, SPEED(14), 0},
+		{ 30,  0,        MOVE(0,0), "dummy-punch", 1, 3, SPEED(14), 0},
+		{ 31,  NEXT(0),  MOVE(0,0), "dummy-punch", 0, 3, SPEED(14), 0},
+		/******************************************************************/
+		{ 32,  0,        MOVE(0,0), "dummy-kick", 0, 5, SPEED(12), 0},
+		{ 33,  0,        MOVE(0,0), "dummy-kick", 1, 5, SPEED(12), 0},
+		{ 34,  0,        MOVE(0,0), "dummy-kick", 2, 5, SPEED(12), 0},
+		{ 35,  0,        MOVE(0,0), "dummy-kick", 3, 5, SPEED(12), 0},
+		{ 36,  NEXT(0),  MOVE(0,0), "dummy-kick", 4, 5, SPEED(12), 0},
+
 		{ 0, 0, },
 	},
 	{ // keyframes
@@ -87,6 +100,8 @@ const AnimDesc Dummy = {
 		/* fwd  */ 5,
 		/* bwd  */ 13,
 		/* jump */ 21,
+		/* punch */ 27,
+		/* kick */ 32,
 	},
 	/* pivot */ 45,119,
 	/* palette */ "dummy-idle.pal.bin",

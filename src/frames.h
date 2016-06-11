@@ -23,6 +23,8 @@ typedef struct {
 		u8 forward;
 		u8 backward;
 		u8 jump;
+		u8 punch;
+		u8 kick;
 	} keyframes;
 	u8 pivotx, pivoty;
 	const char *palette;
@@ -36,11 +38,12 @@ typedef struct {
 #define FCWALK (FCFWD|FCBWD)   // Can begin walking (if input says so)
 #define FCJMP  (1<<3)   // Can begin jumping (if input says so)
 
-#define FSTATUS(f) ((f)&(3<<8))  // Extract status
-#define FST_IDL  (0<<8)  // Status: idle
-#define FST_FWD  (1<<8)  // Status: moving forward
-#define FST_BWD  (2<<8)  // Status: moving backward
-#define FST_JMP  (3<<8)  // Status: jumping
+#define FSTATUS(f) ((f)&(7<<8))  // Extract status
+#define FST_NONE (0<<8)  // Status: none (all the others)
+#define FST_IDL  (1<<8)  // Status: idle
+#define FST_FWD  (2<<8)  // Status: moving forward
+#define FST_BWD  (3<<8)  // Status: moving backward
+#define FST_JMP  (4<<8)  // Status: jumping
 
 extern const AnimDesc Rasky;
 extern const AnimDesc Dummy;
