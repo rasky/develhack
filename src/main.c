@@ -135,6 +135,7 @@ int main(void)
     touchPosition touchXY;
 
     powerOn(POWER_ALL_2D);
+    setBrightness(3, -16); // set full black, both screens
 
     initVideo();
     lcdMainOnBottom();
@@ -203,9 +204,17 @@ int main(void)
     animInit();
 
     uint32 lastKeys = 0;
+    int brightness = -32;
 
     while (1) {
         swiWaitForVBlank();
+
+        // initial fade-in
+        if (brightness < 0) {
+            brightness += 1;
+            setBrightness(3, brightness/2);
+        }
+
         touchRead(&touchXY);
 
         if (touchXY.rawx || touchXY.rawy) {
