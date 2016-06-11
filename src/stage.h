@@ -8,7 +8,7 @@ typedef struct
     u32 w; // width of the level graphics
     u32 h; // height of the level graphics
     u32 floory; // position of the floor within the level
-    u32 fighterStartX[2]; // initial position of fighters    
+    u32 fighterStartX[2]; // initial position of fighters
 } StageDesc;
 
 // Functions related to loading and updating the stage, which generally
@@ -17,7 +17,7 @@ typedef struct
 
 const StageDesc* stageLoad(const char *id);
 
-/* Set the stage coordinate to be shown at the center of the screen.
+/* Set the stage coordinate to be shown at the top-left of the screen.
  * x/y are fixed point (.8).
  */
 void stageSetPosition(s32 x, s32 y);
