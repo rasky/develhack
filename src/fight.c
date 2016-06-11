@@ -161,6 +161,12 @@ static void updateCamera() {
 	}
 
 	if (changed) {
+		if (gFight.camera.x0 < 0) {
+			gFight.camera.x0 = 0;
+		} else if (gFight.camera.x1 > gFight.stage.desc->w<<8) {
+			gFight.camera.x1 = gFight.stage.desc->w<<8;
+		}
+
 		cameraw = gFight.camera.x1 - gFight.camera.x0;
 		gFight.camera.zoom = div32(SCREEN_WIDTH<<(8+SCALE_BITS), cameraw);
 
