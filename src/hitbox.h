@@ -12,9 +12,14 @@ typedef struct Hitbox {
     u8 x : 8;
     u8 y : 8;
     u8 w : 7;
-    int red : 1;
+    bool red : 1;
     u8 h : 7;
+    bool white : 1;
 } Hitbox;
+
+#define WBOX(px,py,pw,ph) { .x=px, .y=py, .w=pw, .h=ph, .red=0, .white=1 }
+#define BBOX(px,py,pw,ph) { .x=px, .y=py, .w=pw, .h=ph, .red=0, .white=0 }
+#define RBOX(px,py,pw,ph) { .x=px, .y=py, .w=pw, .h=ph, .red=1, .white=0 }
 
 /*
  * Returns true if the hitbox is an "attack" one (i.e.: it can deal damage to the other player).
@@ -22,9 +27,14 @@ typedef struct Hitbox {
 bool hitboxIsRed(const Hitbox* hitbox);
 
 /*
- * Returns true if the hitbox is an "idle" one (i.e.: used only for collision detection).
+ * Returns true if the hitbox is an "damage" one (i.e.: it can receive damage from the other player).
  */
 bool hitboxIsBlue(const Hitbox* hitbox);
+
+/*
+ * Returns true if the hitbox is an "volume" one (i.e.: used only for collision detection).
+ */
+bool hitboxIsWhite(const Hitbox* hitbox);
 
 /*
  * Returns true if the given source and destination boxes are colliding.

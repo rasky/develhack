@@ -7,12 +7,17 @@
 
 bool hitboxIsRed(const Hitbox* hitbox)
 {
-    return hitbox->red == 1;
+    return hitbox->red;
+}
+
+bool hitboxIsWhite(const Hitbox* hitbox)
+{
+    return hitbox->white;
 }
 
 bool hitboxIsBlue(const Hitbox* hitbox)
 {
-    return !hitboxIsRed(hitbox);
+    return !hitboxIsRed(hitbox) && !hitboxIsWhite(hitbox);
 }
 
 bool hitboxesAreColliding(

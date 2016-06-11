@@ -1,6 +1,7 @@
 #pragma once
 
 #include <nds/ndstypes.h>
+#include "hitbox.h"
 
 #define ANIM_DESC_MAX_FRAMES 64
 
@@ -14,6 +15,7 @@ typedef struct {
 	u8 animsz : 4;
 	u8 speed;
 	u16 flags;
+	Hitbox boxes[4];
 } AnimFrame;
 
 typedef struct {
