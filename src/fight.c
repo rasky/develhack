@@ -72,6 +72,7 @@ void fightInit(const StageDesc *desc) {
 
 static void fightUpdateStatus(int fx, u32 keys) {
 	struct Fighter *f = &gFight.fighters[fx];
+	const StageDesc *desc = gFight.stage.desc;
 
 	int status, movex, movey;
 	animFighterGetState(fx, &status, &movex, &movey);
@@ -90,10 +91,6 @@ static void fightUpdateStatus(int fx, u32 keys) {
 			f->wx += (s32)movex * 64;
 		else
 			f->wx -= (s32)movex * 64;
-		// if (f->wx > gFight.stage.desc->w<<8)
-		// 	f->wx = gFight.stage.desc->h<<8;
-		// if (f->wx < 0)
-		// 	f->wx = 0;
 		break;
 
 	case FST_JMP:
@@ -104,6 +101,12 @@ static void fightUpdateStatus(int fx, u32 keys) {
 			f->wx += (s32)movex * 64;
 		}
 		break;
+	}
+
+	if (f->wx > desc->fighterLimits[1]<<8) {
+		f->wx = desc->fighterLimits[1]<<8;
+	} else if (f->wx < desc->fighterLimits[0]<<8) {
+		f->wx = desc->fighterLimits[0]<<8;
 	}
 }
 

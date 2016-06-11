@@ -9,6 +9,7 @@ typedef struct
     u32 h; // height of the level graphics
     u32 floory; // position of the floor within the level
     u32 fighterStartX[2]; // initial position of fighters
+    u32 fighterLimits[2]; // minimum/maximum X coordinates the figthers can be at
 } StageDesc;
 
 // Functions related to loading and updating the stage, which generally
