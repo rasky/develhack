@@ -201,8 +201,6 @@ int main(void)
     // playBackgroundMusic(GlobalSfxMenu);
     // ----- END SOUND
 
-    animInit();
-
     uint32 lastKeys = 0;
     int brightness = -32;
 
