@@ -131,7 +131,7 @@ void stageSetPosition(s32 x, s32 y)
 {
     if (x != gStage.camera.x || y != gStage.camera.y)
     {
-        debugf("STAGE: Stage Position %ix%i\n", x >> 8, y >> 8);
+        // debugf("STAGE: Stage Position %ix%i\n", x >> 8, y >> 8);
         gStage.camera.x = x;
         gStage.camera.y = y;
     }
@@ -143,11 +143,10 @@ void stageSetZoom(u32 zoom)
     {
         gStage.camera.zoom = zoom;
 
-        s32 invscale = div32(1<<(8+SCALE_BITS), gStage.camera.zoom);
-
-        debugf("STAGE: Zoom %f (%f)\n",
-            fixedToFloat(gStage.camera.zoom, SCALE_BITS),
-            fixedToFloat(invscale, 8));
+        // s32 invscale = div32(1<<(8+SCALE_BITS), gStage.camera.zoom);
+        // debugf("STAGE: Zoom %f (%f)\n",
+        //     fixedToFloat(gStage.camera.zoom, SCALE_BITS),
+        //     fixedToFloat(invscale, 8));
     }
 }
 
