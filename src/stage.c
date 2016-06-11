@@ -25,7 +25,8 @@ typedef struct
 } Layer;
 
 StageDesc STAGES[] = {
-    { "lounge", 1024, 256, 250, { 64, 160 } },
+    /* name     width   height   floory    fighter start X    */
+    { "lounge", 1024,   256,     250,      { 64, 160 }        },
     { NULL }
 };
 
