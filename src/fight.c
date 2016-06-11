@@ -8,6 +8,9 @@
 #define SCREEN_WIDTH 256
 #define SCREEN_HEIGHT 192
 
+// Position of the floor on the screen
+#define SCREEN_FLOOR_Y 180
+
 // Margin is the minimum distance that we allow a fighter to stay from the border
 // When a fighter is closer than this to the border, we scroll the screen and/or
 // zoom out.
@@ -19,6 +22,7 @@
 
 // This is the maximum zoom level. After reaching this level, we don't zoom anymore
 #define ZOOM_MAX   (1<<SCALE_BITS)
+
 
 /*
  * World coordinates:
@@ -61,7 +65,7 @@ void fightInit(const StageDesc *desc) {
 	gFight.fighters[1].wy = desc->floory << 8;
 	gFight.camera.x0 = 0<<8;
 	gFight.camera.x1 = SCREEN_WIDTH<<8;
-	gFight.camera.y0 = 0<<8;
+	gFight.camera.y0 = (desc->floory - SCREEN_FLOOR_Y) << 8;
 	gFight.camera.zoom = 1<<SCALE_BITS;
 }
 
@@ -163,7 +167,7 @@ static void updateCamera() {
 		// FIXME: This keeps the floory line always at the same point. Not sure
 		// if it's what we want, but for it's OK.
 		gFight.camera.y0 = (gFight.stage.desc->floory<<8) -
-			cameraw * gFight.stage.desc->floory / SCREEN_WIDTH;
+			cameraw * SCREEN_FLOOR_Y / SCREEN_WIDTH;
 	}
 }
 
@@ -190,9 +194,9 @@ void fightUpdate(u32 keys) {
     animUpdateStatus(keys);
 	fightUpdateStatus(0, keys);
 	updateCamera();
-	updateFighters();
 
-	stageSetPosition(gFight.camera.x1 - gFight.camera.x0, gFight.camera.y0);
+	updateFighters();
+	stageSetPosition(gFight.camera.x0, gFight.camera.y0);
 	stageSetZoom(gFight.camera.zoom);
 }
 
