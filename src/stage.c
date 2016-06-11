@@ -26,7 +26,7 @@ typedef struct
 
 StageDesc STAGES[] = {
     /* name     width   height   floory    fighter start X    */
-    { "lounge", 1024,   256,     250,      { 64, 160 }        },
+    { "lounge", 1024,   256,     250,      { 412, 612 }        },
     { NULL }
 };
 
