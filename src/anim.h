@@ -2,15 +2,18 @@
 
 #include <nds/ndstypes.h>
 
+struct Hitbox;
+typedef struct Hitbox Hitbox;
+
 void animInit(void);
 void animUpdateStatus(u32 keys);
 void animRedraw(void);
 void animVblank(void);
 
-/* Fighters public API */
-
 // Number of fractional bits for scale factor in a fighter
 #define SCALE_BITS 10
+
+/* Anim fighters public API */
 
 /* Set the position of the fighter on the screen.
  *    fx: number of fighter (0 or 1)
@@ -32,3 +35,12 @@ void animFighterSetScale(int fx, u32 scale);
  * defined in frames.h.
  */
 void animFighterGetState(int fx, int *status, int *movex, int *movey);
+
+/* Get the pointer to the hitboxes and damage info for the current frame of the
+ * specified fighter. The hitboxes are stored in an array whose size
+ * is ANIM_DESC_MAX_BOXES.
+ */
+const Hitbox* animFighterGetHitboxes(int fx, u8 *damage);
+
+
+void animFighterHit(int fx);

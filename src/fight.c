@@ -36,6 +36,7 @@ struct {
 		// World position of the fighter (fixed .8).
 		// This is the point where the fighter's pivot will be placed.
 		s32 wx, wy;
+		int lifepoints;
 	} fighters[2];
 
 	struct {
@@ -50,6 +51,8 @@ struct {
 		s32 y0;
 		u32 zoom;
 	} camera;
+
+	int collisionFlag;
 } gFight;
 
 
@@ -180,6 +183,44 @@ static void updateCamera() {
 	}
 }
 
+// This function will be called when player #fx was hit
+//   fx - fighter index
+//   npoints - number of hitpoints inflicted to the player
+void fightHit(int fx, int npoints) {
+
+    // Play hit animation (depending if in jump or not)
+    animFighterHit(fx);
+
+    // Remove points and calc if dead
+    gFight.fighters[fx].lifepoints -= npoints;
+    if (gFight.fighters[fx].lifepoints < 0) {
+    	gFight.fighters[fx].lifepoints = 0;
+    	// TODO: die!
+    }
+
+    // TOOD: Play sound effect of hit
+}
+
+static void updateCollisions() {
+	u8 dmg0, dmg1;
+	const Hitbox *b0 = animFighterGetHitboxes(0, &dmg0);
+	const Hitbox *b1 = animFighterGetHitboxes(1, &dmg1);
+
+	// Check if a red box collide with a blue box
+	bool hit0 = hitboxCheckHit(
+		b0, ANIM_DESC_MAX_BOXES, gFight.fighters[0].wx, gFight.fighters[0].wy,
+		b1, ANIM_DESC_MAX_BOXES, gFight.fighters[1].wx, gFight.fighters[1].wy);
+	bool hit1 = hitboxCheckHit(
+		b1, ANIM_DESC_MAX_BOXES, gFight.fighters[1].wx, gFight.fighters[1].wy,
+		b0, ANIM_DESC_MAX_BOXES, gFight.fighters[0].wx, gFight.fighters[0].wy);
+
+	// Now handle hits
+	// TODO: make sure we handle double-hits correctly
+	if (hit0) fightHit(1, dmg0);
+	if (hit1) fightHit(0, dmg1);
+}
+
+
 static void updateFighters() {
 	u32 cameraw = gFight.camera.x1 - gFight.camera.x0;
 
@@ -199,14 +240,22 @@ static void updateFighters() {
 	animRedraw();
 }
 
+static void updateStage() {
+	stageSetPosition(gFight.camera.x0, gFight.camera.y0);
+	stageSetZoom(gFight.camera.zoom);
+}
+
 void fightUpdate(u32 keys) {
     animUpdateStatus(keys);
 	fightUpdateStatus(0, keys);
-	updateCamera();
+	updateCollisions();
 
+	// Compute the new camera based on the position of the fighters
+	// then update the sprites and the stage position/zoom to reflect
+	// the new camera.
+	updateCamera();
 	updateFighters();
-	stageSetPosition(gFight.camera.x0, gFight.camera.y0);
-	stageSetZoom(gFight.camera.zoom);
+	updateStage();
 }
 
 void fightVblank() {

@@ -3,6 +3,7 @@
 #define NEXT(n) ((n)+1)
 #define MOVE(x,y) (x),(y)
 #define SPEED(n) (16-(n))
+#define DAMAGE(n) (n)
 
 const AnimDesc Rasky = {
 	{ // frames
@@ -54,48 +55,52 @@ const AnimDesc Rasky = {
 
 const AnimDesc Dummy = {
 	{ // frames
-		{ 0,  0,        MOVE(0,0), "dummy-idle", 0, 5, SPEED(10),  FST_IDL|FCWALK|FCJMP,        {BASE_WBOX, BASE_BBOX}},
-		{ 1,  0,        MOVE(0,0), "dummy-idle", 1, 5, SPEED(10),  FST_IDL|FCWALK|FCJMP,        {BASE_WBOX, BASE_BBOX}},
-		{ 2,  0,        MOVE(0,0), "dummy-idle", 2, 5, SPEED(10),  FST_IDL|FCWALK|FCJMP,        {BASE_WBOX, BASE_BBOX}},
-		{ 3,  0,        MOVE(0,0), "dummy-idle", 3, 5, SPEED(10),  FST_IDL|FCWALK|FCJMP,        {BASE_WBOX, BASE_BBOX}},
-		{ 4,  NEXT(0),  MOVE(0,0), "dummy-idle", 4, 5, SPEED(10),  FST_IDL|FCWALK|FCJMP,        {BASE_WBOX, BASE_BBOX}},
-		/******************************************************************/
-		{ 5,  0,        MOVE(7,0), "dummy-walk", 0, 8, SPEED(8),   FST_FWD|FCIDLE|FCBWD|FCJMP,  {BASE_WBOX, BASE_BBOX}},
-		{ 6,  0,        MOVE(7,0), "dummy-walk", 1, 8, SPEED(8),   FST_FWD|FCIDLE|FCBWD|FCJMP,  {BASE_WBOX, BASE_BBOX}},
-		{ 7, 0,         MOVE(7,0), "dummy-walk", 2, 8, SPEED(8),   FST_FWD|FCIDLE|FCBWD|FCJMP,  {BASE_WBOX, BASE_BBOX}},
-		{ 8, 0,         MOVE(7,0), "dummy-walk", 3, 8, SPEED(8),   FST_FWD|FCIDLE|FCBWD|FCJMP,  {BASE_WBOX, BASE_BBOX}},
-		{ 9, 0,         MOVE(7,0), "dummy-walk", 4, 8, SPEED(8),   FST_FWD|FCIDLE|FCBWD|FCJMP,  {BASE_WBOX, BASE_BBOX}},
-		{ 10, 0,        MOVE(7,0), "dummy-walk", 5, 8, SPEED(8),   FST_FWD|FCIDLE|FCBWD|FCJMP,  {BASE_WBOX, BASE_BBOX}},
-		{ 11, 0,        MOVE(7,0), "dummy-walk", 6, 8, SPEED(8),   FST_FWD|FCIDLE|FCBWD|FCJMP,  {BASE_WBOX, BASE_BBOX}},
-		{ 12, NEXT(5),  MOVE(7,0), "dummy-walk", 7, 8, SPEED(8),   FST_FWD|FCIDLE|FCBWD|FCJMP,  {BASE_WBOX, BASE_BBOX}},
-		/******************************************************************/
-		{ 13, 0,        MOVE(-7,0), "dummy-walk", 7, 8, SPEED(13),  FST_BWD|FCIDLE|FCFWD|FCJMP, {BASE_WBOX, BASE_BBOX}},
-		{ 14, 0,        MOVE(-7,0), "dummy-walk", 6, 8, SPEED(13),  FST_BWD|FCIDLE|FCFWD|FCJMP, {BASE_WBOX, BASE_BBOX}},
-		{ 15, 0,        MOVE(-7,0), "dummy-walk", 5, 8, SPEED(13),  FST_BWD|FCIDLE|FCFWD|FCJMP, {BASE_WBOX, BASE_BBOX}},
-		{ 16, 0,        MOVE(-7,0), "dummy-walk", 4, 8, SPEED(13),  FST_BWD|FCIDLE|FCFWD|FCJMP, {BASE_WBOX, BASE_BBOX}},
-		{ 17, 0,        MOVE(-7,0), "dummy-walk", 3, 8, SPEED(13),  FST_BWD|FCIDLE|FCFWD|FCJMP, {BASE_WBOX, BASE_BBOX}},
-		{ 18, 0,        MOVE(-7,0), "dummy-walk", 2, 8, SPEED(13),  FST_BWD|FCIDLE|FCFWD|FCJMP, {BASE_WBOX, BASE_BBOX}},
-		{ 19, 0,        MOVE(-7,0), "dummy-walk", 1, 8, SPEED(13),  FST_BWD|FCIDLE|FCFWD|FCJMP, {BASE_WBOX, BASE_BBOX}},
-		{ 20, NEXT(13), MOVE(-7,0), "dummy-walk", 0, 8, SPEED(13),  FST_BWD|FCIDLE|FCFWD|FCJMP, {BASE_WBOX, BASE_BBOX}},
-		/******************************************************************/
-		{ 21, 0,        MOVE(8,-15), "dummy-jump", 0, 6, SPEED(8),  FST_JMP,                    {BASE_WBOX, BASE_BBOX}},
-		{ 22, 0,        MOVE(8,-10), "dummy-jump", 1, 6, SPEED(8),  FST_JMP,                    {BASE_WBOX, BASE_BBOX}},
-		{ 23, 0,        MOVE(8,-5),  "dummy-jump", 2, 6, SPEED(8),  FST_JMP,                    {BASE_WBOX, BASE_BBOX}},
-		{ 24, 0,        MOVE(8,5),   "dummy-jump", 3, 6, SPEED(8),  FST_JMP,                    {BASE_WBOX, BASE_BBOX}},
-		{ 25, 0,        MOVE(8,10),  "dummy-jump", 4, 6, SPEED(8),  FST_JMP,                    {BASE_WBOX, BASE_BBOX}},
-		{ 26, NEXT(0),  MOVE(8,15),  "dummy-jump", 5, 6, SPEED(8),  FST_JMP,                    {BASE_WBOX, BASE_BBOX}},
-		/******************************************************************/
-		{ 27,  0,       MOVE(0,0), "dummy-punch", 0, 3, SPEED(14),  0,                          {BASE_WBOX, BASE_BBOX}},
-		{ 28,  0,       MOVE(0,0), "dummy-punch", 1, 3, SPEED(14),  0,                          {BASE_WBOX, BASE_RBOX}},
-		{ 29,  0,       MOVE(0,0), "dummy-punch", 2, 3, SPEED(14),  0,                          {BASE_WBOX, BASE_RBOX}},
-		{ 30,  0,       MOVE(0,0), "dummy-punch", 1, 3, SPEED(14),  0,                          {BASE_WBOX, BASE_RBOX}},
-		{ 31,  NEXT(0), MOVE(0,0), "dummy-punch", 0, 3, SPEED(14),  0,                          {BASE_WBOX, BASE_BBOX}},
-		/******************************************************************/
-		{ 32,  0,       MOVE(0,0), "dummy-kick", 0, 5, SPEED(12),   0,                          {BASE_WBOX, BASE_BBOX}},
-		{ 33,  0,       MOVE(0,0), "dummy-kick", 1, 5, SPEED(12),   0,                          {BASE_WBOX, BASE_RBOX}},
-		{ 34,  0,       MOVE(0,0), "dummy-kick", 2, 5, SPEED(12),   0,                          {BASE_WBOX, BASE_RBOX}},
-		{ 35,  0,       MOVE(0,0), "dummy-kick", 3, 5, SPEED(12),   0,                          {BASE_WBOX, BASE_RBOX}},
-		{ 36,  NEXT(0), MOVE(0,0), "dummy-kick", 4, 5, SPEED(12),   0,                          {BASE_WBOX, BASE_BBOX}},
+		{ 0,  0,        MOVE(0,0), "dummy-idle", 0, 5, SPEED(10),  FST_IDL|FCWALK|FCJMP,        DAMAGE(0), {BASE_WBOX, BASE_BBOX}},
+		{ 1,  0,        MOVE(0,0), "dummy-idle", 1, 5, SPEED(10),  FST_IDL|FCWALK|FCJMP,        DAMAGE(0), {BASE_WBOX, BASE_BBOX}},
+		{ 2,  0,        MOVE(0,0), "dummy-idle", 2, 5, SPEED(10),  FST_IDL|FCWALK|FCJMP,        DAMAGE(0), {BASE_WBOX, BASE_BBOX}},
+		{ 3,  0,        MOVE(0,0), "dummy-idle", 3, 5, SPEED(10),  FST_IDL|FCWALK|FCJMP,        DAMAGE(0), {BASE_WBOX, BASE_BBOX}},
+		{ 4,  NEXT(0),  MOVE(0,0), "dummy-idle", 4, 5, SPEED(10),  FST_IDL|FCWALK|FCJMP,        DAMAGE(0), {BASE_WBOX, BASE_BBOX}},
+		/*********************************************************************************************************************************/
+		{ 5,  0,        MOVE(7,0), "dummy-walk", 0, 8, SPEED(8),   FST_FWD|FCIDLE|FCBWD|FCJMP,  DAMAGE(0), {BASE_WBOX, BASE_BBOX}},
+		{ 6,  0,        MOVE(7,0), "dummy-walk", 1, 8, SPEED(8),   FST_FWD|FCIDLE|FCBWD|FCJMP,  DAMAGE(0), {BASE_WBOX, BASE_BBOX}},
+		{ 7, 0,         MOVE(7,0), "dummy-walk", 2, 8, SPEED(8),   FST_FWD|FCIDLE|FCBWD|FCJMP,  DAMAGE(0), {BASE_WBOX, BASE_BBOX}},
+		{ 8, 0,         MOVE(7,0), "dummy-walk", 3, 8, SPEED(8),   FST_FWD|FCIDLE|FCBWD|FCJMP,  DAMAGE(0), {BASE_WBOX, BASE_BBOX}},
+		{ 9, 0,         MOVE(7,0), "dummy-walk", 4, 8, SPEED(8),   FST_FWD|FCIDLE|FCBWD|FCJMP,  DAMAGE(0), {BASE_WBOX, BASE_BBOX}},
+		{ 10, 0,        MOVE(7,0), "dummy-walk", 5, 8, SPEED(8),   FST_FWD|FCIDLE|FCBWD|FCJMP,  DAMAGE(0), {BASE_WBOX, BASE_BBOX}},
+		{ 11, 0,        MOVE(7,0), "dummy-walk", 6, 8, SPEED(8),   FST_FWD|FCIDLE|FCBWD|FCJMP,  DAMAGE(0), {BASE_WBOX, BASE_BBOX}},
+		{ 12, NEXT(5),  MOVE(7,0), "dummy-walk", 7, 8, SPEED(8),   FST_FWD|FCIDLE|FCBWD|FCJMP,  DAMAGE(0), {BASE_WBOX, BASE_BBOX}},
+		/*********************************************************************************************************************************/
+		{ 13, 0,        MOVE(-7,0), "dummy-walk", 7, 8, SPEED(13),  FST_BWD|FCIDLE|FCFWD|FCJMP, DAMAGE(0), {BASE_WBOX, BASE_BBOX}},
+		{ 14, 0,        MOVE(-7,0), "dummy-walk", 6, 8, SPEED(13),  FST_BWD|FCIDLE|FCFWD|FCJMP, DAMAGE(0), {BASE_WBOX, BASE_BBOX}},
+		{ 15, 0,        MOVE(-7,0), "dummy-walk", 5, 8, SPEED(13),  FST_BWD|FCIDLE|FCFWD|FCJMP, DAMAGE(0), {BASE_WBOX, BASE_BBOX}},
+		{ 16, 0,        MOVE(-7,0), "dummy-walk", 4, 8, SPEED(13),  FST_BWD|FCIDLE|FCFWD|FCJMP, DAMAGE(0), {BASE_WBOX, BASE_BBOX}},
+		{ 17, 0,        MOVE(-7,0), "dummy-walk", 3, 8, SPEED(13),  FST_BWD|FCIDLE|FCFWD|FCJMP, DAMAGE(0), {BASE_WBOX, BASE_BBOX}},
+		{ 18, 0,        MOVE(-7,0), "dummy-walk", 2, 8, SPEED(13),  FST_BWD|FCIDLE|FCFWD|FCJMP, DAMAGE(0), {BASE_WBOX, BASE_BBOX}},
+		{ 19, 0,        MOVE(-7,0), "dummy-walk", 1, 8, SPEED(13),  FST_BWD|FCIDLE|FCFWD|FCJMP, DAMAGE(0), {BASE_WBOX, BASE_BBOX}},
+		{ 20, NEXT(13), MOVE(-7,0), "dummy-walk", 0, 8, SPEED(13),  FST_BWD|FCIDLE|FCFWD|FCJMP, DAMAGE(0), {BASE_WBOX, BASE_BBOX}},
+		/*********************************************************************************************************************************/
+		{ 21, 0,        MOVE(8,-15), "dummy-jump", 0, 6, SPEED(8),  FST_JMP,                    DAMAGE(0), {BASE_WBOX, BASE_BBOX}},
+		{ 22, 0,        MOVE(8,-10), "dummy-jump", 1, 6, SPEED(8),  FST_JMP,                    DAMAGE(0), {BASE_WBOX, BASE_BBOX}},
+		{ 23, 0,        MOVE(8,-5),  "dummy-jump", 2, 6, SPEED(8),  FST_JMP,                    DAMAGE(0), {BASE_WBOX, BASE_BBOX}},
+		{ 24, 0,        MOVE(8,5),   "dummy-jump", 3, 6, SPEED(8),  FST_JMP,                    DAMAGE(0), {BASE_WBOX, BASE_BBOX}},
+		{ 25, 0,        MOVE(8,10),  "dummy-jump", 4, 6, SPEED(8),  FST_JMP,                    DAMAGE(0), {BASE_WBOX, BASE_BBOX}},
+		{ 26, NEXT(0),  MOVE(8,15),  "dummy-jump", 5, 6, SPEED(8),  FST_JMP,                    DAMAGE(0), {BASE_WBOX, BASE_BBOX}},
+		/*********************************************************************************************************************************/
+		{ 27,  0,       MOVE(0,0), "dummy-punch", 0, 3, SPEED(14),  0,                          DAMAGE(3), {BASE_WBOX, BASE_BBOX}},
+		{ 28,  0,       MOVE(0,0), "dummy-punch", 1, 3, SPEED(14),  0,                          DAMAGE(3), {BASE_WBOX, BASE_RBOX}},
+		{ 29,  0,       MOVE(0,0), "dummy-punch", 2, 3, SPEED(14),  0,                          DAMAGE(3), {BASE_WBOX, BASE_RBOX}},
+		{ 30,  0,       MOVE(0,0), "dummy-punch", 1, 3, SPEED(14),  0,                          DAMAGE(3), {BASE_WBOX, BASE_RBOX}},
+		{ 31,  NEXT(0), MOVE(0,0), "dummy-punch", 0, 3, SPEED(14),  0,                          DAMAGE(3), {BASE_WBOX, BASE_BBOX}},
+		/*********************************************************************************************************************************/
+		{ 32,  0,       MOVE(0,0), "dummy-kick", 0, 5, SPEED(12),   0,                          DAMAGE(8), {BASE_WBOX, BASE_BBOX}},
+		{ 33,  0,       MOVE(0,0), "dummy-kick", 1, 5, SPEED(12),   0,                          DAMAGE(8), {BASE_WBOX, BASE_RBOX}},
+		{ 34,  0,       MOVE(0,0), "dummy-kick", 2, 5, SPEED(12),   0,                          DAMAGE(8), {BASE_WBOX, BASE_RBOX}},
+		{ 35,  0,       MOVE(0,0), "dummy-kick", 3, 5, SPEED(12),   0,                          DAMAGE(8), {BASE_WBOX, BASE_RBOX}},
+		{ 36,  NEXT(0), MOVE(0,0), "dummy-kick", 4, 5, SPEED(12),   0,                          DAMAGE(8), {BASE_WBOX, BASE_BBOX}},
+		/*********************************************************************************************************************************/
+		{ 37,  0,       MOVE(0,0), "dummy-hit", 0, 2, SPEED(10),   0,                           DAMAGE(0), {BASE_WBOX }},
+		{ 38,  0,       MOVE(0,0), "dummy-hit", 1, 2, SPEED(10),   0,                           DAMAGE(0), {BASE_WBOX }},
+		{ 39,  NEXT(0), MOVE(0,0), "dummy-hit", 0, 2, SPEED(10),   0,                           DAMAGE(0), {BASE_WBOX }},
 
 		{ 0, 0, },
 	},
@@ -106,6 +111,7 @@ const AnimDesc Dummy = {
 		/* jump */   21,
 		/* punch */  27,
 		/* kick */   32,
+		/* hit */    37,
 	},
 	/* pivot */ 45,119,
 	/* palette */ "dummy-idle.pal.bin",

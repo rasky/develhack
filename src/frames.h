@@ -4,6 +4,7 @@
 #include "hitbox.h"
 
 #define ANIM_DESC_MAX_FRAMES 64
+#define ANIM_DESC_MAX_BOXES 4
 
 typedef struct {
 	u8 idx;
@@ -15,7 +16,8 @@ typedef struct {
 	u8 animsz : 4;
 	u8 speed;
 	u16 flags;
-	Hitbox boxes[4];
+	u8 damage;
+	Hitbox boxes[ANIM_DESC_MAX_BOXES];
 } AnimFrame;
 
 typedef struct {
@@ -27,6 +29,7 @@ typedef struct {
 		u8 jump;
 		u8 punch;
 		u8 kick;
+		u8 hit;
 	} keyframes;
 	u8 pivotx, pivoty;
 	const char *palette;

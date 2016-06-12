@@ -130,7 +130,7 @@ static void animLoad(int fidx, const AnimDesc *desc) {
 
 void animInit(void) {
 	animLoad(0, &Dummy);
-	animLoad(1, &Rasky);
+	animLoad(1, &Dummy);
 
 	oamInit(&oamMain, SpriteMapping_1D_64, false);
 	oamDisable(&oamMain);
@@ -356,4 +356,22 @@ void animFighterGetState(int fx, int *status, int *movex, int *movey) {
 	if (status) *status = FSTATUS(fframe->flags);
 	if (movex)  *movex = fframe->movex;
 	if (movey)  *movey = fframe->movey;
+}
+
+const Hitbox* animFighterGetHitboxes(int fx, u8 *dmg) {
+	AnimFighter *f = &gFighters[fx];
+	const AnimDesc *fdesc = f->desc;
+	const AnimFrame *fframe = &fdesc->frames[f->curframe];
+
+	if (dmg) *dmg = fframe->damage;
+
+	return fframe->boxes;
+}
+
+void animFighterHit(int fx) {
+	AnimFighter *f = &gFighters[fx];
+	const AnimDesc *fdesc = f->desc;
+
+	// TODO: handle hit in jump
+	animBeginAnimation(fx, fdesc->keyframes.hit);
 }

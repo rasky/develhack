@@ -21,6 +21,9 @@ typedef struct Hitbox {
 #define BBOX(px,py,pw,ph) { .x=px, .y=py, .w=pw, .h=ph, .red=0, .white=0 }
 #define RBOX(px,py,pw,ph) { .x=px, .y=py, .w=pw, .h=ph, .red=1, .white=0 }
 
+/* Returns true if the hitbox is invalid (zero initialization is guaranteed to be invalid). */
+bool hitboxInvalid(const Hitbox* hitbox);
+
 /*
  * Returns true if the hitbox is an "attack" one (i.e.: it can deal damage to the other player).
  */
@@ -47,9 +50,22 @@ bool hitboxIsWhite(const Hitbox* hitbox);
  * - dstX: X coordinate of the destination hitbox (in world coordinates);
  * - dstY: Y coordinate of the destination hitbox (in world coordinates);
  */
-bool hitboxesAreColliding(
+bool hitboxIntersects(
     const Hitbox* src, fix23_8 srcX, fix23_8 srcY,
     const Hitbox* dst, fix23_8 dstX, fix23_8 dstY);
+
+
+/*
+ * Given all the boxes of two players, check whether
+ * any of the src red boxes intersects any of the dst
+ * blue boxes.
+ *
+ * src_all/dst_all are two arrays of hitboxes, that can
+ * contain invalid hitboxes (they are skipped).
+ */
+bool hitboxCheckHit(
+	const Hitbox *src, int nsrc, fix23_8 srcX, fix23_8 srcY,
+	const Hitbox *dst, int ndst, fix23_8 dstX, fix23_8 dstY);
 
 /*
  * Runs some hitbox unit tests at start.
