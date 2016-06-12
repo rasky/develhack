@@ -19,7 +19,13 @@ def parse_grit(grit):
                 continue
             options.extend(line.split(' '))
 
-    inputs = grit.parent.ant_glob('*.png')
+    inputs = []
+
+    while not options[0].startswith('-'):
+        inputs.extend(grit.parent.ant_glob(options.pop(0)))
+
+    if not inputs:
+        raise ValueError("{0} does not begin with at least one file glob pattern".format(grit.relpath()))
 
     extensions = []
     shared_extensions = []
@@ -164,11 +170,12 @@ def build(bld):
 
     for gritfile in bld.path.ant_glob('gfx/**/*.grit'):
         options, inputs, outputs = parse_grit(gritfile)
-        input_paths = " ".join(i.abspath() for i in inputs)
+        cwd = outputs[0].parent
+        input_paths = " ".join(i.path_from(cwd) for i in inputs)
         bld(rule="${{GRIT}} {0} {1}".format(input_paths, " ".join(options)),
             source=inputs,
             target=outputs,
-            cwd=outputs[0].parent.abspath())
+            cwd=cwd.abspath())
         data_files.extend(outputs)
 
     bld(source=bld.path.ant_glob('lua/*.lua'))

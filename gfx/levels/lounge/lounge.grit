@@ -1,3 +1,5 @@
+lounge-00.png lounge-01.png
+
 # binary output mode
 -ftb
 
@@ -16,7 +18,7 @@
 # flat map layout
 -mLf
 
-# tile reduction with support for flipped tiles
+# tile reduction
 -mRt
 
 # 8-bit output
