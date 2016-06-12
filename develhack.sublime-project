@@ -3,7 +3,7 @@
 	[
 		{
 			"name": "Build DevelHack",
-			"shell_cmd": "./script/build && ./script/run",
+			"shell_cmd": "./waf -j2 && ./script/run",
 			"working_dir": "$project_path"
 		}
 	],

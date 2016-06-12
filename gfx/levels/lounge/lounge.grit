@@ -29,4 +29,4 @@
 -O lounge
 
 # use 00ff00 as transparent colour
-# -gT 00ff00
+-gT ff00ff

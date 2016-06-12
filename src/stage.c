@@ -26,12 +26,13 @@ typedef struct
 
 StageDesc STAGES[] = {
     /* name     width   height   floory    fighter start X   fighter limits    */
-    { "lounge", 1024,   256,     250,      { 412, 612 },     { 50, 970 },      },
+    { "lounge", 1024,   512,     500,      { 412, 612 },     { 50, 970 },      },
     { NULL }
 };
 
 Layer LAYERS[] = {
-    { "lounge", "lounge-00", 3, 0, BgType_ExRotation, BgSize_ER_1024x1024, 0, 0, 1024, 256, false },
+    { "lounge", "lounge-00", 2, 1, BgType_ExRotation, BgSize_ER_1024x1024, 0, 0, 1024, 512, false },
+    { "lounge", "lounge-01", 3, 0, BgType_ExRotation, BgSize_ER_1024x1024, 0, 0, 1024, 512, false },
     { NULL, NULL }
 };
 
@@ -95,7 +96,7 @@ const StageDesc* stageLoad(const char* id)
             continue;
         }
 
-        int bg = bgInit(layer->background, layer->bg_type, layer->bg_size, tile_map_offset, 2);
+        int bg = bgInit(layer->background, layer->bg_type, layer->bg_size, tile_map_offset, 4);
         bgSetPriority(bg, layer->priority);
         if (layer->wraps) {
             bgWrapOn(bg);
@@ -105,7 +106,7 @@ const StageDesc* stageLoad(const char* id)
 
         gStage.backgrounds[layer->background].layer = layer;
         gStage.backgrounds[layer->background].id = bg;
-        gStage.backgrounds[layer->background].scale = 1 << SCALE_BITS;
+        gStage.backgrounds[layer->background].scale = 1 << 8;
 
         if (!loaded_tiles) {
             snprintf(filename, sizeof(filename), "%s.img.bin", id);
@@ -161,15 +162,15 @@ void stageUpdate()
             continue;
         }
 
-        Layer* layer = gStage.backgrounds[i].layer;
+        s32 scale = (invscale * gStage.backgrounds[i].scale) >> 8;
 
-        // if each layer had a scale value associated with it, you'd use it here:
-        s32 scale = (invscale * gStage.backgrounds[i].scale) >> SCALE_BITS;
+        s32 x_offset = gStage.camera.x;
+        s32 y_offset = gStage.camera.y;
 
         // TODO: offset the different layers by different amounts for parallax
         bgSet(gStage.backgrounds[i].id, 0, scale, scale,
-            layer->x_offset + gStage.camera.x,
-            layer->y_offset + gStage.camera.y,
+            x_offset,
+            y_offset,
             0, 0);
     }
 
