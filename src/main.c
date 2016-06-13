@@ -188,8 +188,7 @@ int main(void)
 #endif
 
     const StageDesc* stage = stageLoad("lounge");
-    if (stage == NULL)
-    {
+    if (stage == NULL) {
         debugf("Unable to load stage\n");
         goto error;
     }
@@ -210,7 +209,7 @@ int main(void)
         // initial fade-in
         if (brightness < 0) {
             brightness += 1;
-            setBrightness(3, brightness/2);
+            setBrightness(3, brightness / 2);
         }
 
         touchRead(&touchXY);

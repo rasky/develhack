@@ -38,8 +38,8 @@ __attribute__((noinline)) int is_emulator()
         "mov  r0, #0     \n\t" // r0 = 0
         "strh r2, [r1]   \n\t" // Restore previous instruction
         "mov  %[result], r0 \n\t"
-        : [result]"=l"(mov_r0_r0) // output registers
-        : [old]"l"(mov_r0_r0), [new]"l"(mov_r0_0) // input registers
+        : [result] "=l"(mov_r0_r0) // output registers
+        : [old] "l"(mov_r0_r0), [new] "l"(mov_r0_0) // input registers
         : "r0", "r1", "r2" // clobbered registers
         );
 
@@ -55,8 +55,8 @@ __attribute__((noinline)) int is_emulator()
         "mov  r0, #0     \n\t" // r0 = 0
         "str  r2, [r1]   \n\t" // Restore previous instruction
         "mov  %[result],r0 \n\t"
-        : [result]"=r"(mov_r0_r0) // output registers
-        : [old]"r"(mov_r0_r0), "r"(mov_r0_0) // input registers
+        : [result] "=r"(mov_r0_r0) // output registers
+        : [old] "r"(mov_r0_r0), "r"(mov_r0_0) // input registers
         : "r0", "r1", "r2" // clobbered registers
         );
 #endif

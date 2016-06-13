@@ -25,7 +25,8 @@ def parse_grit(grit):
         inputs.extend(grit.parent.ant_glob(options.pop(0)))
 
     if not inputs:
-        raise ValueError("{0} does not begin with at least one file glob pattern".format(grit.relpath()))
+        raise ValueError(
+            "{0} does not begin with at least one file glob pattern".format(grit.relpath()))
 
     extensions = []
     shared_extensions = []

@@ -16,7 +16,7 @@ typedef struct
 // controls the various background layers and may include some sprites
 // as well.
 
-const StageDesc* stageLoad(const char *id);
+const StageDesc* stageLoad(const char* id);
 
 /* Set the stage coordinate to be shown at the top-left of the screen.
  * x/y are fixed point (.8).

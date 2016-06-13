@@ -3,11 +3,9 @@
 #include <nds.h>
 #include <stdio.h>
 
-#include "io.h"
-
 #include "anim.h" // just for SCALE_BITS
-
 #include "debug.h"
+#include "io.h"
 
 typedef struct
 {
@@ -26,7 +24,9 @@ typedef struct
 
 StageDesc STAGES[] = {
     /* name     width   height   floory    fighter start X   fighter limits    */
-    { "lounge", 1024,   512,     500,      { 412, 612 },     { 50, 970 },      },
+    {
+        "lounge", 1024, 512, 500, { 412, 612 }, { 50, 970 },
+    },
     { NULL }
 };
 
@@ -40,7 +40,7 @@ struct {
     struct {
         int id; // the background id returned from bgInit; -1 if unused
         s32 scale;
-        Layer *layer;
+        Layer* layer;
     } backgrounds[4];
 
     struct {
@@ -49,7 +49,6 @@ struct {
         u32 zoom;
     } camera;
 } gStage;
-
 
 int num_chunks(int size, int chunk_size)
 {
@@ -64,7 +63,7 @@ int num_chunks(int size, int chunk_size)
 const StageDesc* stageLoad(const char* id)
 {
     StageDesc* stage = STAGES;
-    for ( ; stage->id != NULL; ++stage) {
+    for (; stage->id != NULL; ++stage) {
         if (stage->id == NULL) {
             debugf("Stage not found: %s\n", id);
             return NULL;
@@ -77,7 +76,7 @@ const StageDesc* stageLoad(const char* id)
 
     char filename[64];
 
-    for (int i=0; i<4; ++i) {
+    for (int i = 0; i < 4; ++i) {
         gStage.backgrounds[i].id = -1;
     }
 
@@ -131,8 +130,7 @@ const StageDesc* stageLoad(const char* id)
 
 void stageSetPosition(s32 x, s32 y)
 {
-    if (x != gStage.camera.x || y != gStage.camera.y)
-    {
+    if (x != gStage.camera.x || y != gStage.camera.y) {
         // debugf("STAGE: Stage Position %ix%i\n", x >> 8, y >> 8);
         gStage.camera.x = x;
         gStage.camera.y = y;
@@ -141,8 +139,7 @@ void stageSetPosition(s32 x, s32 y)
 
 void stageSetZoom(u32 zoom)
 {
-    if (zoom != gStage.camera.zoom)
-    {
+    if (zoom != gStage.camera.zoom) {
         gStage.camera.zoom = zoom;
 
         // s32 invscale = div32(1<<(8+SCALE_BITS), gStage.camera.zoom);
@@ -154,10 +151,9 @@ void stageSetZoom(u32 zoom)
 
 void stageUpdate()
 {
-    s32 invscale = div32(1<<(8+SCALE_BITS), gStage.camera.zoom);
+    s32 invscale = div32(1 << (8 + SCALE_BITS), gStage.camera.zoom);
 
-    for (int i=0; i<4; ++i)
-    {
+    for (int i = 0; i < 4; ++i) {
         if (gStage.backgrounds[i].id == -1) {
             continue;
         }

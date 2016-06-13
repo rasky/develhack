@@ -2,7 +2,7 @@
 
 #include <nds.h>
 
-#define FIFO_XM7  (FIFO_USER_07)
+#define FIFO_XM7 (FIFO_USER_07)
 
 typedef enum GlobalSfx {
     GlobalSfxMenu,

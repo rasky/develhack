@@ -34,13 +34,12 @@ void animFighterSetScale(int fx, u32 scale);
  * The value returned can be compared against the FST_* macros
  * defined in frames.h.
  */
-void animFighterGetState(int fx, int *status, int *movex, int *movey);
+void animFighterGetState(int fx, int* status, int* movex, int* movey);
 
 /* Get the pointer to the hitboxes and damage info for the current frame of the
  * specified fighter. The hitboxes are stored in an array whose size
  * is ANIM_DESC_MAX_BOXES.
  */
-const Hitbox* animFighterGetHitboxes(int fx, u8 *damage);
-
+const Hitbox* animFighterGetHitboxes(int fx, u8* damage);
 
 void animFighterHit(int fx);

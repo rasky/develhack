@@ -17,9 +17,18 @@ typedef struct Hitbox {
     bool white : 1;
 } Hitbox;
 
-#define WBOX(px,py,pw,ph) { .x=px, .y=py, .w=pw, .h=ph, .red=0, .white=1 }
-#define BBOX(px,py,pw,ph) { .x=px, .y=py, .w=pw, .h=ph, .red=0, .white=0 }
-#define RBOX(px,py,pw,ph) { .x=px, .y=py, .w=pw, .h=ph, .red=1, .white=0 }
+#define WBOX(px, py, pw, ph)                                     \
+    {                                                            \
+        .x = px, .y = py, .w = pw, .h = ph, .red = 0, .white = 1 \
+    }
+#define BBOX(px, py, pw, ph)                                     \
+    {                                                            \
+        .x = px, .y = py, .w = pw, .h = ph, .red = 0, .white = 0 \
+    }
+#define RBOX(px, py, pw, ph)                                     \
+    {                                                            \
+        .x = px, .y = py, .w = pw, .h = ph, .red = 1, .white = 0 \
+    }
 
 /* Returns true if the hitbox is invalid (zero initialization is guaranteed to be invalid). */
 bool hitboxInvalid(const Hitbox* hitbox);
@@ -54,7 +63,6 @@ bool hitboxIntersects(
     const Hitbox* src, fix23_8 srcX, fix23_8 srcY,
     const Hitbox* dst, fix23_8 dstX, fix23_8 dstY);
 
-
 /*
  * Given all the boxes of two players, check whether
  * any of the src red boxes intersects any of the dst
@@ -64,8 +72,8 @@ bool hitboxIntersects(
  * contain invalid hitboxes (they are skipped).
  */
 bool hitboxCheckHit(
-	const Hitbox *src, int nsrc, fix23_8 srcX, fix23_8 srcY,
-	const Hitbox *dst, int ndst, fix23_8 dstX, fix23_8 dstY);
+    const Hitbox* src, int nsrc, fix23_8 srcX, fix23_8 srcY,
+    const Hitbox* dst, int ndst, fix23_8 dstX, fix23_8 dstY);
 
 /*
  * Runs some hitbox unit tests at start.

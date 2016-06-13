@@ -5,7 +5,8 @@
 #include "debug.h"
 #include "fixmath.h"
 
-bool hitboxInvalid(const Hitbox* hitbox) {
+bool hitboxInvalid(const Hitbox* hitbox)
+{
     return hitbox->w == 0 || hitbox->h == 0;
 }
 
@@ -28,25 +29,26 @@ bool hitboxIntersects(
     const Hitbox* src, fix23_8 srcX, fix23_8 srcY,
     const Hitbox* dst, fix23_8 dstX, fix23_8 dstY)
 {
-    return !(((src->x + src->w + (srcX>>8)) < (dst->x + (dstX>>8)))
-        || ((dst->x + dst->w + (dstX>>8)) < (src->x + (srcX>>8)))
-        || ((src->y + src->h + (srcY>>8)) < (dst->y + (dstY>>8)))
-        || ((dst->y + dst->h + (dstY>>8)) < (src->y + (srcY>>8))));
+    return !(((src->x + src->w + (srcX >> 8)) < (dst->x + (dstX >> 8)))
+        || ((dst->x + dst->w + (dstX >> 8)) < (src->x + (srcX >> 8)))
+        || ((src->y + src->h + (srcY >> 8)) < (dst->y + (dstY >> 8)))
+        || ((dst->y + dst->h + (dstY >> 8)) < (src->y + (srcY >> 8))));
 }
 
 bool hitboxCheckHit(
-    const Hitbox *src, int nsrc, fix23_8 srcX, fix23_8 srcY,
-    const Hitbox *dst, int ndst, fix23_8 dstX, fix23_8 dstY) {
+    const Hitbox* src, int nsrc, fix23_8 srcX, fix23_8 srcY,
+    const Hitbox* dst, int ndst, fix23_8 dstX, fix23_8 dstY)
+{
 
     // Go through all red boxes in src
-    for (int i=0;i<nsrc;i++) {
-        const Hitbox *h1 = &src[i];
+    for (int i = 0; i < nsrc; i++) {
+        const Hitbox* h1 = &src[i];
         if (hitboxInvalid(h1) || !hitboxIsRed(h1))
             continue;
 
         // Go through all blue boxes in dst
-        for (int j=0;j<ndst;j++) {
-            const Hitbox *h2 = &dst[j];
+        for (int j = 0; j < ndst; j++) {
+            const Hitbox* h2 = &dst[j];
             if (hitboxInvalid(h2) || !hitboxIsBlue(h2))
                 continue;
 
@@ -59,7 +61,6 @@ bool hitboxCheckHit(
 
     return false;
 }
-
 
 void testHitbox()
 {
