@@ -18,7 +18,7 @@ typedef struct
 
 const StageDesc* stageLoad(const char* id);
 
-/* Set the stage coordinate to be shown at the top-left of the screen.
+/* Set the stage coordinate to be shown at the centre of the screen.
  * x/y are fixed point (.8).
  */
 void stageSetPosition(s32 x, s32 y);

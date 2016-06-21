@@ -161,8 +161,11 @@ void stageUpdate()
 
         s32 scale = (invscale * gStage.backgrounds[i].scale) >> 8;
 
-        s32 x_offset = gStage.camera.x;
-        s32 y_offset = gStage.camera.y;
+        s32 width = div32(SCREEN_WIDTH << (8 + SCALE_BITS), gStage.camera.zoom);
+        s32 height = div32(SCREEN_HEIGHT << (8 + SCALE_BITS), gStage.camera.zoom);
+
+        s32 x_offset = gStage.camera.x - (width / 2);
+        s32 y_offset = gStage.camera.y - (height / 2);
 
         // TODO: offset the different layers by different amounts for parallax
         bgSet(gStage.backgrounds[i].id, 0, scale, scale,
