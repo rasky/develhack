@@ -1,4 +1,4 @@
-lounge-00.png lounge-01.png
+cielo.png
 
 # binary output mode
 -ftb
@@ -15,11 +15,11 @@ lounge-00.png lounge-01.png
 # include map data
 -m
 
-# flat map layout
--mLf
+# SBB map layout
+-mLs
 
 # tile reduction
--mRt
+-mRtf
 
 # 8-bit output
 -gB8
@@ -30,5 +30,9 @@ lounge-00.png lounge-01.png
 # output shared data with this file name
 -O lounge
 
-# use 00ff00 as transparent colour
+-W3
+
+-fx lounge
+
+# use ff00ff as transparent colour
 -gT ff00ff

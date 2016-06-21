@@ -31,6 +31,7 @@ StageDesc STAGES[] = {
 };
 
 Layer LAYERS[] = {
+    { "lounge", "cielo", 0, 2, BgType_Text8bpp, BgSize_T_512x512, 0, 0, 512, 512, false },
     { "lounge", "lounge-00", 2, 1, BgType_ExRotation, BgSize_ER_1024x1024, 0, 0, 1024, 512, false },
     { "lounge", "lounge-01", 3, 0, BgType_ExRotation, BgSize_ER_1024x1024, 0, 0, 1024, 512, false },
     { NULL, NULL }
@@ -95,7 +96,7 @@ const StageDesc* stageLoad(const char* id)
             continue;
         }
 
-        int bg = bgInit(layer->background, layer->bg_type, layer->bg_size, tile_map_offset, 4);
+        int bg = bgInit(layer->background, layer->bg_type, layer->bg_size, tile_map_offset, 5);
         bgSetPriority(bg, layer->priority);
         if (layer->wraps) {
             bgWrapOn(bg);
