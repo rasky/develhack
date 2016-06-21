@@ -169,15 +169,56 @@ def build(bld):
     # Run GRIT on images
     data_files = []
 
+    rules = {}
+
     for gritfile in bld.path.ant_glob('gfx/**/*.grit'):
         options, inputs, outputs = parse_grit(gritfile)
         cwd = outputs[0].parent
         input_paths = " ".join(i.path_from(cwd) for i in inputs)
-        bld(rule="${{GRIT}} {0} {1}".format(input_paths, " ".join(options)),
-            source=inputs,
-            target=outputs,
-            cwd=cwd.abspath())
-        data_files.extend(outputs)
+
+        rule = None
+        for output in outputs:
+            if output in rules:
+                rule = rules[output]
+                break
+
+        command = "${{GRIT}} {0} {1}".format(input_paths, " ".join(options))
+
+        if rule:
+            rule["command"].append(command)
+            rule["inputs"] = rule["inputs"] | set(inputs)
+            rule["outputs"] = rule["outputs"] | set(outputs)
+        else:
+            rule = {
+                "command": [command],
+                "inputs": set(inputs),
+                "outputs": set(outputs),
+                "cwd": cwd
+            }
+
+        for output in outputs:
+            if output in rules:
+                assert rule is rules[output]
+            else:
+                rules[output] = rule
+
+    done = set()
+
+    for rule in rules.itervalues():
+        if id(rule) in done:
+            continue
+        done.add(id(rule))
+
+        cwd = rule["cwd"]
+
+        rm_command = "rm -f {0}".format(' '.join(i.path_from(cwd) for i in rule["outputs"]))
+
+        bld(rule=(rm_command,) + tuple(rule["command"]),
+            source=list(rule["inputs"]),
+            target=list(rule["outputs"]),
+            cwd=rule["cwd"].abspath())
+
+        data_files.extend(list(rule["outputs"]))
 
     bld(source=bld.path.ant_glob('lua/*.lua'))
 
@@ -194,12 +235,8 @@ def build(bld):
             if ret != 0:
                 return ret
 
-        for src in task.inputs:
-            ret = task.exec_command('mcopy -o -i %s %s ::' % (tgt, src.abspath()))
-            if ret != 0:
-                return ret
-
-        return task.exec_command('mdir -i %s' % (tgt,))
+        input_list = ' '.join(src.bldpath() for src in task.inputs)
+        return task.exec_command('mcopy -o -i {0} {1} ::'.format(tgt, input_list))
 
     bld(rule=copy_fat_file, source=data_files, target='game.dat')
 
@@ -207,8 +244,8 @@ def build(bld):
     def cp(task):
         tgt = task.outputs[0].parent
         tgt.mkdir()
-        for src in task.inputs:
-            ret = task.exec_command('cp {0} {1}'.format(src.abspath(), tgt.abspath()))
+        input_list = ' '.join(src.bldpath() for src in task.inputs)
+        ret = task.exec_command('cp {0} {1}'.format(input_list, tgt.bldpath()))
         return ret
 
     bld(rule=cp, source=data_files,
