@@ -321,7 +321,7 @@ void animRedraw()
             } else {
                 f->curframe = curframe->next - 1;
             }
-            f->cftime = curframe->speed;
+            f->cftime = fdesc->frames[f->curframe].speed;
         }
 
         animUpdateOam(fx);
