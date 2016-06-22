@@ -37,14 +37,16 @@ Layer LAYERS[] = {
     { NULL, NULL }
 };
 
+typedef struct {
+    int id; // the background id returned from bgInit; -1 if unused
+    Layer* layer;
+    bool scales;
+    s32 parallax_x;
+    s32 parallax_y;
+} Background;
+
 struct {
-    struct {
-        int id; // the background id returned from bgInit; -1 if unused
-        Layer* layer;
-        bool scales;
-        s32 parallax_x;
-        s32 parallax_y;
-    } backgrounds[4];
+    Background backgrounds[4];
 
     struct {
         s32 x; // centre x coordinate
@@ -106,20 +108,22 @@ const StageDesc* stageLoad(const char* id)
             bgWrapOff(bg);
         }
 
-        gStage.backgrounds[layer->background].layer = layer;
-        gStage.backgrounds[layer->background].id = bg;
-        gStage.backgrounds[layer->background].parallax_x = div32((layer->width << 16), (stage->w << 8));
-        gStage.backgrounds[layer->background].parallax_y = div32((layer->height << 16), (stage->h << 8));
+        Background *background = gStage.backgrounds + layer->background;
+
+        background->layer = layer;
+        background->id = bg;
+        background->parallax_x = div32((layer->width << 16), (stage->w << 8));
+        background->parallax_y = div32((layer->height << 16), (stage->h << 8));
 
         switch (layer->bg_type) {
             case BgType_Text4bpp:
             case BgType_Text8bpp:
-                gStage.backgrounds[layer->background].scales = false;
+                background->scales = false;
                 break;
 
             case BgType_Rotation:
             case BgType_ExRotation:
-                gStage.backgrounds[layer->background].scales = true;
+                background->scales = true;
                 break;
 
             default:
@@ -150,7 +154,7 @@ const StageDesc* stageLoad(const char* id)
 
 void stageSetPosition(s32 left, s32 right, s32 top)
 {
-    // calcuate half width and half height of the rectangle
+    // calculate width and height of the rectangle
     s32 width = (right - left);
     s32 height = (width * (SCREEN_HEIGHT<<8 / SCREEN_WIDTH)) >> 8;
 
@@ -181,21 +185,22 @@ void stageUpdate()
     s32 invscale = div32(1 << (8 + SCALE_BITS), gStage.camera.zoom);
 
     for (int i = 0; i < 4; ++i) {
-        if (gStage.backgrounds[i].id == -1) {
+        Background *bg = gStage.backgrounds + i;
+        if (bg->id == -1) {
             continue;
         }
 
-        if (gStage.backgrounds[i].scales) {
+        if (bg->scales) {
             s32 width = div32(SCREEN_WIDTH << (8 + SCALE_BITS), gStage.camera.zoom);
             s32 height = div32(SCREEN_HEIGHT << (8 + SCALE_BITS), gStage.camera.zoom);
 
             s32 x_offset = gStage.camera.x - (width / 2);
             s32 y_offset = gStage.camera.y - height;
 
-            x_offset = (x_offset * gStage.backgrounds[i].parallax_x) >> 8;
-            y_offset = (y_offset * gStage.backgrounds[i].parallax_y) >> 8;
+            x_offset = (x_offset * bg->parallax_x) >> 8;
+            y_offset = (y_offset * bg->parallax_y) >> 8;
 
-            bgSet(gStage.backgrounds[i].id, 0, invscale, invscale,
+            bgSet(bg->id, 0, invscale, invscale,
                 x_offset,
                 y_offset,
                 0, 0);
@@ -203,10 +208,12 @@ void stageUpdate()
             s32 x_offset = gStage.camera.x - (SCREEN_WIDTH / 2);
             s32 y_offset = gStage.camera.y;
 
-            x_offset = (x_offset * gStage.backgrounds[i].parallax_x) >> 8;
-            y_offset = (y_offset * gStage.backgrounds[i].parallax_y) >> 8;
+            x_offset = (x_offset * bg->parallax_x) >> 8;
+            y_offset = (y_offset * bg->parallax_y) >> 8;
 
-            bgSetScrollf(gStage.backgrounds[i].id, x_offset, y_offset);
+            bgSetScrollf(bg->id,
+                x_offset + bg->layer->x_offset,
+                y_offset + bg->layer->y_offset);
         }
     }
 
