@@ -30,8 +30,6 @@ cielo.png
 # output shared data with this file name
 -O lounge
 
--W3
-
 -fx lounge
 
 # use ff00ff as transparent colour

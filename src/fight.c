@@ -250,11 +250,7 @@ static void updateFighters()
 
 static void updateStage()
 {
-    // calcuate half width and half height of the rectangle
-    s32 width = ((gFight.camera.x1 - gFight.camera.x0) / 2);
-    s32 height = (width * (SCREEN_HEIGHT<<8 / SCREEN_WIDTH)) >> 8;
-
-    stageSetPosition(gFight.camera.x0 + width, gFight.camera.y0 + height);
+    stageSetPosition(gFight.camera.x0, gFight.camera.x1, gFight.camera.y0);
     stageSetZoom(gFight.camera.zoom);
 }
 

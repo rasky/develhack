@@ -40,13 +40,15 @@ Layer LAYERS[] = {
 struct {
     struct {
         int id; // the background id returned from bgInit; -1 if unused
-        s32 scale;
         Layer* layer;
+        bool scales;
+        s32 parallax_x;
+        s32 parallax_y;
     } backgrounds[4];
 
     struct {
-        s32 x;
-        s32 y;
+        s32 x; // centre x coordinate
+        s32 y; // floor y coordinate
         u32 zoom;
     } camera;
 } gStage;
@@ -106,7 +108,24 @@ const StageDesc* stageLoad(const char* id)
 
         gStage.backgrounds[layer->background].layer = layer;
         gStage.backgrounds[layer->background].id = bg;
-        gStage.backgrounds[layer->background].scale = 1 << 8;
+        gStage.backgrounds[layer->background].parallax_x = div32((layer->width << 16), (stage->w << 8));
+        gStage.backgrounds[layer->background].parallax_y = div32((layer->height << 16), (stage->h << 8));
+
+        switch (layer->bg_type) {
+            case BgType_Text4bpp:
+            case BgType_Text8bpp:
+                gStage.backgrounds[layer->background].scales = false;
+                break;
+
+            case BgType_Rotation:
+            case BgType_ExRotation:
+                gStage.backgrounds[layer->background].scales = true;
+                break;
+
+            default:
+                debugf("I know nothing about your background type: %i", layer->bg_type);
+                break;
+        }
 
         if (!loaded_tiles) {
             snprintf(filename, sizeof(filename), "%s.img.bin", id);
@@ -129,8 +148,15 @@ const StageDesc* stageLoad(const char* id)
     return stage;
 }
 
-void stageSetPosition(s32 x, s32 y)
+void stageSetPosition(s32 left, s32 right, s32 top)
 {
+    // calcuate half width and half height of the rectangle
+    s32 width = (right - left);
+    s32 height = (width * (SCREEN_HEIGHT<<8 / SCREEN_WIDTH)) >> 8;
+
+    s32 x = left + (width / 2);
+    s32 y = top + height;
+
     if (x != gStage.camera.x || y != gStage.camera.y) {
         // debugf("STAGE: Stage Position %ix%i\n", x >> 8, y >> 8);
         gStage.camera.x = x;
@@ -159,19 +185,29 @@ void stageUpdate()
             continue;
         }
 
-        s32 scale = (invscale * gStage.backgrounds[i].scale) >> 8;
+        if (gStage.backgrounds[i].scales) {
+            s32 width = div32(SCREEN_WIDTH << (8 + SCALE_BITS), gStage.camera.zoom);
+            s32 height = div32(SCREEN_HEIGHT << (8 + SCALE_BITS), gStage.camera.zoom);
 
-        s32 width = div32(SCREEN_WIDTH << (8 + SCALE_BITS), gStage.camera.zoom);
-        s32 height = div32(SCREEN_HEIGHT << (8 + SCALE_BITS), gStage.camera.zoom);
+            s32 x_offset = gStage.camera.x - (width / 2);
+            s32 y_offset = gStage.camera.y - height;
 
-        s32 x_offset = gStage.camera.x - (width / 2);
-        s32 y_offset = gStage.camera.y - (height / 2);
+            x_offset = (x_offset * gStage.backgrounds[i].parallax_x) >> 8;
+            y_offset = (y_offset * gStage.backgrounds[i].parallax_y) >> 8;
 
-        // TODO: offset the different layers by different amounts for parallax
-        bgSet(gStage.backgrounds[i].id, 0, scale, scale,
-            x_offset,
-            y_offset,
-            0, 0);
+            bgSet(gStage.backgrounds[i].id, 0, invscale, invscale,
+                x_offset,
+                y_offset,
+                0, 0);
+        } else {
+            s32 x_offset = gStage.camera.x - (SCREEN_WIDTH / 2);
+            s32 y_offset = gStage.camera.y;
+
+            x_offset = (x_offset * gStage.backgrounds[i].parallax_x) >> 8;
+            y_offset = (y_offset * gStage.backgrounds[i].parallax_y) >> 8;
+
+            bgSetScrollf(gStage.backgrounds[i].id, x_offset, y_offset);
+        }
     }
 
     bgUpdate();

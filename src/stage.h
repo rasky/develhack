@@ -18,10 +18,10 @@ typedef struct
 
 const StageDesc* stageLoad(const char* id);
 
-/* Set the stage coordinate to be shown at the centre of the screen.
- * x/y are fixed point (.8).
+/* Set the stage viewport
+ * left/right/top are fixed point (.8).
  */
-void stageSetPosition(s32 x, s32 y);
+void stageSetPosition(s32 left, s32 right, s32 top);
 
 /* Set the zoom factor (fixed point using SCALE_BITS fractional bits)
  */
