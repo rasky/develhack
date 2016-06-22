@@ -228,7 +228,12 @@ static void animProcessInput(int fx, u32 input)
     // Check keys for hit/special moves
     if (FSTATUS(fflags) != FST_NONE) {
         // Normal walk/jump animation, check buttons
-        if (input & KEY_A) {
+        if (input & KEY_SPECIAL_HADUKEN) {
+            if (FSTATUS(fflags) != FST_JMP) {
+                animBeginAnimation(fx, fdesc->keyframes.special);
+                return;
+            }
+        } else if (input & KEY_A) {
             if (FSTATUS(fflags) != FST_JMP) {
                 animBeginAnimation(fx, fdesc->keyframes.punch);
                 return;

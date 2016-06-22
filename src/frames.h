@@ -31,6 +31,7 @@ typedef struct {
         u8 punch;
         u8 kick;
         u8 hit;
+        u8 special;
     } keyframes;
     u8 pivotx, pivoty;
     const char* palette;
