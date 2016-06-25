@@ -1,0 +1,79 @@
+#!/usr/bin/env python2.7
+# -*- coding: utf-8 -*-
+
+from __future__ import division, print_function
+
+import collections
+import os
+import os.path
+import struct
+import sys
+
+from PIL import Image
+
+FRAME_SIZE = 128
+
+Box = collections.namedtuple('Box', ['frame', 'x', 'y', 'w', 'h'])
+
+
+def main():
+    # Load image
+    path = sys.argv[1]
+    im = Image.open(path)
+    px = im.load()
+    width, height = im.size
+
+    assert height % FRAME_SIZE == 0
+
+    # Determine background and boxes color
+    bg = px[0, 0]
+
+    # Find bounding boxes
+    boxes = []
+
+    def get_bounding_box(start_x, start_y):
+        box_x, box_y = start_x, start_y
+
+        for x in xrange(start_x, width):
+            if px[x, start_y] == bg:
+                box_w = x - box_x - 1
+                break
+
+        for y in xrange(start_y, height):
+            if px[start_x, y] == bg:
+                box_h = y - box_y - 1
+                break
+
+        for y in xrange(box_y, box_y + box_h + 1):
+            for x in xrange(box_x, box_x + box_w + 1):
+                px[x, y] = bg
+
+        # NOTE: Frames are stacked vertically, no need to take modulo of 'x' coordinates.
+        return Box(int(box_y / FRAME_SIZE), box_x, box_y % FRAME_SIZE, box_w, box_h)
+
+    for y in xrange(0, height):
+        for x in xrange(0, width):
+            if px[x, y] != bg:
+                boxes.append(get_bounding_box(x, y))
+
+    # Grab boxes
+    basename = os.path.splitext(os.path.basename(path))[0]
+
+    with open('out.bin', 'wb') as f:
+        for box in boxes:
+            f.write(struct.pack('<16sBBBBB', basename, box.frame, box.x, box.y, box.w, box.h))
+
+
+def debug_px(bg, px, width, height):
+    for y in xrange(0, height):
+        for x in xrange(0, width):
+            if px[x, y] != bg:
+                sys.stdout.write('X')
+            else:
+                sys.stdout.write(' ')
+
+        sys.stdout.write('\n')
+
+
+if __name__ == '__main__':
+    main()
