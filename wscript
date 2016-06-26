@@ -117,11 +117,11 @@ def configure(conf):
 
 
 def build(bld):
-    # bld.stlib(
-    #     target='lua',
-    #     source=bld.path.ant_glob("3rdparty/lua-5.3.2/src/*.c"),
-    #     defines='LUA_COMPAT_5_2',
-    #     use='ARM9')
+    bld.stlib(
+        target='lua',
+        source=bld.path.ant_glob("3rdparty/lua-5.3.2/src/*.c"),
+        defines='LUA_COMPAT_5_2',
+        use='ARM9')
 
     # Build game executable
     libxm_path = '3rdparty/libxm7-1.06'
@@ -140,7 +140,7 @@ def build(bld):
         includes=['%s/libnds/include' % bld.env.DEVKITPRO,
                   '%s/libnds/include/nds' % bld.env.DEVKITPRO,
                   '3rdparty/lua-5.3.2/src/'],
-        use='ARM9 fat xm79 nds9',
+        use='ARM9 fat xm79 nds9 lua',
         stlib='m')
 
     bld(rule='${OBJCOPY} -O binary ${SRC} ${TGT}',

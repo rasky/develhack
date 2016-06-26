@@ -4,7 +4,7 @@
 
 typedef struct
 {
-    const char* id; // stage identifier
+    char id[32]; // stage identifier
     u32 w; // width of the level graphics
     u32 h; // height of the level graphics
     u32 floory; // position of the floor within the level
@@ -15,6 +15,9 @@ typedef struct
 // Functions related to loading and updating the stage, which generally
 // controls the various background layers and may include some sprites
 // as well.
+
+// Initialize global stage-related state
+void stageInit();
 
 const StageDesc* stageLoad(const char* id);
 
