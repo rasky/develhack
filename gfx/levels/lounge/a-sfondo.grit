@@ -34,3 +34,6 @@ lounge-00.png lounge-01.png
 
 # use ff00ff as transparent colour
 -gT ff00ff
+
+# extend bottom of image to 1024 pixels
+-ah 1024
