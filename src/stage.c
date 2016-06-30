@@ -142,9 +142,13 @@ void stageInit()
 
 const StageDesc* stageLoad(const char* id)
 {
+    char filename[64];
+
+    snprintf(filename, sizeof(filename), "%s.luac", id);
+
     lua_State *L = gStage.lua;
-    if (luaL_dofile(L, "lounge.luac") != 0) {
-        debugf("Error reading lounge.luac: %s\n", lua_tostring(L, -1));
+    if (luaL_dofile(L, filename) != 0) {
+        debugf("Error reading %s: %s\n", filename, lua_tostring(L, -1));
     }
 
     for (int i = 0; i < 4; ++i) {
@@ -173,8 +177,6 @@ const StageDesc* stageLoad(const char* id)
     //         lua_typename(L, lua_type(L, -1)));
     //     lua_pop(L, 1);
     // }
-
-    char filename[64];
 
     // an offset into VRAM in 2K chunks
     int tile_map_offset = 0;
