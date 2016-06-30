@@ -189,7 +189,7 @@ int main(void)
 
     stageInit();
 
-    const StageDesc* stage = stageLoad("lounge");
+    const StageDesc* stage = stageLoad("tuttobene");
     if (stage == NULL) {
         debugf("Unable to load stage\n");
         goto error;

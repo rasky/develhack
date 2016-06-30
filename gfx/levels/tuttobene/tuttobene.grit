@@ -1,0 +1,39 @@
+tuttobene*.png
+
+# binary output mode
+-ftb
+
+# tiled output
+-gt
+
+# shared graphics
+-gS
+
+# no header file
+-fh!
+
+# include map data
+-m
+
+# flat map layout
+-mLf
+
+# tile reduction
+-mRtf
+
+# 8-bit output
+-gB8
+
+# shared palette
+-pS
+
+# output shared data with this file name
+-O tuttobene
+
+-fx tuttobene
+
+# use ff00ff as transparent colour
+-gT ff00ff
+
+# extend bottom of image to 1024 pixels
+-ah 1024

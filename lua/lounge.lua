@@ -6,15 +6,13 @@ function init()
 	set_layer(2, "lounge", "lounge-00.map.bin", 1, Background.exrot_1024x1024, 0, 0, 1024, 512, false)
 	set_layer(3, "lounge", "lounge-01.map.bin", 0, Background.exrot_1024x1024, 0, 0, 1024, 512, false)
 
-	stage = {
-		foozball=gen_sprite[2]
-	}
-
 	-- TODO
-	-- foozball = gen_sprite(2)
+	-- stage = {
+	-- 	foozball = gen_sprite(2)
+	-- }
 	-- set_sprite(stage.foozball[1], x, y, priority, palette_alpha, size, format, offset, affineIndex, double, hide, hflip, vflip, mosaic)
 	-- set_sprite(stage.foozball[2], x, y, priority, palette_alpha, size, format, offset, affineIndex, double, hide, hflip, vflip, mosaic)
-	return stage
+	-- return stage
 end
 
 function update(stage)
