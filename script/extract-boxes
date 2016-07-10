@@ -3,6 +3,7 @@
 
 from __future__ import division, print_function
 
+import argparse
 import collections
 import os
 import os.path
@@ -17,8 +18,10 @@ Box = collections.namedtuple('Box', ['frame', 'x', 'y', 'w', 'h'])
 
 
 def main():
+    args = parse_args()
+
     # Load image
-    path = sys.argv[1]
+    path = args.source
     im = Image.open(path)
     px = im.load()
     width, height = im.size
@@ -59,9 +62,17 @@ def main():
     # Grab boxes
     basename = os.path.splitext(os.path.basename(path))[0]
 
-    with open('out.bin', 'wb') as f:
+    with open(args.output, 'wb') as f:
         for box in boxes:
             f.write(struct.pack('<16sBBBBB', basename, box.frame, box.x, box.y, box.w, box.h))
+
+
+def parse_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('source', help='Source file')
+    parser.add_argument('-o', '--output', help='Destination file', required=True)
+
+    return parser.parse_args()
 
 
 def debug_px(bg, px, width, height):
