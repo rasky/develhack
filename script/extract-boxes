@@ -27,6 +27,14 @@ def main():
             f.write(struct.pack('<16sBBBBB', box.name, box.frame, box.x, box.y, box.w, box.h))
 
 
+def parse_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('source', help='Source file')
+    parser.add_argument('-o', '--output', help='Destination file', required=True)
+
+    return parser.parse_args()
+
+
 def extract_boxes(path):
     # Box name is the file's basename, without the extension
     name = os.path.splitext(os.path.basename(path))[0]
@@ -70,14 +78,6 @@ def extract_boxes(path):
                 boxes.append(get_bounding_box(x, y))
 
     return boxes
-
-
-def parse_args():
-    parser = argparse.ArgumentParser()
-    parser.add_argument('source', help='Source file')
-    parser.add_argument('-o', '--output', help='Destination file', required=True)
-
-    return parser.parse_args()
 
 
 def debug_px(bg, px, width, height):
