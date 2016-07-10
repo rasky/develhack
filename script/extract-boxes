@@ -80,16 +80,5 @@ def extract_boxes(path):
     return boxes
 
 
-def debug_px(bg, px, width, height):
-    for y in xrange(0, height):
-        for x in xrange(0, width):
-            if px[x, y] != bg:
-                sys.stdout.write('X')
-            else:
-                sys.stdout.write(' ')
-
-        sys.stdout.write('\n')
-
-
 if __name__ == '__main__':
     main()
