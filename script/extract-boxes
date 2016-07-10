@@ -14,14 +14,24 @@ from PIL import Image
 
 FRAME_SIZE = 128
 
-Box = collections.namedtuple('Box', ['frame', 'x', 'y', 'w', 'h'])
+Box = collections.namedtuple('Box', ['name', 'frame', 'x', 'y', 'w', 'h'])
 
 
 def main():
     args = parse_args()
 
+    boxes = extract_boxes(args.source)
+
+    with open(args.output, 'wb') as f:
+        for box in boxes:
+            f.write(struct.pack('<16sBBBBB', box.name, box.frame, box.x, box.y, box.w, box.h))
+
+
+def extract_boxes(path):
+    # Box name is the file's basename, without the extension
+    name = os.path.splitext(os.path.basename(path))[0]
+
     # Load image
-    path = args.source
     im = Image.open(path)
     px = im.load()
     width, height = im.size
@@ -52,19 +62,14 @@ def main():
                 px[x, y] = bg
 
         # NOTE: Frames are stacked vertically, no need to take modulo of 'x' coordinates.
-        return Box(int(box_y / FRAME_SIZE), box_x, box_y % FRAME_SIZE, box_w, box_h)
+        return Box(name, int(box_y / FRAME_SIZE), box_x, box_y % FRAME_SIZE, box_w, box_h)
 
     for y in xrange(0, height):
         for x in xrange(0, width):
             if px[x, y] != bg:
                 boxes.append(get_bounding_box(x, y))
 
-    # Grab boxes
-    basename = os.path.splitext(os.path.basename(path))[0]
-
-    with open(args.output, 'wb') as f:
-        for box in boxes:
-            f.write(struct.pack('<16sBBBBB', basename, box.frame, box.x, box.y, box.w, box.h))
+    return boxes
 
 
 def parse_args():
