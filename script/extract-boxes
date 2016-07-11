@@ -14,17 +14,28 @@ from PIL import Image
 
 FRAME_SIZE = 128
 
-Box = collections.namedtuple('Box', ['name', 'frame', 'x', 'y', 'w', 'h'])
+Box = collections.namedtuple('Box', ['name', 'color', 'frame', 'x', 'y', 'w', 'h'])
+
+
+class BoxColor:
+    Blue, Red, White = range(3)
 
 
 def main():
     args = parse_args()
 
-    boxes = extract_boxes(args.source)
+    boxes = extract_boxes(args.source, file_name_to_color(args.source))
 
     with open(args.output, 'wb') as f:
         for box in boxes:
-            f.write(struct.pack('<16sBBBBB', box.name, box.frame, box.x, box.y, box.w, box.h))
+            w, h = box.w, box.h
+
+            if box.color == BoxColor.Red:
+                w |= 0x80
+            elif box.color == BoxColor.White:
+                h |= 0x80
+
+            f.write(struct.pack('<16sBBBBB', box.name, box.frame, box.x, box.y, w, h))
 
 
 def parse_args():
@@ -35,7 +46,18 @@ def parse_args():
     return parser.parse_args()
 
 
-def extract_boxes(path):
+def file_name_to_color(path):
+    if path.endswith('_b.png'):
+        return BoxColor.Blue
+    elif path.endswith('_r.png'):
+        return BoxColor.Red
+    elif path.endswith('_w.png'):
+        return BoxColor.White
+    else:
+        raise ValueError('Unknown box type')
+
+
+def extract_boxes(path, color):
     # Box name is the file's basename, without the extension
     name = os.path.splitext(os.path.basename(path))[0]
 
@@ -70,7 +92,7 @@ def extract_boxes(path):
                 px[x, y] = bg
 
         # NOTE: Frames are stacked vertically, no need to take modulo of 'x' coordinates.
-        return Box(name, int(box_y / FRAME_SIZE), box_x, box_y % FRAME_SIZE, box_w, box_h)
+        return Box(name, color, int(box_y / FRAME_SIZE), box_x, box_y % FRAME_SIZE, box_w, box_h)
 
     for y in xrange(0, height):
         for x in xrange(0, width):
