@@ -130,10 +130,17 @@ def extract_boxes(path, color):
         # NOTE: Frames are stacked vertically, no need to take modulo of 'x' coordinates.
         return Box(name, color, box_x, box_y % FRAME_SIZE, box_w, box_h)
 
-    for y in xrange(0, height):
-        for x in xrange(0, width):
-            if px[x, y] != bg:
-                boxes.append(get_bounding_box(x, y))
+    for frame in range(1, int(height / FRAME_SIZE) + 1):
+        box_found = False
+
+        for y in xrange(0, frame * FRAME_SIZE):
+            for x in xrange(0, width):
+                if px[x, y] != bg:
+                    boxes.append(get_bounding_box(x, y))
+                    box_found = True
+
+        if not box_found:
+            boxes.append(Box(name, color, 0, 0, 0, 0))
 
     return boxes
 
