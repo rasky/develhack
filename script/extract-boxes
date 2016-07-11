@@ -102,6 +102,7 @@ def extract_boxes(path, color):
     width, height = im.size
 
     assert height % FRAME_SIZE == 0
+    assert width == FRAME_SIZE
 
     # Determine background and boxes color
     bg = px[0, 0]
