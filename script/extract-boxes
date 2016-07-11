@@ -24,7 +24,13 @@ class BoxColor:
 def main():
     args = parse_args()
 
-    boxes = extract_boxes(args.source, file_name_to_color(args.source))
+    if not os.path.isdir(args.source):
+        print('%s: must be a directory.' % args.source)
+        sys.exit(1)
+
+    boxes = []
+    for png in [p for p in os.listdir(args.source) if p.endswith('.png')]:
+        boxes += extract_boxes(os.path.join(args.source, png), file_name_to_color(png))
 
     with open(args.output, 'wb') as f:
         for box in boxes:
