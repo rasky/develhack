@@ -19,7 +19,7 @@ from PIL import Image
 
 FRAME_SIZE = 128
 
-Box = collections.namedtuple('Box', ['name', 'color', 'frame', 'x', 'y', 'w', 'h'])
+Box = collections.namedtuple('Box', ['name', 'color', 'x', 'y', 'w', 'h'])
 
 
 class BoxColor:
@@ -128,7 +128,7 @@ def extract_boxes(path, color):
                 px[x, y] = bg
 
         # NOTE: Frames are stacked vertically, no need to take modulo of 'x' coordinates.
-        return Box(name, color, int(box_y / FRAME_SIZE), box_x, box_y % FRAME_SIZE, box_w, box_h)
+        return Box(name, color, box_x, box_y % FRAME_SIZE, box_w, box_h)
 
     for y in xrange(0, height):
         for x in xrange(0, width):
