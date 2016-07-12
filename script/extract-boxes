@@ -103,7 +103,8 @@ def get_desc(path):
             assert len(red) == len(red)
 
         for frame in range(len(white)):
-            desc[animation].append([white[0], get_or_none(blue, frame), get_or_none(red, frame)])
+            desc[animation].append(
+                [white[frame], get_or_none(blue, frame), get_or_none(red, frame)])
 
     return desc
 
