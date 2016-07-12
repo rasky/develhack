@@ -92,7 +92,7 @@ u32 currentKeyEvent()
 
 void debugKeys(u32 keys)
 {
-    debugf("%c%c%c%c%c%c%c%c%c%c%c%c%c%c  %c%c\n",
+    debugf("%c%c%c%c%c%c%c%c%c%c%c%c%c%c  %c%c  %c%c\n",
         keys & KEY_A ? 'A' : '.',
         keys & KEY_B ? 'B' : '.',
         keys & KEY_SELECT ? 's' : '.',
@@ -108,5 +108,7 @@ void debugKeys(u32 keys)
         keys & KEY_TOUCH ? 'T' : '.',
         keys & KEY_LID ? 'L' : '.',
         keys & KEY_SPECIAL_HADUKEN ? 'H' : '.',
-        keys & KEY_SPECIAL_SHORYUKEN ? 'S' : '.');
+        keys & KEY_SPECIAL_SHORYUKEN ? 'S' : '.',
+        keys & KEY_SPECIAL_HADUKEN_RTL ? 'h' : '.',
+        keys & KEY_SPECIAL_SHORYUKEN_RTL ? 's' : '.');
 }
