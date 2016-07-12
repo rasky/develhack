@@ -12,11 +12,11 @@
 static u32 keyBuffer[BUFFER_SIZE];
 static u8 current = 0;
 
-static const u8 HADUKEN_LEFT_TO_RIGHT[] = { KEY_DOWN, KEY_DOWN | KEY_RIGHT, KEY_RIGHT, KEY_A };
-static const u8 HADUKEN_RIGHT_TO_LEFT[] = { KEY_DOWN, KEY_DOWN | KEY_LEFT, KEY_LEFT, KEY_A };
+static const u8 HADUKEN[] = { KEY_DOWN, KEY_DOWN | KEY_RIGHT, KEY_RIGHT, KEY_A };
+static const u8 HADUKEN_RTL[] = { KEY_DOWN, KEY_DOWN | KEY_LEFT, KEY_LEFT, KEY_A };
 
-static const u8 SHORYUKEN_LEFT_TO_RIGHT[] = { KEY_RIGHT, KEY_DOWN, KEY_DOWN | KEY_RIGHT, KEY_A };
-static const u8 SHORYUKEN_RIGHT_TO_LEFT[] = { KEY_LEFT, KEY_DOWN, KEY_DOWN | KEY_LEFT, KEY_A };
+static const u8 SHORYUKEN[] = { KEY_RIGHT, KEY_DOWN, KEY_DOWN | KEY_RIGHT, KEY_A };
+static const u8 SHORYUKEN_RTL[] = { KEY_LEFT, KEY_DOWN, KEY_DOWN | KEY_LEFT, KEY_A };
 
 #if 0
 static void debugKeyBuffer()
@@ -70,9 +70,9 @@ u32 currentKeyEvent()
     u32 ret = keyBuffer[current] = keysCurrent();
 
     // Recognize special move
-    if (detectSpecialMove(HADUKEN_LEFT_TO_RIGHT) || detectSpecialMove(HADUKEN_RIGHT_TO_LEFT)) {
+    if (detectSpecialMove(HADUKEN) || detectSpecialMove(HADUKEN_RTL)) {
         ret ^= KEY_SPECIAL_HADUKEN;
-    } else if (detectSpecialMove(SHORYUKEN_LEFT_TO_RIGHT) || detectSpecialMove(SHORYUKEN_RIGHT_TO_LEFT)) {
+    } else if (detectSpecialMove(SHORYUKEN) || detectSpecialMove(SHORYUKEN_RTL)) {
         ret ^= KEY_SPECIAL_SHORYUKEN;
     }
 
