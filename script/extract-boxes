@@ -75,10 +75,6 @@ def serialize(desc, path):
 
                 for box in frame:
                     write(render(box))
-                    # if box:
-                    #     write('{ %s, %s, %s, %s }, ' % (box.x, box.y, box.w, box.h))
-                    # else:
-                    #     write('{ 0, 0, 0, 0 }, ')
 
                 writeln('},')
 
