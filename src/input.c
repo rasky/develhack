@@ -70,9 +70,9 @@ u32 currentKeyEvent()
     u32 ret = keyBuffer[current] = keysCurrent();
 
     // Recognize special move
-    if (detectSpecialMove(HADUKEN) || detectSpecialMove(HADUKEN_RTL)) {
+    if (detectSpecialMove(HADUKEN)) {
         ret ^= KEY_SPECIAL_HADUKEN;
-    } else if (detectSpecialMove(SHORYUKEN) || detectSpecialMove(SHORYUKEN_RTL)) {
+    } else if (detectSpecialMove(SHORYUKEN)) {
         ret ^= KEY_SPECIAL_SHORYUKEN;
     }
 
