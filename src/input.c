@@ -88,7 +88,7 @@ u32 currentKeyEvent()
 
 void debugKeys(u32 keys)
 {
-    debugf("%c%c%c%c%c%c%c%c%c%c%c%c%c%c %c%c\n",
+    debugf("%c%c%c%c%c%c%c%c%c%c%c%c%c%c  %c%c\n",
         keys & KEY_A ? 'A' : '.',
         keys & KEY_B ? 'B' : '.',
         keys & KEY_SELECT ? 's' : '.',
