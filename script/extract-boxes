@@ -84,7 +84,7 @@ def serialize(desc, path):
 
 
 def get_desc(path):
-    get_or_none = lambda iterable, i: iterable[i] if i < len(iterable) else None
+    frame_box = lambda iterable, i: iterable[i] if i < len(iterable) else None
 
     desc = {}
 
@@ -105,8 +105,7 @@ def get_desc(path):
             assert len(red) == len(red)
 
         for frame in range(len(white)):
-            desc[animation].append(
-                [white[frame], get_or_none(blue, frame), get_or_none(red, frame)])
+            desc[animation].append([white[frame], frame_box(blue, frame), frame_box(red, frame)])
 
     return desc
 
