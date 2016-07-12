@@ -74,6 +74,10 @@ u32 currentKeyEvent()
         ret ^= KEY_SPECIAL_HADUKEN;
     } else if (detectSpecialMove(SHORYUKEN)) {
         ret ^= KEY_SPECIAL_SHORYUKEN;
+    } else if (detectSpecialMove(HADUKEN_RTL)) {
+        ret ^= KEY_SPECIAL_HADUKEN_RTL;
+    } else if (detectSpecialMove(SHORYUKEN_RTL)) {
+        ret ^= KEY_SPECIAL_SHORYUKEN_RTL;
     }
 
     // Wrap around
