@@ -84,6 +84,8 @@ def serialize(desc, path):
 
 
 def get_desc(path):
+    get_or_none = lambda iterable, i: iterable[i] if i < len(iterable) else None
+
     desc = {}
 
     animations = {p[:-6] for p in os.listdir(path) if p.endswith('.png')}
@@ -163,13 +165,6 @@ def extract_boxes(path):
             boxes.append(None)
 
     return boxes
-
-
-def get_or_none(iterable, i):
-    if i < len(iterable):
-        return iterable[i]
-    else:
-        return None
 
 
 if __name__ == '__main__':
