@@ -29,6 +29,10 @@ typedef struct Hitbox {
     {                                                            \
         .x = px, .y = py, .w = pw, .h = ph, .red = 1, .white = 0 \
     }
+#define NO_BOX()                                             \
+    {                                                        \
+        .x = 0, .y = 0, .w = 0, .h = 0, .red = 0, .white = 0 \
+    }
 
 #define MAX_HITBOXES 12
 #define MAX_FRAMES 8

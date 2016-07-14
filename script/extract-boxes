@@ -53,6 +53,8 @@ def serialize(desc, path):
         writeln('')
         writeln('#include "hitbox.h"')
         writeln('')
+        writeln('/* Box order is: white, blue, red */')
+        writeln('')
         writeln('const HitboxDesc Hitboxes[MAX_HITBOXES] = {')
 
         for name in sorted(desc.keys()):
@@ -60,16 +62,9 @@ def serialize(desc, path):
                 if box:
                     return '%s(%s,%s, %s,%s), ' % (macro_name, box.x, box.y, box.w, box.h)
                 else:
-                    return '{ 0, 0, 0, 0 }, '
+                    return 'NO_BOX(), '
 
             writeln('    { "%s", {' % name)
-
-            # Header
-            write('        /*        ')
-            write('White'.ljust(len(render(desc[name][0][0], 'XXXX'))))
-            write('Blue'.ljust(len(render(desc[name][0][1], 'XXXX'))))
-            write('Red')
-            writeln(' */')
 
             for i, frame in enumerate(desc[name], start=1):
                 write('        /* %s */ { ' % i)
