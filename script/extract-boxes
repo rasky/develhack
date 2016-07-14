@@ -56,9 +56,9 @@ def serialize(desc, path):
         writeln('const HitboxDesc Hitboxes[MAX_HITBOXES] = {')
 
         for name in sorted(desc.keys()):
-            def render(box):
+            def render(box, macro_name):
                 if box:
-                    return '{ %s, %s, %s, %s }, ' % (box.x, box.y, box.w, box.h)
+                    return '%s(%s,%s, %s,%s), ' % (macro_name, box.x, box.y, box.w, box.h)
                 else:
                     return '{ 0, 0, 0, 0 }, '
 
@@ -66,16 +66,16 @@ def serialize(desc, path):
 
             # Header
             write('        /*        ')
-            write('White'.ljust(len(render(desc[name][0][0]))))
-            write('Blue'.ljust(len(render(desc[name][0][1]))))
+            write('White'.ljust(len(render(desc[name][0][0], 'XXXX'))))
+            write('Blue'.ljust(len(render(desc[name][0][1], 'XXXX'))))
             write('Red')
             writeln(' */')
 
             for i, frame in enumerate(desc[name], start=1):
                 write('        /* %s */ { ' % i)
 
-                for box in frame:
-                    write(render(box))
+                for box, macro_name in zip(frame, ['WBOX', 'BBOX', 'RBOX']):
+                    write(render(box, macro_name))
 
                 writeln('},')
 
