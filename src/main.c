@@ -199,7 +199,7 @@ int main(void)
 
     // ----- BEGIN SOUND
     initSoundSystem();
-    // playBackgroundMusic(GlobalSfxMenu);
+    playBackgroundMusic(GlobalSfxMenu);
     // ----- END SOUND
 
     uint32 lastKeys = 0;
@@ -230,9 +230,9 @@ int main(void)
         if (changed) {
             debugKeys(keys);
 
-            if ((keys & KEY_A) == KEY_A) {
-                playSoundEffect(GlobalSfxPunch);
-            }
+            // if ((keys & KEY_A) == KEY_A) {
+            //     playSoundEffect(GlobalSfxPunch);
+            // }
         }
 
         fightUpdate(keys);
