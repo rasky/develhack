@@ -5,7 +5,7 @@
 #include "hitbox.h"
 
 #define ANIM_DESC_MAX_FRAMES 64
-#define ANIM_DESC_MAX_BOXES 4
+#define ANIM_DESC_MAX_BOXES 3
 
 typedef struct {
     u8 idx;

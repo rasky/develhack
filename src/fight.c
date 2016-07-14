@@ -58,6 +58,28 @@ struct {
     int collisionFlag;
 } gFight;
 
+static void fighterLoadHitboxes()
+{
+    debugf("Loading hitboxes\n");
+
+    for (int i = 0; i < MAX_HITBOXES; i++) {
+        const HitboxDesc* hitboxDesc = &Hitboxes[i];
+
+        for (int j = 0; j < ANIM_DESC_MAX_FRAMES; j++) {
+            AnimFrame* animFrame = (AnimFrame*)&Dummy.frames[j];
+
+            if (strcmp(hitboxDesc->name, animFrame->filename) == 0) {
+                memcpy(animFrame->boxes, hitboxDesc->hitbox[animFrame->animidx], HITBOX_TYPES_COUNT * sizeof(Hitbox));
+
+#if 0
+                debugf("%s - %d - %d %d\n", animFrame->filename, animFrame->animidx,
+                    animFrame->boxes[0].x, animFrame->boxes[0].y);
+#endif
+            }
+        }
+    }
+}
+
 void fightInit(const StageDesc* desc)
 {
     animInit();
@@ -73,6 +95,8 @@ void fightInit(const StageDesc* desc)
     gFight.camera.x1 = SCREEN_WIDTH << 8;
     gFight.camera.y0 = (desc->floory - SCREEN_FLOOR_Y) << 8;
     gFight.camera.zoom = 1 << SCALE_BITS;
+
+    fighterLoadHitboxes();
 }
 
 static void fightUpdateStatus(int fx, u32 keys)
