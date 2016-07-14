@@ -14,6 +14,7 @@ import sys
 from PIL import Image
 
 FRAME_SIZE = 128
+PADDING = 22
 
 Box = collections.namedtuple('Box', ['x', 'y', 'w', 'h'])
 
@@ -60,9 +61,9 @@ def serialize(desc, path):
         for name in sorted(desc.keys()):
             def render(box, macro_name):
                 if box:
-                    return '%s(%s,%s, %s,%s), ' % (macro_name, box.x, box.y, box.w, box.h)
+                    return ('%s(%s,%s, %s,%s), ' % (macro_name, box.x, box.y, box.w, box.h)).ljust(PADDING)
                 else:
-                    return 'NO_BOX(), '
+                    return 'NO_BOX(), '.ljust(PADDING)
 
             writeln('    { "%s", {' % name)
 
