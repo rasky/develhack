@@ -233,16 +233,17 @@ void fightHit(int fx, int npoints)
 static void updateCollisions()
 {
     u8 dmg0, dmg1;
-    const Hitbox* b0 = animFighterGetHitboxes(0, &dmg0);
-    const Hitbox* b1 = animFighterGetHitboxes(1, &dmg1);
+    bool f0, f1;
+    const Hitbox* b0 = animFighterGetHitboxes(0, &dmg0, &f0);
+    const Hitbox* b1 = animFighterGetHitboxes(1, &dmg1, &f1);
 
     // Check if a red box collide with a blue box
     bool hit0 = hitboxCheckHit(
-        b0, ANIM_DESC_MAX_BOXES, gFight.fighters[0].wx, gFight.fighters[0].wy,
-        b1, ANIM_DESC_MAX_BOXES, gFight.fighters[1].wx, gFight.fighters[1].wy);
+        b0, ANIM_DESC_MAX_BOXES, gFight.fighters[0].wx, gFight.fighters[0].wy, f0,
+        b1, ANIM_DESC_MAX_BOXES, gFight.fighters[1].wx, gFight.fighters[1].wy, f1);
     bool hit1 = hitboxCheckHit(
-        b1, ANIM_DESC_MAX_BOXES, gFight.fighters[1].wx, gFight.fighters[1].wy,
-        b0, ANIM_DESC_MAX_BOXES, gFight.fighters[0].wx, gFight.fighters[0].wy);
+        b1, ANIM_DESC_MAX_BOXES, gFight.fighters[1].wx, gFight.fighters[1].wy, f1,
+        b0, ANIM_DESC_MAX_BOXES, gFight.fighters[0].wx, gFight.fighters[0].wy, f0);
 
     // Now handle hits
     // TODO: make sure we handle double-hits correctly

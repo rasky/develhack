@@ -40,6 +40,6 @@ void animFighterGetState(int fx, int* status, int* movex, int* movey);
  * specified fighter. The hitboxes are stored in an array whose size
  * is ANIM_DESC_MAX_BOXES.
  */
-const Hitbox* animFighterGetHitboxes(int fx, u8* damage);
+const Hitbox* animFighterGetHitboxes(int fx, u8* damage, bool *flipped);
 
 void animFighterHit(int fx);

@@ -82,8 +82,8 @@ bool hitboxIsWhite(const Hitbox* hitbox);
  * - dstY: Y coordinate of the destination hitbox (in world coordinates);
  */
 bool hitboxIntersects(
-    const Hitbox* src, fix23_8 srcX, fix23_8 srcY,
-    const Hitbox* dst, fix23_8 dstX, fix23_8 dstY);
+    const Hitbox* src, fix23_8 srcX, fix23_8 srcY, bool flipsrc,
+    const Hitbox* dst, fix23_8 dstX, fix23_8 dstY, bool flipdst);
 
 /*
  * Given all the boxes of two players, check whether
@@ -94,8 +94,8 @@ bool hitboxIntersects(
  * contain invalid hitboxes (they are skipped).
  */
 bool hitboxCheckHit(
-    const Hitbox* src, int nsrc, fix23_8 srcX, fix23_8 srcY,
-    const Hitbox* dst, int ndst, fix23_8 dstX, fix23_8 dstY);
+    const Hitbox* src, int nsrc, fix23_8 srcX, fix23_8 srcY, bool flipsrc,
+    const Hitbox* dst, int ndst, fix23_8 dstX, fix23_8 dstY, bool flipdst);
 
 /*
  * Runs some hitbox unit tests at start.

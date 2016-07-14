@@ -376,7 +376,7 @@ void animFighterGetState(int fx, int* status, int* movex, int* movey)
         *movey = fframe->movey;
 }
 
-const Hitbox* animFighterGetHitboxes(int fx, u8* dmg)
+const Hitbox* animFighterGetHitboxes(int fx, u8* dmg, bool *flipped)
 {
     AnimFighter* f = &gFighters[fx];
     const AnimDesc* fdesc = f->desc;
@@ -384,6 +384,8 @@ const Hitbox* animFighterGetHitboxes(int fx, u8* dmg)
 
     if (dmg)
         *dmg = fframe->damage;
+    if (flipped)
+        *flipped = (f->flags & FLAGS_IS_RIGHT);
 
     return fframe->boxes;
 }
