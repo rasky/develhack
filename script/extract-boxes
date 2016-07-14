@@ -29,13 +29,14 @@ def main():
         print('%s: must be a directory.' % args.source)
         sys.exit(1)
 
-    serialize(get_desc(args.source), args.output)
+    serialize(get_desc(args.source, args.prefix), args.output)
 
 
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('source', help='Source file')
     parser.add_argument('-o', '--output', help='Destination file', required=True)
+    parser.add_argument('-p', '--prefix', help='Animation prefix', required=True)
 
     return parser.parse_args()
 
@@ -83,15 +84,17 @@ def serialize(desc, path):
         writeln('};')
 
 
-def get_desc(path):
+def get_desc(path, prefix):
     frame_box = lambda iterable, i: iterable[i] if i < len(iterable) else None
 
     desc = {}
 
     animations = {p[:-6] for p in os.listdir(path) if p.endswith('.png')}
     for animation in sorted(animations):
+        prefixed = prefix + animation
+
         if not animation in desc:
-            desc[animation] = []
+            desc[prefixed] = []
 
         # Assuming white frame is always available
         white = extract_boxes(os.path.join(path, animation + '_w.png'))
@@ -105,7 +108,7 @@ def get_desc(path):
             assert len(red) == len(red)
 
         for frame in range(len(white)):
-            desc[animation].append([white[frame], frame_box(blue, frame), frame_box(red, frame)])
+            desc[prefixed].append([white[frame], frame_box(blue, frame), frame_box(red, frame)])
 
     return desc
 
