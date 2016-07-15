@@ -71,6 +71,7 @@ void playBackgroundMusic(const GlobalSfx sfx)
     }
 
     DC_FlushRange(backgroundSnd->data, backgroundSnd->size);
+    DC_FlushRange(&backgroundMod, sizeof(backgroundMod));
     fifoSendValue32(FIFO_XM7, (u32)&backgroundMod);
 }
 
