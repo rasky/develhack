@@ -72,6 +72,29 @@ bool hitboxCheckHit(
     return false;
 }
 
+Hitbox hitboxGetBlue(const Hitbox* src, int nsrc, fix23_8 srcX, fix23_8 srcY, bool flipsrc)
+{
+    Hitbox h = WBOX(0,0,0,0);
+
+    // Go through all red boxes in src
+    for (int i = 0; i < nsrc; i++) {
+        const Hitbox* h1 = &src[i];
+        if (hitboxInvalid(h1) || !hitboxIsBlue(h1))
+            continue;
+
+        h = *h1;
+        h.x += srcX>>8;
+        h.y += srcY>>8;
+        if (flipsrc) {
+            h.x = (SPRITE_WIDTH - h.x - 1) - (h.w - 1);
+        }
+        break;
+    }
+
+    return h;
+}
+
+
 void testHitbox()
 {
     Hitbox h1 = {.x = 0, .y = 0, .w = 10, .h = 10, .red = 0 };

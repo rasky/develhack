@@ -16,6 +16,7 @@ typedef struct {
 
 typedef struct {
     SpecialDesc *desc;
+    u8 enemy;  // index of the figher that can be hit by this
     s32 x,y;
     u16 frame;
     u8 flags;
@@ -75,9 +76,30 @@ void hagokenLoad(SpecialDesc *s) {
     dmaCopyHalfWords(2, s->pal, SPRITE_PALETTE + MMAP_PAL_SPECIALS(TYPE_HAGOKEN-1)*16, 16*2);
 }
 
+bool hagokenCollide(Special *s, Hitbox *boxes)
+{
+    // Hitbox hit = RBOX(5, 5, 54, 54);
+    // // bool ret = hitboxIntersects(
+    // //     &hit, s->x, s->y, false,
+    // //     &boxes[s->enemy], 0, 0, false);
+    // debugf("collide %d: %d,%d,%d,%d -> %d,%d,%d,%d\n", ret,
+    //     5+(s->x>>8),5+(s->y>>8), 5+(s->x>>8)+54,5+(s->y>>8)+54,
+    //     boxes[s->enemy].x, boxes[s->enemy].y, boxes[s->enemy].w, boxes[s->enemy].h);
+
+    if (hitboxInvalid(&boxes[s->enemy]))
+        return false;
+
+    int sx = s->x>>8;
+    if (sx+20 > boxes[s->enemy].x && sx < boxes[s->enemy].x+boxes[s->enemy].w) {
+        return true;
+    }
+
+    return false;
+}
+
 void hagokenUpdate(Special *s)
 {
-    s->x += 1<<8;
+    s->x += 2<<8;
     if (s->x >= 512<<8) { // FIXME
         destroy(s);
         return;
@@ -131,13 +153,14 @@ void destroy(Special *s)
     memset(s, 0, sizeof(Special));
 }
 
-void specialCreate(u8 type, s32 x, s32 y)
+void specialCreate(u8 type, s32 x, s32 y, u8 enemy)
 {
     Special *s = alloc();
     s->flags |= FLAG_ACTIVE;
     s->desc = &gdesc[type-1];
     s->x = x;
     s->y = y;
+    s->enemy = enemy;
 
     oamSet(&oamMain, MMAP_OAM_SPECIALS+SPECIAL_IDX(s),
         /*pos*/ 1000, 1000,
@@ -179,6 +202,22 @@ void specialUpdate(void)
                 break;
             }
         }
+}
+
+bool specialCollide(Hitbox *fighters, int *fx)
+{
+    for (int i=0;i<MAX_SPECIALS;i++)
+        if ((specials[i].flags & FLAG_ACTIVE) != 0) {
+            switch (specials[i].desc->type) {
+            case TYPE_HAGOKEN:
+                if (hagokenCollide(&specials[i], fighters)) {
+                    *fx = specials[i].enemy;
+                    return true;
+                }
+                break;
+            }
+        }
+    return false;
 }
 
 void specialInit(void)

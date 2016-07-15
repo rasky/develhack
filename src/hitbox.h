@@ -97,6 +97,13 @@ bool hitboxCheckHit(
     const Hitbox* src, int nsrc, fix23_8 srcX, fix23_8 srcY, bool flipsrc,
     const Hitbox* dst, int ndst, fix23_8 dstX, fix23_8 dstY, bool flipdst);
 
+
+/*
+ * Returns the world-coordinate blue box (damage box). The returned box
+ * has been already translated/flipped to the correct position.
+ */
+Hitbox hitboxGetBlue(const Hitbox* src, int nsrc, fix23_8 srcX, fix23_8 srcY, bool flipsrc);
+
 /*
  * Runs some hitbox unit tests at start.
  */

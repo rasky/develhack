@@ -331,7 +331,8 @@ void animRedraw()
             if (fdesc->frames[f->curframe].flags & FSPECIAL)
                 specialCreate(fdesc->special.type,
                     f->x+((s32)fdesc->special.offx<<8),
-                    f->y+((s32)fdesc->special.offy<<8));
+                    f->y+((s32)fdesc->special.offy<<8),
+                    1-fx);
         }
 
         animUpdateOam(fx);
@@ -381,7 +382,7 @@ void animFighterGetState(int fx, int* status, int* movex, int* movey)
         *movey = fframe->movey;
 }
 
-const Hitbox* animFighterGetHitboxes(int fx, u8* dmg, bool *flipped)
+const Hitbox* animFighterGetHitboxes(int fx, u8* dmg, u8 *pivotx, u8 *pivoty, bool *flipped)
 {
     AnimFighter* f = &gFighters[fx];
     const AnimDesc* fdesc = f->desc;
@@ -391,6 +392,10 @@ const Hitbox* animFighterGetHitboxes(int fx, u8* dmg, bool *flipped)
         *dmg = fframe->damage;
     if (flipped)
         *flipped = (f->flags & FLAGS_IS_RIGHT);
+    if (pivotx)
+        *pivotx = fdesc->pivotx;
+    if (pivoty)
+        *pivoty = fdesc->pivoty;
 
     return fframe->boxes;
 }

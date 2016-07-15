@@ -267,8 +267,10 @@ static void updateCollisions()
 {
     u8 dmg0, dmg1;
     bool f0, f1;
-    const Hitbox* b0 = animFighterGetHitboxes(0, &dmg0, &f0);
-    const Hitbox* b1 = animFighterGetHitboxes(1, &dmg1, &f1);
+    u8 pvx0, pvy0;
+    u8 pvx1, pvy1;
+    const Hitbox* b0 = animFighterGetHitboxes(0, &dmg0, &pvx0, &pvy0, &f0);
+    const Hitbox* b1 = animFighterGetHitboxes(1, &dmg1, &pvx1, &pvy1, &f1);
 
     // Check if a red box collide with a blue box
     bool hit0 = hitboxCheckHit(
@@ -284,6 +286,23 @@ static void updateCollisions()
         fightHit(1, dmg0);
     if (hit1)
         fightHit(0, dmg1);
+
+    Hitbox blues[2] = {
+        hitboxGetBlue(b0, ANIM_DESC_MAX_BOXES, gFight.fighters[0].wx, gFight.fighters[0].wy, f0),
+        hitboxGetBlue(b1, ANIM_DESC_MAX_BOXES, gFight.fighters[1].wx, gFight.fighters[1].wy, f1),
+    };
+
+    blues[0].x -= pvx0;
+    blues[0].y -= pvy0;
+    blues[1].x -= pvx1;
+    blues[1].y -= pvy1;
+
+    int fxhit;
+    if (specialCollide(blues, &fxhit)) {
+        // FIXME: parametrize special move damage
+        fightHit(fxhit, 20);
+        fightFall(fxhit);
+    }
 }
 
 static void updateFighters()
