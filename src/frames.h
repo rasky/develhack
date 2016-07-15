@@ -4,7 +4,7 @@
 
 #include "hitbox.h"
 
-#define ANIM_DESC_MAX_FRAMES 64
+#define ANIM_DESC_MAX_FRAMES 70
 #define ANIM_DESC_MAX_BOXES 3
 
 typedef struct {
@@ -33,6 +33,8 @@ typedef struct {
         u8 hit;
         u8 special;
         u8 fall;
+        u8 jkick;
+        u8 jpunch;
     } keyframes;
     u8 pivotx, pivoty;
     const char* palette;
@@ -49,8 +51,9 @@ typedef struct {
 #define FCBWD (1 << 2) // Can begin walking backward (if input says so)
 #define FCWALK (FCFWD | FCBWD) // Can begin walking (if input says so)
 #define FCJMP (1 << 3) // Can begin jumping (if input says so)
+#define FCJMPCH (1 << 4) // Can begin jump-kicking/punching
 
-#define FSPECIAL (1 << 4) // Start the special effect
+#define FSPECIAL (1 << 5) // Start the special effect
 
 #define FSTATUS(f) ((f) & (7 << 8)) // Extract status
 #define FST_NONE (0 << 8) // Status: none (all the others)

@@ -251,8 +251,8 @@ void fightHit(int fx, int npoints)
         // TODO: die
         fightFall(fx);
     } else {
-		gFight.fighters[fx].fallpoints += npoints*5;
-		if (gFight.fighters[fx].fallpoints >= 80) {
+		gFight.fighters[fx].fallpoints += npoints*10;
+		if (gFight.fighters[fx].fallpoints >= 85) {
 			// Hit many times in short timespan -> fall
 	        fightFall(fx);
 		}

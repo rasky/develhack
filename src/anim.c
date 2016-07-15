@@ -238,15 +238,15 @@ static void animProcessInput(int fx, u32 input)
             if (FSTATUS(fflags) != FST_JMP) {
                 animBeginAnimation(fx, fdesc->keyframes.punch);
                 return;
-            } else {
-                // TODO: jump punch
+            } else if (fflags & FCJMPCH) {
+                animBeginAnimation(fx, fdesc->keyframes.jpunch);
             }
         } else if (input & KEY_B) {
             if (FSTATUS(fflags) != FST_JMP) {
                 animBeginAnimation(fx, fdesc->keyframes.kick);
                 return;
-            } else {
-                // TODO: jump kick
+            } else if (fflags & FCJMPCH) {
+                animBeginAnimation(fx, fdesc->keyframes.jkick);
             }
         }
     }
