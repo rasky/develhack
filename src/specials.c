@@ -56,6 +56,7 @@ void hagokenLoad(SpecialDesc *s) {
     loadGfx("hagoken", &s->gfx, &s->pal);
     s->vramptr = oamAllocateGfx(&oamMain, SpriteSize_64x64, SpriteColorFormat_16Color);
 
+    // FIXME: swap colors 0x0<->0xF in palette and in gfx (assets are wrong)
     u8 tmp;
     for (int i=0;i<64*64*3/2;i++){
         u8 px = s->gfx[i];
