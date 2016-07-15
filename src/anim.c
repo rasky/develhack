@@ -7,6 +7,7 @@
 #include "debug.h"
 #include "frames.h"
 #include "input.h"
+#include "specials.h"
 
 #define SPRITE_W 64
 #define SPRITE_H 64
@@ -327,6 +328,10 @@ void animRedraw()
                 f->curframe = curframe->next - 1;
             }
             f->cftime = fdesc->frames[f->curframe].speed;
+            if (fdesc->frames[f->curframe].flags & FSPECIAL)
+                specialCreate(fdesc->special.type,
+                    f->x+((s32)fdesc->special.offx<<8),
+                    f->y+((s32)fdesc->special.offy<<8));
         }
 
         animUpdateOam(fx);

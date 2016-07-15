@@ -8,6 +8,7 @@
 #include "debug.h"
 #include "frames.h"
 #include "stage.h"
+#include "specials.h"
 
 #define SCREEN_WIDTH 256
 #define SCREEN_HEIGHT 192
@@ -279,6 +280,12 @@ static void updateStage()
     stageSetZoom(gFight.camera.zoom);
 }
 
+static void updateSpecial()
+{
+    specialSetScale(gFight.camera.zoom);
+    specialUpdate();
+}
+
 void fightUpdate(u32 keys)
 {
     animUpdateStatus(keys);
@@ -291,6 +298,7 @@ void fightUpdate(u32 keys)
     updateCamera();
     updateFighters();
     updateStage();
+    updateSpecial();
 }
 
 void fightVblank()

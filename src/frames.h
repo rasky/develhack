@@ -35,6 +35,10 @@ typedef struct {
     } keyframes;
     u8 pivotx, pivoty;
     const char* palette;
+    struct {
+        u8 type;
+        u8 offx, offy;
+    } special;
 } AnimDesc;
 
 // Animation Flags. Mark specific animation frames
@@ -44,6 +48,8 @@ typedef struct {
 #define FCBWD (1 << 2) // Can begin walking backward (if input says so)
 #define FCWALK (FCFWD | FCBWD) // Can begin walking (if input says so)
 #define FCJMP (1 << 3) // Can begin jumping (if input says so)
+
+#define FSPECIAL (1 << 4) // Start the special effect
 
 #define FSTATUS(f) ((f) & (7 << 8)) // Extract status
 #define FST_NONE (0 << 8) // Status: none (all the others)

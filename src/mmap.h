@@ -7,3 +7,6 @@
 #define MMAP_OAM_FIGHTERS    0    // 8 required
 #define MMAP_OAM_SPECIALS   10    // 8 required
 #define MMAP_OAM_BACKGROUND 20    // 10 required
+
+#define MMAP_PAL_FIGHTERS(i)    (0+(i))
+#define MMAP_PAL_SPECIALS(i)    (2+(i))

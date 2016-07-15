@@ -1,4 +1,5 @@
 #include "frames.h"
+#include "specials.h"
 
 #define NEXT(n) ((n)+1)
 #define MOVE(x,y) (x),(y)
@@ -105,7 +106,7 @@ const AnimDesc Dummy = {
         { 40,  0,       MOVE(0,0), "dummy-special", 0, 4, SPEED(10),   0,                       DAMAGE(0), {BASE_WBOX }},
         { 41,  0,       MOVE(0,0), "dummy-special", 1, 4, SPEED(10),   0,                       DAMAGE(0), {BASE_WBOX }},
         { 42,  0,       MOVE(0,0), "dummy-special", 2, 4, SPEED(10),   0,                       DAMAGE(0), {BASE_WBOX }},
-        { 43,  0,       MOVE(0,0), "dummy-special", 3, 4, SPEED(0),    0,                       DAMAGE(0), {BASE_WBOX }},
+        { 43,  0,       MOVE(0,0), "dummy-special", 3, 4, SPEED(0),    FSPECIAL,                DAMAGE(0), {BASE_WBOX }},
         { 44,  0,       MOVE(0,0), "dummy-special", 3, 4, SPEED(0),    0,                       DAMAGE(0), {BASE_WBOX }},
         { 45,  0,       MOVE(0,0), "dummy-special", 2, 4, SPEED(12),   0,                       DAMAGE(0), {BASE_WBOX }},
         { 46,  0,       MOVE(0,0), "dummy-special", 1, 4, SPEED(12),   0,                       DAMAGE(0), {BASE_WBOX }},
@@ -125,4 +126,5 @@ const AnimDesc Dummy = {
     },
     /* pivot */ 45,119,
     /* palette */ "dummy-idle.pal.bin",
+    /* special */ { TYPE_HAGOKEN, 64, -40 },
 };

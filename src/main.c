@@ -17,6 +17,8 @@
 #include "input.h"
 #include "sound.h"
 #include "stage.h"
+#include "pool.h"
+#include "specials.h"
 
 volatile int frame = 0;
 
@@ -120,6 +122,7 @@ void Vblank()
 {
     fightVblank();
     stageVblank();
+    specialVblank();
     frame++;
     if (mustDumpStats()) {
         u16 y = REG_VCOUNT;
@@ -155,37 +158,7 @@ int main(void)
         goto error;
     }
 
-#if 0
-    // ---- BEGIN LUA
-
-    lua_State* lstate = luaL_newstate();
-    if (lstate == NULL) {
-        debugf("Unable to create Lua state\n");
-        goto error;
-    }
-
-    int rc = luaL_dofile(lstate, "hello.luac");
-    if (rc != LUA_OK) {
-        debugf("%s\n", lua_tostring(lstate, -1));
-        goto error;
-    }
-
-    lua_getglobal(lstate, "sum");
-    lua_pushnumber(lstate, 1);
-    lua_pushnumber(lstate, 2);
-    if (lua_pcall(lstate, 2, 1, 0) != 0) {
-        debugf(lua_tostring(lstate, -1));
-        goto error;
-    }
-
-    int z = lua_tonumber(lstate, -1);
-    lua_pop(lstate, 1);
-
-    lua_close(lstate);
-    debugf("Lua: %d\n", z);
-
-    // ----- END LUA
-#endif
+    poolInit();
 
     stageInit();
 
@@ -196,6 +169,7 @@ int main(void)
     }
 
     fightInit(stage);
+    specialInit();
 
     // ----- BEGIN SOUND
     initSoundSystem();
