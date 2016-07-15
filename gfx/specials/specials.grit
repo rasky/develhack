@@ -1,0 +1,7 @@
+*.png
+-ftb
+-fh!
+-Mh8
+-Mw8
+-gB4
+-pn16
