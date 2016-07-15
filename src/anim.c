@@ -403,3 +403,11 @@ void animFighterHit(int fx)
     // TODO: handle hit in jump
     animBeginAnimation(fx, fdesc->keyframes.hit);
 }
+
+void animFighterFall(int fx)
+{
+    AnimFighter* f = &gFighters[fx];
+    const AnimDesc* fdesc = f->desc;
+
+    animBeginAnimation(fx, fdesc->keyframes.fall);
+}

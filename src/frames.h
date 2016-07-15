@@ -32,6 +32,7 @@ typedef struct {
         u8 kick;
         u8 hit;
         u8 special;
+        u8 fall;
     } keyframes;
     u8 pivotx, pivoty;
     const char* palette;
@@ -53,10 +54,11 @@ typedef struct {
 
 #define FSTATUS(f) ((f) & (7 << 8)) // Extract status
 #define FST_NONE (0 << 8) // Status: none (all the others)
-#define FST_IDL (1 << 8) // Status: idle
-#define FST_FWD (2 << 8) // Status: moving forward
-#define FST_BWD (3 << 8) // Status: moving backward
-#define FST_JMP (4 << 8) // Status: jumping
+#define FST_IDL  (1 << 8) // Status: idle
+#define FST_FWD  (2 << 8) // Status: moving forward
+#define FST_BWD  (3 << 8) // Status: moving backward
+#define FST_JMP  (4 << 8) // Status: jumping
+#define FST_FALL (5 << 8) // Status: falling
 
 extern const AnimDesc Rasky;
 extern const AnimDesc Dummy;

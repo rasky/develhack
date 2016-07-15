@@ -42,4 +42,6 @@ void animFighterGetState(int fx, int* status, int* movex, int* movey);
  */
 const Hitbox* animFighterGetHitboxes(int fx, u8* damage, bool *flipped);
 
+// Trigger specific animations driven by game logic
 void animFighterHit(int fx);
+void animFighterFall(int fx);

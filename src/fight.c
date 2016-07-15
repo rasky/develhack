@@ -40,7 +40,13 @@ struct {
         // World position of the fighter (fixed .8).
         // This is the point where the fighter's pivot will be placed.
         s32 wx, wy;
+
+        // Life points of the player (0=dead)
         int lifepoints;
+
+        // Accumulator to check whether was hit many points in short
+        // window (and thus the player will fall to the ground)
+        int fallpoints;
     } fighters[2];
 
     struct {
@@ -92,6 +98,8 @@ void fightInit(const StageDesc* desc)
     gFight.fighters[1].wx = (u32)desc->fighterStartX[1] << 8;
     gFight.fighters[0].wy = desc->floory << 8;
     gFight.fighters[1].wy = desc->floory << 8;
+    gFight.fighters[0].lifepoints = 300;
+    gFight.fighters[1].lifepoints = 300;
     gFight.camera.x0 = 0 << 8;
     gFight.camera.x1 = SCREEN_WIDTH << 8;
     gFight.camera.y0 = (desc->floory - SCREEN_FLOOR_Y) << 8;
@@ -132,6 +140,13 @@ static void fightUpdateStatus(int fx, u32 keys)
             f->wx += (s32)movex * 64;
         }
         break;
+
+    case FST_FALL:
+    	if (isleft)
+	        f->wx += (s32)movex * 64;
+	    else
+	        f->wx -= (s32)movex * 64;
+    	break;
     }
 
     if (f->wx > desc->fighterLimits[1] << 8) {
@@ -139,6 +154,9 @@ static void fightUpdateStatus(int fx, u32 keys)
     } else if (f->wx < desc->fighterLimits[0] << 8) {
         f->wx = desc->fighterLimits[0] << 8;
     }
+
+    if (f->fallpoints > 0)
+    	f->fallpoints--;
 }
 
 // Calculate the "camera" position; this basically means calculating
@@ -212,12 +230,17 @@ static void updateCamera()
     }
 }
 
+void fightFall(int fx)
+{
+   animFighterFall(fx);
+   gFight.fighters[fx].fallpoints = 0;
+}
+
 // This function will be called when player #fx was hit
 //   fx - fighter index
 //   npoints - number of hitpoints inflicted to the player
 void fightHit(int fx, int npoints)
 {
-
     // Play hit animation (depending if in jump or not)
     animFighterHit(fx);
 
@@ -225,8 +248,17 @@ void fightHit(int fx, int npoints)
     gFight.fighters[fx].lifepoints -= npoints;
     if (gFight.fighters[fx].lifepoints < 0) {
         gFight.fighters[fx].lifepoints = 0;
-        // TODO: die!
+        // TODO: die
+        fightFall(fx);
+    } else {
+		gFight.fighters[fx].fallpoints += npoints*5;
+		if (gFight.fighters[fx].fallpoints >= 80) {
+			// Hit many times in short timespan -> fall
+	        fightFall(fx);
+		}
     }
+
+    debugf("OUCH: player %d: life %d (hit by %d, fall: %d)\n", fx, gFight.fighters[fx].lifepoints, npoints, gFight.fighters[fx].fallpoints);
 
     // TOOD: Play sound effect of hit
 }
@@ -290,6 +322,7 @@ void fightUpdate(u32 keys)
 {
     animUpdateStatus(keys);
     fightUpdateStatus(0, keys);
+    fightUpdateStatus(1, 0);
     updateCollisions();
 
     // Compute the new camera based on the position of the fighters
