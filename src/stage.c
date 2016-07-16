@@ -183,6 +183,7 @@ const StageDesc* stageLoad(const char* id)
 
     snprintf(filename, sizeof(filename), "%s.pal.bin", id);
     Bytes palette = slurp(filename);
+    DC_FlushRange(palette.data, palette.size);
     dmaCopy(palette.data, BG_PALETTE, palette.size);
     free(palette.data);
 
