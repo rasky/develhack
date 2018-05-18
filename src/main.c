@@ -109,9 +109,6 @@ void initBackgrounds()
     REG_BG3Y_SUB = 0;
 }
 
-/* Select a low priority DMA channel to perform our background copying. */
-static const int DMA_CHANNEL = 3;
-
 bool mustDumpStats()
 {
     // FIXME: for now every once in a while; could be bound to a key
